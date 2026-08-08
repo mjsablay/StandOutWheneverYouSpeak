@@ -1,65 +1,190 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Wrap, Section, SectionHead, Btn, Eyebrow } from "@/components/ui";
+import LogoMarquee from "@/components/LogoMarquee";
+import { FAQS } from "@/lib/site";
+
+const LOOP = [
+  {
+    n: 1,
+    title: "Learn",
+    body: "Short, focused lessons on structure, delivery, and staying on message — built from a decade of coaching 3,000+ speakers.",
+  },
+  {
+    n: 2,
+    title: "Practice",
+    body: "Rehearse with an AI speaking coach that pushes back, throws curveballs, and gives feedback — then practice live with peers.",
+  },
+  {
+    n: 3,
+    title: "Perform",
+    body: "Walk into the classroom, boardroom, or interview having already been there — and earn points every step of the way.",
+  },
+];
+
+const EXPLORE = [
+  {
+    href: "/courses",
+    icon: "🎓",
+    title: "Courses",
+    body: "Leadership Voice and Campus Voice — structured, lesson-by-lesson.",
+    go: "View courses",
+  },
+  {
+    href: "/events",
+    icon: "📅",
+    title: "Events",
+    body: "Live workshops, practice nights, and open houses to join.",
+    go: "See what's on",
+  },
+  {
+    href: "/community",
+    icon: "👥",
+    title: "Community",
+    body: "Find practice partners and get peer feedback as a member.",
+    go: "Meet the members",
+  },
+  {
+    href: "/leaderboard",
+    icon: "🏆",
+    title: "Leaderboard",
+    body: "Earn points for showing up. Climb the ranks and keep streaks.",
+    go: "See the rankings",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* Hero */}
+      <header className="py-20 text-center sm:py-24">
+        <Wrap>
+          <Eyebrow>Speak with impact and influence</Eyebrow>
+          <h1 className="mx-auto mb-6 max-w-[760px] text-[clamp(40px,6vw,64px)] font-extrabold leading-[1.06] tracking-[-0.03em]">
+            Stand out whenever you speak.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mb-9 max-w-[560px] text-[19px] text-ink-soft">
+            Eight out of ten people feel nervous presenting. Learn the
+            structure, practice with an AI coach and real peers, and perform
+            when it counts.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          <div className="flex flex-wrap justify-center gap-3.5">
+            <Btn
+              href="/courses"
+              variant="accent"
+              className="px-7 py-3.5 text-base"
+            >
+              Choose your course
+            </Btn>
+            <Btn
+              href="/pricing"
+              variant="ghost"
+              className="px-7 py-3.5 text-base"
+            >
+              Start free in the Front Row →
+            </Btn>
+          </div>
+          <p className="mt-4 text-[13.5px] text-ink-soft">
+            No credit card required. Upgrade to Speakers&apos; Circle anytime.
+          </p>
+        </Wrap>
+      </header>
+
+      <LogoMarquee />
+
+      {/* The loop */}
+      <Section alt>
+        <Wrap>
+          <SectionHead
+            title="One loop. Every rep compounds."
+            sub="Speaking well isn't a talent — it's a cycle. What you learn shapes how you practice, and every practice changes how you perform."
+          />
+          <div className="grid gap-5 md:grid-cols-3">
+            {LOOP.map((c) => (
+              <div
+                key={c.n}
+                className="rounded-2xl border border-line bg-white p-8"
+              >
+                <div className="mb-4 flex h-[34px] w-[34px] items-center justify-center rounded-full bg-brand-soft text-[15px] font-bold text-brand">
+                  {c.n}
+                </div>
+                <h3 className="mb-2 text-xl font-bold">{c.title}</h3>
+                <p className="text-[15px] text-ink-soft">{c.body}</p>
+              </div>
+            ))}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Explore */}
+      <Section>
+        <Wrap>
+          <SectionHead
+            title="Explore Stand Out."
+            sub="Everything you need to grow your voice, in one place."
+          />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {EXPLORE.map((c) => (
+              <Link
+                key={c.href}
+                href={c.href}
+                className="block rounded-2xl border border-line bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(20,24,31,.08)]"
+              >
+                <div className="mb-3 text-2xl">{c.icon}</div>
+                <h3 className="mb-1 text-[17px] font-bold">{c.title}</h3>
+                <p className="text-[13.5px] text-ink-soft">{c.body}</p>
+                <div className="mt-3 text-[13px] font-bold text-brand">
+                  {c.go} →
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* CTA band */}
+      <Section alt>
+        <Wrap>
+          <div className="rounded-3xl bg-brand px-6 py-14 text-center text-white sm:px-10">
+            <h2 className="text-[clamp(28px,4vw,40px)] font-extrabold leading-tight tracking-tight">
+              Ready to be remembered?
+            </h2>
+            <p className="mx-auto mb-7 mt-3 max-w-[520px] text-[17px] text-[#cddcf0]">
+              Join the Front Row free, or step into the Speakers&apos; Circle
+              for the full experience — $10 CAD/month, cancel anytime.
+            </p>
+            <Btn
+              href="/pricing"
+              variant="accent"
+              className="px-7 py-3.5 text-base"
+            >
+              See plans &amp; pricing
+            </Btn>
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* FAQ */}
+      <Section>
+        <Wrap>
+          <SectionHead title="Frequently asked questions." center />
+          <div className="mx-auto max-w-[760px]">
+            {FAQS.map(([q, a]) => (
+              <details key={q} className="group border-b border-line">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
+                  {q}
+                  <span className="text-2xl font-normal leading-none text-brand group-open:hidden">
+                    +
+                  </span>
+                  <span className="hidden text-2xl font-normal leading-none text-brand group-open:inline">
+                    –
+                  </span>
+                </summary>
+                <p className="pb-6 text-[15.5px] text-ink-soft">{a}</p>
+              </details>
+            ))}
+          </div>
+        </Wrap>
+      </Section>
+    </>
   );
 }

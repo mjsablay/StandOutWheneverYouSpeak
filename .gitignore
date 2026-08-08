@@ -24,7 +24,16 @@
 .DS_Store
 *.pem
 
+# Lesson videos — deliberately NOT committed.
+# GitHub rejects any file over 100MB and most of these exceed it.
+# They live here for local development only; production serves them from
+# a video host (Supabase Storage / Mux / Cloudflare Stream) via
+# NEXT_PUBLIC_VIDEO_BASE_URL. See README.
+/public/videos/
+
 # debug
+build.log
+public/materials/quizzes-raw.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
