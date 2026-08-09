@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { Wrap, Section, PageSkeleton } from "@/components/ui";
 import { NOTIFICATIONS } from "@/lib/members";
 import { useAuth } from "@/lib/mock-auth";
+import WaitlistGate from "@/components/WaitlistGate";
 
-export default function NotificationsPage() {
+function NotificationsPageInner() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -49,5 +50,13 @@ export default function NotificationsPage() {
         </p>
       </Wrap>
     </Section>
+  );
+}
+
+export default function NotificationsPage() {
+  return (
+    <WaitlistGate>
+      <NotificationsPageInner />
+    </WaitlistGate>
   );
 }

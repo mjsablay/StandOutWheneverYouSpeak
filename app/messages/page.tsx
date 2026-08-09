@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
 import { CONVERSATIONS } from "@/lib/members";
 import { useAuth } from "@/lib/mock-auth";
+import WaitlistGate from "@/components/WaitlistGate";
 
-export default function MessagesPage() {
+function MessagesPageInner() {
   const router = useRouter();
   const { user, loading, hasFullAccess } = useAuth();
   const [activeSlug, setActiveSlug] = useState(CONVERSATIONS[0].slug);
@@ -157,5 +158,13 @@ export default function MessagesPage() {
         </div>
       </Wrap>
     </Section>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <WaitlistGate>
+      <MessagesPageInner />
+    </WaitlistGate>
   );
 }

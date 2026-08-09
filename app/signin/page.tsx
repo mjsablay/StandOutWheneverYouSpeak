@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Wrap, Section } from "@/components/ui";
 import { useAuth } from "@/lib/mock-auth";
+import SocialSignIn from "@/components/SocialSignIn";
 
 const field =
   "w-full rounded-[10px] border border-line bg-white px-3.5 py-3 text-[15px] text-ink outline-none focus:border-transparent focus:ring-2 focus:ring-brand";
@@ -108,6 +109,10 @@ function SignInInner() {
               {busy ? "Sending…" : "Email me a sign-in link"}
             </button>
           </form>
+
+          <div className="mt-6">
+            <SocialSignIn next={next ?? undefined} />
+          </div>
 
           <p className="mt-6 text-center text-[14px] text-ink-soft">
             New here?{" "}

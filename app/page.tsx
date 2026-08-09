@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Wrap, Section, SectionHead, Btn, Eyebrow } from "@/components/ui";
+import { Wrap, Section, SectionHead, Btn } from "@/components/ui";
 import LogoMarquee from "@/components/LogoMarquee";
 import { FAQS } from "@/lib/site";
 
@@ -58,33 +58,48 @@ export default function Home() {
       {/* Hero */}
       <header className="py-20 text-center sm:py-24">
         <Wrap>
-          <Eyebrow>Speak with impact and influence</Eyebrow>
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-4 py-1.5 text-[13px] font-bold text-accent-ink">
+            <span className="h-2 w-2 rounded-full bg-accent" />
+            Now accepting founding members
+          </span>
           <h1 className="mx-auto mb-6 max-w-[760px] text-[clamp(40px,6vw,64px)] font-extrabold leading-[1.06] tracking-[-0.03em]">
             Stand out whenever you speak.
           </h1>
-          <p className="mx-auto mb-9 max-w-[560px] text-[19px] text-ink-soft">
-            Eight out of ten people feel nervous presenting. Learn the
+          <p className="mx-auto mb-4 max-w-[580px] text-[19px] text-ink-soft">
+            Around three in four people fear public speaking. Learn the
             structure, practice with an AI coach and real peers, and perform
             when it counts.
           </p>
+          <p className="mx-auto mb-9 max-w-[560px] text-[13.5px] text-ink-soft">
+            <a
+              href="https://nationalsocialanxietycenter.com/social-anxiety/public-speaking-anxiety/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-ink"
+            >
+              National Social Anxiety Center
+            </a>{" "}
+            — about 75% report some fear of public speaking.
+          </p>
           <div className="flex flex-wrap justify-center gap-3.5">
             <Btn
-              href="/courses"
+              href="/signup"
               variant="accent"
               className="px-7 py-3.5 text-base"
             >
-              Choose your course
+              Request your place
             </Btn>
             <Btn
-              href="/pricing"
+              href="/courses"
               variant="ghost"
               className="px-7 py-3.5 text-base"
             >
-              Start free in the Front Row →
+              See what&apos;s inside →
             </Btn>
           </div>
           <p className="mt-4 text-[13.5px] text-ink-soft">
-            No credit card required. Upgrade to Speakers&apos; Circle anytime.
+            Free to request. We&apos;re approving members in small groups so
+            every cohort gets proper attention.
           </p>
         </Wrap>
       </header>
@@ -149,15 +164,15 @@ export default function Home() {
               Ready to be remembered?
             </h2>
             <p className="mx-auto mb-7 mt-3 max-w-[520px] text-[17px] text-[#cddcf0]">
-              Join the Front Row free, or step into the Speakers&apos; Circle
-              for the full experience — $10 CAD/month, cancel anytime.
+              Request your place today. We review every request and approve
+              members in small groups — you&apos;ll hear from us by email.
             </p>
             <Btn
-              href="/pricing"
+              href="/signup"
               variant="accent"
               className="px-7 py-3.5 text-base"
             >
-              See plans &amp; pricing
+              Request your place
             </Btn>
           </div>
         </Wrap>

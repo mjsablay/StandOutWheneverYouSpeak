@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Wrap, Section, Check } from "@/components/ui";
 import { useAuth } from "@/lib/mock-auth";
+import SocialSignIn from "@/components/SocialSignIn";
 
 const field =
   "w-full rounded-[10px] border border-line bg-white px-3.5 py-3 text-[15px] text-ink outline-none focus:border-transparent focus:ring-2 focus:ring-brand";
@@ -121,6 +122,10 @@ function SignUpInner() {
               </li>
             </ul>
           )}
+
+          <div className="mt-6">
+            <SocialSignIn next={next} />
+          </div>
 
           <p className="mt-6 text-center text-[14px] text-ink-soft">
             Already have an account?{" "}

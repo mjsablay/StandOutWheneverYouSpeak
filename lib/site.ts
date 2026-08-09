@@ -150,6 +150,10 @@ export const TEAM = [
 
 export const FAQS = [
   [
+    "How do I get access?",
+    "Request a place with your email, and we'll review it. We're opening Stand Out in stages so each intake gets proper attention, and you'll get an email as soon as your place is ready. There's no charge to request access.",
+  ],
+  [
     "What's the difference between the Front Row and Speakers' Circle?",
     "Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle ($10 CAD/month) unlocks every lesson, unlimited AI practice, the full member community, and all live workshops and cohort classes.",
   ],

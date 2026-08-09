@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export type Tier = "free" | "circle";
 export type Role = "admin" | "member";
+export type Status = "pending" | "approved" | "declined";
 
 export type Profile = {
   id: string;
@@ -34,6 +35,7 @@ export type Profile = {
   name: string;
   tier: Tier;
   role: Role;
+  status: Status;
   headline?: string | null;
   bio?: string | null;
   linkedin?: string | null;
@@ -43,12 +45,21 @@ export type Profile = {
   location?: string | null;
 };
 
+export type OAuthProvider = "google" | "azure" | "linkedin_oidc";
+
 type AuthValue = {
   user: Profile | null;
   loading: boolean;
   isAdmin: boolean;
+  /** Admin has approved this account off the waitlist. */
+  isApproved: boolean;
+  /** Approved AND (paid or admin) — gates Speakers' Circle content. */
   hasFullAccess: boolean;
   signInWithEmail: (email: string, next?: string) => Promise<{ error?: string }>;
+  signInWithProvider: (
+    provider: OAuthProvider,
+    next?: string,
+  ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Partial<Profile>) => Promise<{ error?: string }>;
   refresh: () => Promise<void>;
@@ -69,6 +80,7 @@ type Row = {
   location: string | null;
   role: Role;
   tier: Tier;
+  status: Status;
 };
 
 const toProfile = (r: Row): Profile => ({
@@ -77,6 +89,7 @@ const toProfile = (r: Row): Profile => ({
   name: r.display_name || r.email.split("@")[0],
   tier: r.tier,
   role: r.role,
+  status: r.status,
   headline: r.headline,
   bio: r.bio,
   linkedin: r.linkedin_url,
@@ -96,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id,email,display_name,headline,bio,linkedin_url,school,company,job_title,location,role,tier",
+          "id,email,display_name,headline,bio,linkedin_url,school,company,job_title,location,role,tier,status",
         )
         .eq("id", userId)
         .single();
@@ -143,6 +156,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [supabase],
   );
 
+  const signInWithProvider = useCallback(
+    async (provider: OAuthProvider, next?: string) => {
+      const redirect = `${window.location.origin}/auth/callback${
+        next ? `?next=${encodeURIComponent(next)}` : ""
+      }`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: redirect },
+      });
+      return error ? { error: error.message } : {};
+    },
+    [supabase],
+  );
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -175,12 +202,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) await loadProfile(user.id);
   }, [user, loadProfile]);
 
+  const isAdmin = user?.role === "admin";
+  const isApproved = isAdmin || user?.status === "approved";
+
   const value: AuthValue = {
     user,
     loading,
-    isAdmin: user?.role === "admin",
-    hasFullAccess: user?.role === "admin" || user?.tier === "circle",
+    isAdmin,
+    isApproved,
+    hasFullAccess: isAdmin || (isApproved && user?.tier === "circle"),
     signInWithEmail,
+    signInWithProvider,
     signOut,
     updateProfile,
     refresh,
