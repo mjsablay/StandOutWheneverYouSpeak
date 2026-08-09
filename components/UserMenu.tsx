@@ -44,7 +44,7 @@ export default function UserMenu() {
   const totalUnread = unreadNotifs + unreadMsgs;
 
   const items = [
-    { href: "/account", icon: "👤", label: "View profile" },
+    { href: "/account", icon: "👤", label: "My profile" },
     { href: "/messages", icon: "💬", label: "Messages", badge: unreadMsgs },
     {
       href: "/notifications",
@@ -53,7 +53,7 @@ export default function UserMenu() {
       badge: unreadNotifs,
     },
     { href: "/community", icon: "👥", label: "Community" },
-    { href: "/account", icon: "⚙️", label: "Settings & data" },
+    { href: "/account", icon: "✏️", label: "Edit profile" },
     ...(isAdmin
       ? [{ href: "/admin", icon: "🛡️", label: "Admin console" }]
       : []),
@@ -67,13 +67,22 @@ export default function UserMenu() {
         aria-expanded={open}
         className="relative flex items-center gap-2 rounded-full border border-line py-1 pl-1 pr-3 transition hover:bg-paper-warm"
       >
-        <span
-          className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[12px] font-bold ${
-            isMember ? "bg-accent text-ink" : "bg-brand text-white"
-          }`}
-        >
-          {initialsOf(user.name || user.email)}
-        </span>
+        {user.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={user.avatar_url}
+            alt=""
+            className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <span
+            className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[12px] font-bold ${
+              isMember ? "bg-accent text-ink" : "bg-brand text-white"
+            }`}
+          >
+            {initialsOf(user.name || user.email)}
+          </span>
+        )}
         <span className="text-[9px] leading-none text-ink-soft">▼</span>
         {totalUnread > 0 && (
           <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-brand" />
@@ -85,13 +94,22 @@ export default function UserMenu() {
           {/* Identity */}
           <div className="border-b border-line p-4">
             <div className="flex items-center gap-3">
-              <span
-                className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold ${
-                  isMember ? "bg-accent text-ink" : "bg-brand text-white"
-                }`}
-              >
-                {initialsOf(user.name || user.email)}
-              </span>
+              {user.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatar_url}
+                  alt=""
+                  className="h-11 w-11 flex-shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <span
+                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    isMember ? "bg-accent text-ink" : "bg-brand text-white"
+                  }`}
+                >
+                  {initialsOf(user.name || user.email)}
+                </span>
+              )}
               <div className="min-w-0">
                 <div className="truncate text-[15px] font-bold">
                   {user.name || "Your profile"}

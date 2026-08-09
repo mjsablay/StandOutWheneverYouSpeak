@@ -116,11 +116,30 @@ export function Avatar({
   initials,
   size = 34,
   variant = "brand",
+  src,
+  alt,
 }: {
   initials: string;
   size?: number;
   variant?: "brand" | "accent" | "dark";
+  /** Photo URL. Falls back to initials when absent. */
+  src?: string | null;
+  alt?: string;
 }) {
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={alt ?? "Profile photo"}
+        width={size}
+        height={size}
+        className="flex-shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
   const bg =
     variant === "accent"
       ? "bg-accent text-ink"

@@ -29,10 +29,17 @@ export type Tier = "free" | "circle";
 export type Role = "admin" | "member";
 export type Status = "pending" | "approved" | "declined";
 
+export type HeadlineMode = "custom" | "school" | "work";
+
 export type Profile = {
   id: string;
   email: string;
+  /** Full name, kept in sync by the database from first + last. */
   name: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  avatar_url?: string | null;
+  headline_mode?: HeadlineMode;
   tier: Tier;
   role: Role;
   status: Status;
@@ -62,6 +69,7 @@ type AuthValue = {
   ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Partial<Profile>) => Promise<{ error?: string }>;
+  uploadAvatar: (file: File) => Promise<{ error?: string }>;
   refresh: () => Promise<void>;
 };
 
@@ -81,12 +89,20 @@ type Row = {
   role: Role;
   tier: Tier;
   status: Status;
+  first_name: string | null;
+  last_name: string | null;
+  avatar_url: string | null;
+  headline_mode: HeadlineMode;
 };
 
 const toProfile = (r: Row): Profile => ({
   id: r.id,
   email: r.email,
   name: r.display_name || r.email.split("@")[0],
+  first_name: r.first_name,
+  last_name: r.last_name,
+  avatar_url: r.avatar_url,
+  headline_mode: r.headline_mode,
   tier: r.tier,
   role: r.role,
   status: r.status,
@@ -109,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id,email,display_name,headline,bio,linkedin_url,school,company,job_title,location,role,tier,status",
+          "id,email,display_name,first_name,last_name,avatar_url,headline,headline_mode,bio,linkedin_url,school,company,job_title,location,role,tier,status",
         )
         .eq("id", userId)
         .single();
@@ -178,20 +194,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(
     async (patch: Partial<Profile>) => {
       if (!user) return { error: "Not signed in" };
+      const fields: Record<string, unknown> = {
+        first_name: patch.first_name,
+        last_name: patch.last_name,
+        headline: patch.headline,
+        headline_mode: patch.headline_mode,
+        bio: patch.bio,
+        linkedin_url: patch.linkedin,
+        school: patch.school,
+        company: patch.company,
+        job_title: patch.role_title,
+        location: patch.location,
+        avatar_url: patch.avatar_url,
+      };
+      // Only send keys the caller actually supplied.
+      Object.keys(fields).forEach(
+        (k) => fields[k] === undefined && delete fields[k],
+      );
+
       const { error } = await supabase
         .from("profiles")
-        .update({
-          display_name: patch.name,
-          headline: patch.headline,
-          bio: patch.bio,
-          linkedin_url: patch.linkedin,
-          school: patch.school,
-          company: patch.company,
-          job_title: patch.role_title,
-          location: patch.location,
-        })
+        .update(fields)
         .eq("id", user.id);
       if (error) return { error: error.message };
+      await loadProfile(user.id);
+      return {};
+    },
+    [supabase, user, loadProfile],
+  );
+
+  /** Uploads an avatar to storage and saves the public URL on the profile. */
+  const uploadAvatar = useCallback(
+    async (file: File) => {
+      if (!user) return { error: "Not signed in" };
+      if (file.size > 2 * 1024 * 1024)
+        return { error: "Image must be under 2 MB." };
+
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+
+      const { error: upErr } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) return { error: upErr.message };
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+
+      const { error: dbErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
+      if (dbErr) return { error: dbErr.message };
+
       await loadProfile(user.id);
       return {};
     },
@@ -215,6 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signInWithProvider,
     signOut,
     updateProfile,
+    uploadAvatar,
     refresh,
   };
 
