@@ -118,6 +118,7 @@ export function Avatar({
   variant = "brand",
   src,
   alt,
+  position,
 }: {
   initials: string;
   size?: number;
@@ -125,6 +126,8 @@ export function Avatar({
   /** Photo URL. Falls back to initials when absent. */
   src?: string | null;
   alt?: string;
+  /** CSS object-position, e.g. "50% 30%" — lets members centre their face. */
+  position?: string | null;
 }) {
   if (src) {
     return (
@@ -135,7 +138,11 @@ export function Avatar({
         width={size}
         height={size}
         className="flex-shrink-0 rounded-full object-cover"
-        style={{ width: size, height: size }}
+        style={{
+          width: size,
+          height: size,
+          objectPosition: position ?? "50% 50%",
+        }}
       />
     );
   }

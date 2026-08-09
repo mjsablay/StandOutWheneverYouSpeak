@@ -3,66 +3,79 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Wrap, Section, Avatar, Check, PageSkeleton } from "@/components/ui";
+import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
+import PhotoFramer from "@/components/PhotoFramer";
 import { useAuth, initialsOf, type Profile } from "@/lib/mock-auth";
-import {
-  SCHOOLS,
-  COMPANIES,
-  ROLES,
-  LOCATIONS,
-  BIO_MAX,
-  deriveHeadline,
-} from "@/lib/profile-options";
+import { LIMITS, deriveHeadline } from "@/lib/profile-options";
 
 const field =
-  "w-full rounded-[10px] border border-line bg-white px-3.5 py-3 text-[14.5px] text-ink outline-none focus:border-transparent focus:ring-2 focus:ring-brand";
+  "w-full rounded-[10px] border border-line bg-white px-3.5 py-2.5 text-[14.5px] text-ink outline-none transition focus:border-transparent focus:ring-2 focus:ring-brand";
 
-function Label({
-  htmlFor,
-  children,
+function Field({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  max,
   optional,
+  type = "text",
 }: {
-  htmlFor: string;
-  children: React.ReactNode;
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  max: number;
   optional?: boolean;
+  type?: string;
 }) {
   return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] font-semibold">
-      {children}
-      {optional && (
-        <span className="font-normal text-ink-soft"> (optional)</span>
-      )}
-    </label>
+    <div>
+      <label htmlFor={id} className="mb-1.5 block text-[13px] font-semibold">
+        {label}
+        {optional && <span className="font-normal text-ink-soft"> (optional)</span>}
+      </label>
+      <input
+        id={id}
+        type={type}
+        value={value}
+        maxLength={max}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={field}
+      />
+    </div>
   );
 }
 
-function Select({
-  id,
-  value,
+/** LinkedIn-style visibility switch. */
+function Toggle({
+  checked,
   onChange,
-  options,
-  placeholder,
+  label,
 }: {
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: readonly string[];
-  placeholder: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
 }) {
   return (
-    <select
-      id={id}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={field}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`relative h-6 w-11 flex-shrink-0 rounded-full transition ${
+        checked ? "bg-brand" : "bg-line"
+      }`}
     >
-      <option value="">{placeholder}</option>
-      {options.map((o) => (
-        <option key={o} value={o}>
-          {o}
-        </option>
-      ))}
-    </select>
+      <span
+        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+          checked ? "left-[22px]" : "left-0.5"
+        }`}
+      />
+    </button>
   );
 }
 
@@ -93,18 +106,16 @@ export default function AccountPage() {
   const form: Partial<Profile> = { ...user, ...edits };
   const isMember = hasFullAccess;
   const bioLength = (form.bio ?? "").length;
-  const bioOver = bioLength > BIO_MAX;
+  const dirty = Object.keys(edits).length > 0;
 
-  const set =
-    (k: keyof Profile) =>
-    (v: string) =>
-      setEdits((f) => ({ ...f, [k]: v }));
+  const set = (k: keyof Profile) => (v: string | boolean) =>
+    setEdits((f) => ({ ...f, [k]: v }));
 
   const fullName =
     [form.first_name, form.last_name].filter(Boolean).join(" ").trim() ||
     "Your name";
 
-  const previewHeadline = deriveHeadline({
+  const headline = deriveHeadline({
     headline: form.headline,
     headline_mode: form.headline_mode,
     school: form.school,
@@ -112,20 +123,25 @@ export default function AccountPage() {
     role_title: form.role_title,
   });
 
+  const save = async () => {
+    setError(null);
+    const res = await updateProfile(edits);
+    if (res.error) return setError(res.error);
+    setEdits({});
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2200);
+  };
+
   return (
     <Section>
-      <Wrap>
+      <Wrap className="max-w-[980px]">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="mb-3 inline-block text-[13px] font-bold uppercase tracking-[0.12em] text-brand">
+            <h1 className="text-[clamp(26px,4vw,36px)] font-extrabold tracking-tight">
               Edit profile
-            </span>
-            <h1 className="text-[clamp(28px,4vw,40px)] font-extrabold tracking-tight">
-              Showcase yourself.
             </h1>
-            <p className="mt-2 max-w-[560px] text-[17px] text-ink-soft">
-              Add a photo, your details, and a short bio so practice partners
-              get to know you.
+            <p className="mt-1.5 text-[16px] text-ink-soft">
+              This is how you appear to other members.
             </p>
           </div>
           <button
@@ -139,357 +155,388 @@ export default function AccountPage() {
           </button>
         </div>
 
-        {/* Membership */}
-        <div
-          className={`mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border p-6 ${
-            isMember ? "border-accent bg-accent-soft" : "border-line bg-paper-warm"
-          }`}
-        >
-          <div>
-            <div className="mb-1 text-[13px] font-bold uppercase tracking-wider text-ink-soft">
-              Membership
-            </div>
-            <div className="flex flex-wrap items-center gap-2.5 text-xl font-extrabold">
-              {user.tier === "circle" ? "Speakers' Circle" : "Front Row (free)"}
-              {isAdmin && (
-                <span className="rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-white">
-                  Administrator
-                </span>
-              )}
-            </div>
-          </div>
-          {isMember ? (
-            <Link
-              href="/community"
-              className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-white hover:bg-brand-dark"
-            >
-              Go to community
-            </Link>
-          ) : (
-            <Link
-              href="/checkout?next=/account"
-              className="rounded-lg bg-accent px-5 py-2.5 font-semibold text-ink hover:bg-accent-dark"
-            >
-              Upgrade — $10 CAD/mo
-            </Link>
-          )}
-        </div>
-
         {error && (
           <div className="mb-5 rounded-xl border border-brand bg-brand-soft p-4 text-[14px]">
             {error}
           </div>
         )}
 
-        <div className="grid items-start gap-6 lg:grid-cols-2">
-          {/* ---------------- Editor ---------------- */}
-          <div className="rounded-2xl border border-line bg-white p-8">
-            <h2 className="mb-5 text-lg font-bold">Your details</h2>
-
-            {/* Photo */}
-            <div className="mb-6 flex items-center gap-5">
-              <Avatar
-                initials={initialsOf(fullName)}
-                size={80}
-                variant={isMember ? "accent" : "brand"}
-                src={form.avatar_url}
-                alt={fullName}
-              />
-              <div>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setUploading(true);
-                    setError(null);
-                    const res = await uploadAvatar(file);
-                    setUploading(false);
-                    if (res.error) setError(res.error);
-                    if (fileRef.current) fileRef.current.value = "";
-                  }}
+        {/* ---------- Preview card (LinkedIn style) ---------- */}
+        <div className="mb-6 overflow-hidden rounded-2xl border border-line bg-white">
+          <div className="h-24 bg-brand" />
+          <div className="px-7 pb-7">
+            <div className="-mt-12 mb-4">
+              <span className="inline-block rounded-full border-4 border-white bg-white">
+                <Avatar
+                  initials={initialsOf(fullName)}
+                  size={96}
+                  variant={isMember ? "accent" : "brand"}
+                  src={form.avatar_url}
+                  position={form.avatar_position}
+                  alt={fullName}
                 />
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 className="text-[24px] font-extrabold tracking-tight">
+                  {fullName}
+                </h2>
+                {headline && (
+                  <p className="text-[15.5px] text-ink-soft">{headline}</p>
+                )}
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-ink-soft">
+                  {form.show_location !== false && form.location && (
+                    <span>{form.location}</span>
+                  )}
+                  {form.linkedin && (
+                    <>
+                      {form.show_location !== false && form.location && (
+                        <span aria-hidden>·</span>
+                      )}
+                      <a
+                        href={form.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-brand hover:underline"
+                      >
+                        {fullName} on LinkedIn
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <span
+                className={`rounded-full px-3 py-1.5 text-[12.5px] font-bold ${
+                  isMember
+                    ? "bg-accent-soft text-accent-ink"
+                    : "bg-brand-soft text-brand"
+                }`}
+              >
+                {isAdmin
+                  ? "Administrator"
+                  : user.tier === "circle"
+                    ? "Speakers' Circle"
+                    : "Front Row"}
+              </span>
+            </div>
+
+            {form.bio && (
+              <p className="mt-4 max-w-[620px] text-[15px] leading-relaxed text-ink-soft">
+                {form.bio}
+              </p>
+            )}
+
+            {((form.show_school !== false && form.school) ||
+              (form.show_company !== false && form.company)) && (
+              <div className="mt-5 space-y-2.5 border-t border-line pt-4">
+                {form.show_school !== false && form.school && (
+                  <div className="flex items-center gap-2.5 text-[14.5px]">
+                    <span aria-hidden>🎓</span>
+                    <span>{form.school}</span>
+                  </div>
+                )}
+                {form.show_company !== false && form.company && (
+                  <div className="flex items-center gap-2.5 text-[14.5px]">
+                    <span aria-hidden>💼</span>
+                    <span>
+                      {form.role_title ? `${form.role_title} at ` : ""}
+                      {form.company}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ---------- Photo ---------- */}
+        <div className="mb-6 rounded-2xl border border-line bg-white p-7">
+          <h3 className="mb-1 text-[17px] font-bold">Profile photo</h3>
+          <p className="mb-5 text-[14px] text-ink-soft">
+            Drag the photo or use the sliders to frame your face.
+          </p>
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setUploading(true);
+              setError(null);
+              const res = await uploadAvatar(file);
+              setUploading(false);
+              if (res.error) setError(res.error);
+              if (fileRef.current) fileRef.current.value = "";
+            }}
+          />
+
+          {form.avatar_url ? (
+            <>
+              <PhotoFramer
+                src={form.avatar_url}
+                value={form.avatar_position ?? "50% 50%"}
+                onChange={(pos) => set("avatar_position")(pos)}
+              />
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="mt-5 rounded-lg border border-line px-4 py-2 text-[14px] font-semibold hover:bg-paper-warm disabled:opacity-60"
+              >
+                {uploading ? "Uploading…" : "Replace photo"}
+              </button>
+            </>
+          ) : (
+            <div className="flex flex-wrap items-center gap-5">
+              <Avatar initials={initialsOf(fullName)} size={96} />
+              <div>
                 <button
                   onClick={() => fileRef.current?.click()}
                   disabled={uploading}
-                  className="rounded-lg border border-line px-4 py-2 text-[14px] font-semibold hover:bg-paper-warm disabled:opacity-60"
+                  className="rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
                 >
-                  {uploading
-                    ? "Uploading…"
-                    : form.avatar_url
-                      ? "Change photo"
-                      : "Upload photo"}
+                  {uploading ? "Uploading…" : "Upload a photo"}
                 </button>
                 <p className="mt-2 text-[12.5px] text-ink-soft">
                   JPG, PNG or WebP · max 2 MB
                 </p>
               </div>
             </div>
+          )}
+        </div>
 
-            {/* Name */}
-            <div className="mb-3.5 grid gap-3.5 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="first">First name</Label>
-                <input
-                  id="first"
-                  className={field}
-                  value={form.first_name ?? ""}
-                  onChange={(e) => set("first_name")(e.target.value)}
-                  placeholder="Aisha"
-                />
-              </div>
-              <div>
-                <Label htmlFor="last">Last name</Label>
-                <input
-                  id="last"
-                  className={field}
-                  value={form.last_name ?? ""}
-                  onChange={(e) => set("last_name")(e.target.value)}
-                  placeholder="Khan"
-                />
-              </div>
-            </div>
+        {/* ---------- Basics ---------- */}
+        <div className="mb-6 rounded-2xl border border-line bg-white p-7">
+          <h3 className="mb-5 text-[17px] font-bold">Basics</h3>
 
-            {/* Headline */}
-            <div className="mb-3.5">
-              <Label htmlFor="headline" optional>
-                Headline
-              </Label>
-              <input
-                id="headline"
-                className={field}
-                value={form.headline ?? ""}
-                onChange={(e) => set("headline")(e.target.value)}
-                placeholder="Marketing student · aspiring keynote speaker"
-              />
-              <div className="mt-2.5 rounded-xl bg-paper-warm p-3.5">
-                <div className="mb-2 text-[12.5px] font-semibold text-ink-soft">
-                  If you leave the headline blank, show:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {(
-                    [
-                      ["school", "My school"],
-                      ["work", "My role & company"],
-                      ["custom", "Nothing"],
-                    ] as const
-                  ).map(([mode, label]) => (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => set("headline_mode")(mode)}
-                      className={`rounded-lg px-3.5 py-2 text-[13.5px] font-semibold transition ${
-                        (form.headline_mode ?? "custom") === mode
-                          ? "bg-brand text-white"
-                          : "border border-line bg-white hover:bg-white/60"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div className="mb-3.5">
-              <Label htmlFor="bio" optional>
-                Bio
-              </Label>
-              <textarea
-                id="bio"
-                rows={4}
-                maxLength={BIO_MAX}
-                className={`${field} resize-y`}
-                value={form.bio ?? ""}
-                onChange={(e) => set("bio")(e.target.value)}
-                placeholder="A few sentences about you and your speaking goals…"
-              />
-              <div
-                className={`mt-1.5 text-right text-[12.5px] ${
-                  bioLength > BIO_MAX - 40 ? "font-semibold text-brand" : "text-ink-soft"
-                }`}
-              >
-                {bioLength} / {BIO_MAX}
-              </div>
-            </div>
-
-            {/* Structured fields */}
-            <div className="mb-3.5">
-              <Label htmlFor="school" optional>
-                School
-              </Label>
-              <Select
-                id="school"
-                value={form.school ?? ""}
-                onChange={set("school")}
-                options={SCHOOLS}
-                placeholder="Select your school"
-              />
-            </div>
-
-            <div className="mb-3.5 grid gap-3.5 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="company" optional>
-                  Company
-                </Label>
-                <Select
-                  id="company"
-                  value={form.company ?? ""}
-                  onChange={set("company")}
-                  options={COMPANIES}
-                  placeholder="Select"
-                />
-              </div>
-              <div>
-                <Label htmlFor="role" optional>
-                  Role
-                </Label>
-                <Select
-                  id="role"
-                  value={form.role_title ?? ""}
-                  onChange={set("role_title")}
-                  options={ROLES}
-                  placeholder="Select"
-                />
-              </div>
-            </div>
-
-            <div className="mb-3.5">
-              <Label htmlFor="location" optional>
-                Location
-              </Label>
-              <Select
-                id="location"
-                value={form.location ?? ""}
-                onChange={set("location")}
-                options={LOCATIONS}
-                placeholder="Select your location"
-              />
-            </div>
-
-            <div className="mb-5">
-              <Label htmlFor="linkedin" optional>
-                LinkedIn profile URL
-              </Label>
-              <input
-                id="linkedin"
-                type="url"
-                className={field}
-                value={form.linkedin ?? ""}
-                onChange={(e) => set("linkedin")(e.target.value)}
-                placeholder="https://linkedin.com/in/username"
-              />
-              <p className="mt-1.5 text-[12.5px] text-ink-soft">
-                Shown on your profile as “{fullName} on LinkedIn”.
-              </p>
-            </div>
-
-            <button
-              disabled={bioOver}
-              onClick={async () => {
-                setError(null);
-                const res = await updateProfile(edits);
-                if (res.error) {
-                  setError(res.error);
-                  return;
-                }
-                setEdits({});
-                setSaved(true);
-                setTimeout(() => setSaved(false), 2200);
-              }}
-              className="w-full rounded-lg bg-accent px-5 py-3 font-semibold text-ink transition hover:bg-accent-dark disabled:opacity-50"
-            >
-              {saved ? "Saved ✓" : "Save profile"}
-            </button>
+          <div className="mb-4 grid gap-4 sm:grid-cols-2">
+            <Field
+              id="first"
+              label="First name"
+              value={form.first_name ?? ""}
+              onChange={set("first_name")}
+              placeholder="Aisha"
+              max={LIMITS.firstName}
+            />
+            <Field
+              id="last"
+              label="Last name"
+              value={form.last_name ?? ""}
+              onChange={set("last_name")}
+              placeholder="Khan"
+              max={LIMITS.lastName}
+            />
           </div>
 
-          {/* ---------------- Preview ---------------- */}
-          <div className="rounded-2xl border border-line bg-white p-8">
-            <h2 className="mb-5 text-lg font-bold">How members see you</h2>
-
-            <div className="mb-4 flex items-center gap-4">
-              <Avatar
-                initials={initialsOf(fullName)}
-                size={72}
-                variant={isMember ? "accent" : "brand"}
-                src={form.avatar_url}
-                alt={fullName}
-              />
-              <div>
-                <div className="text-xl font-extrabold">{fullName}</div>
-                <div className="text-sm text-ink-soft">
-                  {previewHeadline || "Add a headline"}
-                </div>
+          <div className="mb-4">
+            <Field
+              id="headline"
+              label="Headline"
+              value={form.headline ?? ""}
+              onChange={set("headline")}
+              placeholder="Marketing student · aspiring keynote speaker"
+              max={LIMITS.headline}
+              optional
+            />
+            <div className="mt-2.5 rounded-xl bg-paper-warm p-3.5">
+              <div className="mb-2 text-[12.5px] font-semibold text-ink-soft">
+                If you leave this blank, show instead:
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    ["school", "My school"],
+                    ["work", "My role & company"],
+                    ["custom", "Nothing"],
+                  ] as const
+                ).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => set("headline_mode")(mode)}
+                    className={`rounded-lg px-3.5 py-2 text-[13.5px] font-semibold transition ${
+                      (form.headline_mode ?? "custom") === mode
+                        ? "bg-brand text-white"
+                        : "border border-line bg-white hover:bg-white/60"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
+          </div>
 
-            <p className="mb-3.5 text-[14.5px] text-ink-soft">
-              {form.bio || "Your bio will appear here."}
-            </p>
-
-            <div className="mb-3.5 flex flex-wrap gap-2">
-              {form.school && (
-                <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  🎓 {form.school}
-                </span>
-              )}
-              {form.company && (
-                <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  💼 {form.role_title ? `${form.role_title} · ` : ""}
-                  {form.company}
-                </span>
-              )}
-              {form.location && (
-                <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  📍 {form.location}
-                </span>
-              )}
+          <div>
+            <label htmlFor="bio" className="mb-1.5 block text-[13px] font-semibold">
+              Bio <span className="font-normal text-ink-soft">(optional)</span>
+            </label>
+            <textarea
+              id="bio"
+              rows={4}
+              maxLength={LIMITS.bio}
+              value={form.bio ?? ""}
+              onChange={(e) => set("bio")(e.target.value)}
+              placeholder="A few sentences about you and your speaking goals…"
+              className={`${field} resize-y`}
+            />
+            <div
+              className={`mt-1.5 text-right text-[12.5px] ${
+                bioLength > LIMITS.bio - 40
+                  ? "font-semibold text-brand"
+                  : "text-ink-soft"
+              }`}
+            >
+              {bioLength} / {LIMITS.bio}
             </div>
-
-            {form.linkedin && (
-              <a
-                href={form.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-semibold text-brand hover:underline"
-              >
-                {fullName} on LinkedIn ↗
-              </a>
-            )}
-
-            <div className="mt-5 flex gap-7 border-t border-line pt-4">
-              <div>
-                <div className="text-xl font-extrabold">0</div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
-                  Points
-                </div>
-              </div>
-              <div>
-                <div className="text-xl font-extrabold">—</div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
-                  Rank
-                </div>
-              </div>
-              <div>
-                <div className="text-xl font-extrabold">🔥 0</div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
-                  Day streak
-                </div>
-              </div>
-            </div>
-
-            {!isMember && (
-              <div className="mt-5 rounded-xl bg-paper-warm p-4 text-[14px] text-ink-soft">
-                <Check /> Speakers&apos; Circle members appear in the community
-                directory where others can request practice sessions.
-              </div>
-            )}
           </div>
         </div>
+
+        {/* ---------- Details + visibility ---------- */}
+        <div className="mb-6 rounded-2xl border border-line bg-white p-7">
+          <h3 className="mb-1 text-[17px] font-bold">Details</h3>
+          <p className="mb-5 text-[14px] text-ink-soft">
+            Use the switches to choose what other members can see.
+          </p>
+
+          {/* School */}
+          <div className="mb-4 border-b border-line pb-4">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <span className="text-[14px] font-semibold">Show my school</span>
+              <Toggle
+                label="Show my school"
+                checked={form.show_school !== false}
+                onChange={(v) => set("show_school")(v)}
+              />
+            </div>
+            <Field
+              id="school"
+              label="School"
+              value={form.school ?? ""}
+              onChange={set("school")}
+              placeholder="University of Toronto"
+              max={LIMITS.school}
+              optional
+            />
+          </div>
+
+          {/* Work */}
+          <div className="mb-4 border-b border-line pb-4">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <span className="text-[14px] font-semibold">
+                Show my role &amp; company
+              </span>
+              <Toggle
+                label="Show my role and company"
+                checked={form.show_company !== false}
+                onChange={(v) => set("show_company")(v)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                id="company"
+                label="Company"
+                value={form.company ?? ""}
+                onChange={set("company")}
+                placeholder="RBC"
+                max={LIMITS.company}
+                optional
+              />
+              <Field
+                id="role"
+                label="Role"
+                value={form.role_title ?? ""}
+                onChange={set("role_title")}
+                placeholder="Analyst"
+                max={LIMITS.role}
+                optional
+              />
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="mb-4 border-b border-line pb-4">
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <span className="text-[14px] font-semibold">Show my location</span>
+              <Toggle
+                label="Show my location"
+                checked={form.show_location !== false}
+                onChange={(v) => set("show_location")(v)}
+              />
+            </div>
+            <Field
+              id="location"
+              label="Location"
+              value={form.location ?? ""}
+              onChange={set("location")}
+              placeholder="Toronto, ON"
+              max={LIMITS.location}
+              optional
+            />
+          </div>
+
+          <Field
+            id="linkedin"
+            label="LinkedIn profile URL"
+            type="url"
+            value={form.linkedin ?? ""}
+            onChange={set("linkedin")}
+            placeholder="https://linkedin.com/in/username"
+            max={LIMITS.linkedin}
+            optional
+          />
+          <p className="mt-1.5 text-[12.5px] text-ink-soft">
+            Appears as “{fullName} on LinkedIn”.
+          </p>
+        </div>
+
+        {/* ---------- Save bar ---------- */}
+        <div className="sticky bottom-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-white p-4 shadow-[0_8px_28px_rgba(20,24,31,.10)]">
+          <span className="text-[14px] text-ink-soft">
+            {saved
+              ? "All changes saved."
+              : dirty
+                ? "You have unsaved changes."
+                : "Everything is up to date."}
+          </span>
+          <div className="flex gap-3">
+            {dirty && (
+              <button
+                onClick={() => setEdits({})}
+                className="rounded-lg border border-line px-5 py-2.5 text-[14.5px] font-semibold hover:bg-paper-warm"
+              >
+                Discard
+              </button>
+            )}
+            <button
+              onClick={save}
+              disabled={!dirty}
+              className="rounded-lg bg-accent px-6 py-2.5 text-[14.5px] font-semibold text-ink transition hover:bg-accent-dark disabled:opacity-45"
+            >
+              {saved ? "Saved ✓" : "Save changes"}
+            </button>
+          </div>
+        </div>
+
+        {!isMember && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-paper-warm p-6">
+            <p className="max-w-[520px] text-[14.5px] text-ink-soft">
+              Speakers&apos; Circle members appear in the community directory,
+              where others can find them and request practice sessions.
+            </p>
+            <Link
+              href="/checkout?next=/account"
+              className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-white hover:bg-brand-dark"
+            >
+              Upgrade
+            </Link>
+          </div>
+        )}
       </Wrap>
     </Section>
   );

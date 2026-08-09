@@ -124,14 +124,17 @@ export const POINTS_RULES = [
   ["7-day streak bonus", 100],
 ] as const;
 
+/**
+ * Public team details.
+ * Email addresses are deliberately NOT listed — published addresses get
+ * scraped and spammed. All contact goes through the request form.
+ */
 export const TEAM = [
   {
     initials: "BK",
     name: "Barry Kuntz",
     role: "Founder & Head Coach",
     bio: "Managing Director of Black Isle Consultants and author of Pause. Over the past ten years, Barry has taught more than 3,000 people how to structure presentations for impact and deliver them with compelling style. His method is simple: speaking with impact is a critical life skill — and anyone can learn it.",
-    calendly: "https://calendly.com/barry-kuntz",
-    email: "bkuntz@black-isle.com",
     contactBlurb:
       "Coaching, curriculum, and corporate or team-training enquiries.",
     dark: true,
@@ -141,8 +144,6 @@ export const TEAM = [
     name: "Michael Jordan Sablay",
     role: "Co-Founder",
     bio: "[Add your intro here: your background, what drew you to this work, and what you want members to get out of the platform. Two to four sentences is the sweet spot.]",
-    calendly: "https://calendly.com/mjsablay",
-    email: "",
     contactBlurb: "Partnerships, platform, product, and general enquiries.",
     dark: false,
   },

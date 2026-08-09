@@ -4,6 +4,8 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/lib/mock-auth";
+import { ViewAsProvider } from "@/lib/view-as";
+import ViewAsBar from "@/components/ViewAsBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +27,12 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         <AuthProvider>
-          <Nav />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <ViewAsProvider>
+            <Nav />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <ViewAsBar />
+          </ViewAsProvider>
         </AuthProvider>
       </body>
     </html>

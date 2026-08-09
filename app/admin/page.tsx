@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
+import MeetingRequests from "./MeetingRequests";
 import {
   useAuth,
   initialsOf,
@@ -164,11 +165,17 @@ export default function AdminPage() {
           ))}
         </div>
 
+        <MeetingRequests />
+
         {error && (
           <div className="mb-5 rounded-xl border border-brand bg-brand-soft p-4 text-[14px]">
             {error}
           </div>
         )}
+
+        <h2 className="mb-4 text-[20px] font-extrabold tracking-tight">
+          Members &amp; waitlist
+        </h2>
 
         <div className="mb-4 flex flex-wrap gap-2">
           {(["pending", "approved", "declined", "all"] as const).map((f) => (

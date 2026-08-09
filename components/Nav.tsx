@@ -5,11 +5,15 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV_LINKS, COURSE_LINKS } from "@/lib/site";
 import { useAuth } from "@/lib/mock-auth";
+import { useAudience } from "@/lib/view-as";
 import UserMenu from "./UserMenu";
 
 export default function Nav() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const { audience } = useAudience();
+  // When an admin previews as a signed-out visitor, hide the account menu.
+  const showAsSignedIn = Boolean(user) && audience !== "visitor";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
 
@@ -84,7 +88,7 @@ export default function Nav() {
               aria-hidden
               className="hidden h-[42px] w-[132px] rounded-full bg-paper-warm sm:block"
             />
-          ) : user ? (
+          ) : showAsSignedIn ? (
             <UserMenu />
           ) : (
             <>

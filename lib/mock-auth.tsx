@@ -39,7 +39,11 @@ export type Profile = {
   first_name?: string | null;
   last_name?: string | null;
   avatar_url?: string | null;
+  avatar_position?: string | null;
   headline_mode?: HeadlineMode;
+  show_school?: boolean;
+  show_company?: boolean;
+  show_location?: boolean;
   tier: Tier;
   role: Role;
   status: Status;
@@ -92,7 +96,11 @@ type Row = {
   first_name: string | null;
   last_name: string | null;
   avatar_url: string | null;
+  avatar_position: string | null;
   headline_mode: HeadlineMode;
+  show_school: boolean;
+  show_company: boolean;
+  show_location: boolean;
 };
 
 const toProfile = (r: Row): Profile => ({
@@ -102,7 +110,11 @@ const toProfile = (r: Row): Profile => ({
   first_name: r.first_name,
   last_name: r.last_name,
   avatar_url: r.avatar_url,
+  avatar_position: r.avatar_position,
   headline_mode: r.headline_mode,
+  show_school: r.show_school,
+  show_company: r.show_company,
+  show_location: r.show_location,
   tier: r.tier,
   role: r.role,
   status: r.status,
@@ -125,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id,email,display_name,first_name,last_name,avatar_url,headline,headline_mode,bio,linkedin_url,school,company,job_title,location,role,tier,status",
+          "id,email,display_name,first_name,last_name,avatar_url,avatar_position,headline,headline_mode,bio,linkedin_url,school,company,job_title,location,role,tier,status,show_school,show_company,show_location",
         )
         .eq("id", userId)
         .single();
@@ -206,6 +218,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         job_title: patch.role_title,
         location: patch.location,
         avatar_url: patch.avatar_url,
+        avatar_position: patch.avatar_position,
+        show_school: patch.show_school,
+        show_company: patch.show_company,
+        show_location: patch.show_location,
       };
       // Only send keys the caller actually supplied.
       Object.keys(fields).forEach(
