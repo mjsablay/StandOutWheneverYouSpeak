@@ -7,6 +7,8 @@ import { ShieldAlert, Users, CalendarClock, BookOpen, Clock } from "lucide-react
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import MeetingRequests from "./MeetingRequests";
+import Insights from "./Insights";
+import PreviewControl from "./PreviewControl";
 import TestData from "./TestData";
 import {
   useAuth,
@@ -177,7 +179,11 @@ export default function AdminPage() {
           ))}
         </div>
 
+        <Insights />
+
         <MeetingRequests />
+
+        <PreviewControl />
 
         <TestData
           members={rows.map((r) => ({
