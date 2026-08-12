@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import MeetingRequests from "./MeetingRequests";
 import Insights from "./Insights";
 import PreviewControl from "./PreviewControl";
+import ContentEditor from "./ContentEditor";
 import TestData from "./TestData";
 import {
   useAuth,
@@ -182,6 +183,8 @@ export default function AdminPage() {
         <Insights />
 
         <MeetingRequests />
+
+        <ContentEditor />
 
         <PreviewControl />
 
