@@ -10,6 +10,27 @@ export const SITE = {
   currency: "CAD",
 } as const;
 
+/**
+ * PRE-LAUNCH MODE
+ * ---------------
+ * While true, everyone except administrators sees only the waitlist home,
+ * About Us and Contact. Courses, events, community, leaderboard and pricing
+ * are hidden from the navigation and redirect to the home page.
+ *
+ * Set to false to open the full site. That single change is the launch.
+ */
+export const PRELAUNCH = true;
+
+/** Paths anyone may visit during pre-launch. */
+export const PUBLIC_PATHS = [
+  "/",
+  "/about",
+  "/contact",
+  "/signin",
+  "/signup",
+  "/auth",
+] as const;
+
 export const NAV_LINKS = [
   { href: "/courses", label: "Courses" },
   { href: "/events", label: "Events" },
@@ -17,6 +38,12 @@ export const NAV_LINKS = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/about", label: "About Us" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+/** The reduced navigation shown during pre-launch. */
+export const PRELAUNCH_NAV_LINKS = [
+  { href: "/about", label: "About Us" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

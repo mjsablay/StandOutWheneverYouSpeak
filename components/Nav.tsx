@@ -3,15 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { NAV_LINKS, COURSE_LINKS } from "@/lib/site";
+import {
+  NAV_LINKS,
+  PRELAUNCH_NAV_LINKS,
+  COURSE_LINKS,
+  PRELAUNCH,
+} from "@/lib/site";
 import { useAuth } from "@/lib/mock-auth";
 import { useAudience } from "@/lib/view-as";
 import UserMenu from "./UserMenu";
 
 export default function Nav() {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
-  const { audience } = useAudience();
+  const { user, loading, isAdmin } = useAuth();
+  const { audience, previewing } = useAudience();
+
+  // Pre-launch: everyone except an admin (viewing as themselves) sees only
+  // Home, About Us and Contact.
+  const fullSite = !PRELAUNCH || (isAdmin && !previewing);
+  const links = fullSite ? NAV_LINKS : PRELAUNCH_NAV_LINKS;
+
   // When an admin previews as a signed-out visitor, hide the account menu.
   const showAsSignedIn = Boolean(user) && audience !== "visitor";
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,46 +49,52 @@ export default function Nav() {
             Home
           </Link>
 
-          {/* Courses dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setCoursesOpen(true)}
-            onMouseLeave={() => setCoursesOpen(false)}
-          >
-            <Link
-              href="/courses"
-              className={`inline-flex items-center gap-1.5 ${
-                isActive("/courses") ? "font-bold text-brand" : "hover:text-ink"
-              }`}
+          {/* Courses dropdown — full site only */}
+          {fullSite && (
+            <div
+              className="relative"
+              onMouseEnter={() => setCoursesOpen(true)}
+              onMouseLeave={() => setCoursesOpen(false)}
             >
-              Courses <span className="text-[10px]">▾</span>
-            </Link>
-            {coursesOpen && (
-              <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-xl border border-line bg-white p-1.5 shadow-[0_14px_34px_rgba(20,24,31,.12)]">
-                {COURSE_LINKS.map((c) => (
-                  <Link
-                    key={c.href}
-                    href={c.href}
-                    className="whitespace-nowrap rounded-lg px-3 py-2 text-[14.5px] font-medium text-ink hover:bg-paper-warm"
-                  >
-                    {c.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+              <Link
+                href="/courses"
+                className={`inline-flex items-center gap-1.5 ${
+                  isActive("/courses")
+                    ? "font-bold text-brand"
+                    : "hover:text-ink"
+                }`}
+              >
+                Courses <span className="text-[10px]">▾</span>
+              </Link>
+              {coursesOpen && (
+                <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-xl border border-line bg-white p-1.5 shadow-[0_14px_34px_rgba(20,24,31,.12)]">
+                  {COURSE_LINKS.map((c) => (
+                    <Link
+                      key={c.href}
+                      href={c.href}
+                      className="whitespace-nowrap rounded-lg px-3 py-2 text-[14.5px] font-medium text-ink hover:bg-paper-warm"
+                    >
+                      {c.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-          {NAV_LINKS.filter((l) => l.href !== "/courses").map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={
-                isActive(l.href) ? "font-bold text-brand" : "hover:text-ink"
-              }
-            >
-              {l.label}
-            </Link>
-          ))}
+          {links
+            .filter((l) => l.href !== "/courses")
+            .map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={
+                  isActive(l.href) ? "font-bold text-brand" : "hover:text-ink"
+                }
+              >
+                {l.label}
+              </Link>
+            ))}
         </div>
 
         {/* Fixed-height, right-aligned slot so swapping between the
@@ -102,7 +119,7 @@ export default function Nav() {
                 href="/signup"
                 className="hidden rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark sm:inline-block"
               >
-                Join free
+                {PRELAUNCH ? "Request a place" : "Join free"}
               </Link>
             </>
           )}
@@ -129,7 +146,7 @@ export default function Nav() {
             >
               Home
             </Link>
-            {NAV_LINKS.map((l) => (
+            {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -139,7 +156,7 @@ export default function Nav() {
                 {l.label}
               </Link>
             ))}
-            {user ? (
+            {showAsSignedIn && fullSite ? (
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
@@ -147,7 +164,7 @@ export default function Nav() {
               >
                 My account
               </Link>
-            ) : (
+            ) : showAsSignedIn ? null : (
               <>
                 <Link
                   href="/signin"

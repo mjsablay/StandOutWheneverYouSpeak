@@ -1,9 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { PRELAUNCH } from "@/lib/site";
 
 /**
- * Refreshes the Supabase session on every request and guards private routes.
- * Without this, tokens expire and users get silently signed out.
+ * Refreshes the Supabase session on every request, guards private routes,
+ * and — while PRELAUNCH is true — keeps everyone except administrators on
+ * the waitlist home, About Us and Contact.
  */
 
 const PROTECTED = [
@@ -12,6 +14,15 @@ const PROTECTED = [
   "/messages",
   "/notifications",
   "/checkout",
+];
+
+/** Reachable by anyone during pre-launch. */
+const PRELAUNCH_ALLOWED = [
+  "/about",
+  "/contact",
+  "/signin",
+  "/signup",
+  "/auth",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -44,6 +55,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+
   const needsAuth =
     PROTECTED.some((p) => path.startsWith(p)) ||
     /^\/courses\/[^/]+\/lessons\//.test(path);
@@ -53,6 +65,32 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/signin";
     url.searchParams.set("next", path);
     return NextResponse.redirect(url);
+  }
+
+  // ---- Pre-launch gate ----
+  if (PRELAUNCH) {
+    const allowed =
+      path === "/" || PRELAUNCH_ALLOWED.some((p) => path.startsWith(p));
+
+    if (!allowed) {
+      // Only administrators may reach the rest of the site for now.
+      let isAdmin = false;
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        isAdmin = data?.role === "admin";
+      }
+
+      if (!isAdmin) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/";
+        url.search = "";
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   return response;

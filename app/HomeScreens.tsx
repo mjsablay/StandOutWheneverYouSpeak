@@ -6,7 +6,7 @@ import LogoMarquee from "@/components/LogoMarquee";
 import { useAuth } from "@/lib/mock-auth";
 import { useAudience } from "@/lib/view-as";
 import { COURSES, FREE_PREVIEW_COUNT } from "@/lib/courses";
-import { UPCOMING_EVENTS, FAQS } from "@/lib/site";
+import { UPCOMING_EVENTS, FAQS, PRELAUNCH } from "@/lib/site";
 
 /* ============================ shared bits ============================ */
 
@@ -87,8 +87,12 @@ function VisitorHome() {
             <Btn href="/signup" variant="accent" className="px-7 py-3.5 text-base">
               Request your place
             </Btn>
-            <Btn href="/courses" variant="ghost" className="px-7 py-3.5 text-base">
-              See what&apos;s inside →
+            <Btn
+              href={PRELAUNCH ? "/about" : "/courses"}
+              variant="ghost"
+              className="px-7 py-3.5 text-base"
+            >
+              {PRELAUNCH ? "Meet the coaches →" : "See what's inside →"}
             </Btn>
           </div>
           <p className="mt-4 text-[13.5px] text-ink-soft">
@@ -181,8 +185,29 @@ function PendingHome({ name }: { name: string }) {
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Card href="/courses" icon="🎓" title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
-          <Card href="/events" icon="📅" title="Free open houses" body="Some events are open to everyone." cta="See events" />
+          {PRELAUNCH ? (
+            <>
+              <Card
+                href="/about"
+                icon="👋"
+                title="Meet the coaches"
+                body="Barry has taught over 3,000 people to speak with impact."
+                cta="Read more"
+              />
+              <Card
+                href="/contact"
+                icon="💬"
+                title="Have a question?"
+                body="Ask us anything about the programme before you start."
+                cta="Get in touch"
+              />
+            </>
+          ) : (
+            <>
+              <Card href="/courses" icon="🎓" title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
+              <Card href="/events" icon="📅" title="Free open houses" body="Some events are open to everyone." cta="See events" />
+            </>
+          )}
         </div>
       </Wrap>
     </Section>
