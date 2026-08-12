@@ -89,7 +89,7 @@ export default function PricingCards() {
           className="block w-full rounded-lg bg-accent px-5 py-2.5 text-center text-[14.5px] font-semibold text-ink transition hover:bg-accent-dark"
         >
           {isMember
-            ? "You're a member ✓"
+            ? "You're a member "
             : user
               ? "Continue to payment"
               : "Create account & subscribe"}

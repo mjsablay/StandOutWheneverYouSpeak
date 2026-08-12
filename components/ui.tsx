@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Check as CheckIcon } from "lucide-react";
 
 /* ---------- Layout helpers ---------- */
 
@@ -109,7 +110,12 @@ export function Btn({
 /* ---------- Bits ---------- */
 
 export function Check() {
-  return <span className="font-extrabold text-accent">✓</span>;
+  return (
+    <CheckIcon
+      className="mt-0.5 h-[18px] w-[18px] flex-shrink-0 text-accent"
+      strokeWidth={2.5}
+    />
+  );
 }
 
 export function Avatar({

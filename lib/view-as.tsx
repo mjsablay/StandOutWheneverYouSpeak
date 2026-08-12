@@ -1,13 +1,11 @@
 "use client";
 
 /**
- * Admin "view as" preview.
+ * Admin "view as" preview state.
  *
- * Lets an administrator see the site as a visitor, a free member, or a paid
- * member — without signing out. This only changes what the interface renders;
- * the database still enforces the real permissions, so an admin previewing
- * "visitor" would still be allowed to fetch admin data if they asked for it
- * directly. It's a design tool, not a security boundary.
+ * Stored in sessionStorage so it survives navigation but clears when the
+ * tab closes — you can't accidentally leave yourself in preview forever.
+ * Read this through useAccess() rather than directly.
  */
 
 import {
@@ -18,25 +16,18 @@ import {
   type ReactNode,
 } from "react";
 
-export type ViewAs = "actual" | "visitor" | "free" | "circle";
+export type ViewAs = "actual" | "visitor" | "pending" | "free" | "circle";
 
 const KEY = "standout.viewAs";
-
-type Ctx = {
-  viewAs: ViewAs;
-  setViewAs: (v: ViewAs) => void;
-};
-
-const ViewAsContext = createContext<Ctx>({
-  viewAs: "actual",
-  setViewAs: () => {},
-});
-
 const EVENT = "standout:viewas";
 
 function subscribe(cb: () => void) {
   window.addEventListener(EVENT, cb);
-  return () => window.removeEventListener(EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
 }
 
 function getSnapshot(): ViewAs {
@@ -48,6 +39,13 @@ function getSnapshot(): ViewAs {
 }
 
 const getServerSnapshot = (): ViewAs => "actual";
+
+type Ctx = { viewAs: ViewAs; setViewAs: (v: ViewAs) => void };
+
+const ViewAsContext = createContext<Ctx>({
+  viewAs: "actual",
+  setViewAs: () => {},
+});
 
 export function ViewAsProvider({ children }: { children: ReactNode }) {
   const viewAs = useSyncExternalStore(
@@ -75,45 +73,10 @@ export function ViewAsProvider({ children }: { children: ReactNode }) {
 
 export const useViewAs = () => useContext(ViewAsContext);
 
-import { useAuth } from "@/lib/mock-auth";
-
-export type Audience = "visitor" | "pending" | "free" | "circle" | "admin";
-
-/**
- * What the interface should render for, honouring an admin's preview choice.
- * Use this for presentation decisions; use useAuth() for real permissions.
- */
-export function useAudience(): {
-  audience: Audience;
-  previewing: boolean;
-  loading: boolean;
-} {
-  const { user, loading, isAdmin, isApproved, hasFullAccess } = useAuth();
-  const { viewAs } = useViewAs();
-
-  if (loading) return { audience: "visitor", previewing: false, loading: true };
-
-  if (isAdmin && viewAs !== "actual") {
-    const map: Record<string, Audience> = {
-      visitor: "visitor",
-      free: "free",
-      circle: "circle",
-    };
-    return { audience: map[viewAs] ?? "admin", previewing: true, loading: false };
-  }
-
-  if (!user) return { audience: "visitor", previewing: false, loading: false };
-  if (isAdmin) return { audience: "admin", previewing: false, loading: false };
-  if (!isApproved) return { audience: "pending", previewing: false, loading: false };
-  return {
-    audience: hasFullAccess ? "circle" : "free",
-    previewing: false,
-    loading: false,
-  };
-}
-
-export const VIEW_LABEL: Record<Exclude<ViewAs, "actual">, string> = {
-  visitor: "Signed-out visitor",
-  free: "Front Row member",
-  circle: "Speakers' Circle member",
-};
+export const VIEW_OPTIONS: { value: ViewAs; label: string }[] = [
+  { value: "actual", label: "Admin" },
+  { value: "visitor", label: "Visitor" },
+  { value: "pending", label: "Waitlisted" },
+  { value: "free", label: "Front Row" },
+  { value: "circle", label: "Circle" },
+];

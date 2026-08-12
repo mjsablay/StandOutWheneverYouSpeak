@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Wrap, Section, SectionHead, Btn } from "@/components/ui";
 import LogoMarquee from "@/components/LogoMarquee";
 import { useAuth } from "@/lib/mock-auth";
-import { useAudience } from "@/lib/view-as";
+import { useAccess } from "@/lib/access";
 import { COURSES, FREE_PREVIEW_COUNT } from "@/lib/courses";
 import { UPCOMING_EVENTS, FAQS, PRELAUNCH } from "@/lib/site";
 
@@ -177,7 +177,7 @@ function PendingHome({ name }: { name: string }) {
           sub="Your request is with us — we approve members in small groups."
         />
         <div className="mb-6 rounded-2xl border-2 border-accent bg-accent-soft p-7">
-          <div className="mb-2 text-3xl">⏳</div>
+          <div className="mb-2 text-3xl"></div>
           <h2 className="mb-1.5 text-xl font-extrabold">You&apos;re on the waitlist</h2>
           <p className="text-[15px] text-ink-soft">
             We&apos;ll email you the moment your place is ready. Nothing else to
@@ -189,14 +189,14 @@ function PendingHome({ name }: { name: string }) {
             <>
               <Card
                 href="/about"
-                icon="👋"
+                icon=""
                 title="Meet the coaches"
                 body="Barry has taught over 3,000 people to speak with impact."
                 cta="Read more"
               />
               <Card
                 href="/contact"
-                icon="💬"
+                icon=""
                 title="Have a question?"
                 body="Ask us anything about the programme before you start."
                 cta="Get in touch"
@@ -204,8 +204,8 @@ function PendingHome({ name }: { name: string }) {
             </>
           ) : (
             <>
-              <Card href="/courses" icon="🎓" title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
-              <Card href="/events" icon="📅" title="Free open houses" body="Some events are open to everyone." cta="See events" />
+              <Card href="/courses" icon="" title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
+              <Card href="/events" icon="" title="Free open houses" body="Some events are open to everyone." cta="See events" />
             </>
           )}
         </div>
@@ -275,7 +275,7 @@ function MemberHome({
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card
             href={`/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
-            icon="🎙️"
+            icon=""
             title="Practice"
             body="Run a coaching session against Barry's rubric."
             cta="Start a rep"
@@ -283,13 +283,13 @@ function MemberHome({
           />
           <Card
             href={paid ? "/community" : "/pricing"}
-            icon="👥"
+            icon=""
             title="Community"
             body={paid ? "Find a practice partner this week." : "Unlock peer practice with Speakers' Circle."}
             cta={paid ? "Meet members" : "See pricing"}
           />
-          <Card href="/events" icon="📅" title="Events" body="Live workshops and practice nights." cta="What's on" />
-          <Card href="/leaderboard" icon="🏆" title="Leaderboard" body="See where you stand this month." cta="View ranks" />
+          <Card href="/events" icon="" title="Events" body="Live workshops and practice nights." cta="What's on" />
+          <Card href="/leaderboard" icon="" title="Leaderboard" body="See where you stand this month." cta="View ranks" />
         </div>
 
         {/* Admin shortcut */}
@@ -369,7 +369,7 @@ function MemberHome({
 
 export default function HomeScreens() {
   const { user } = useAuth();
-  const { audience, loading } = useAudience();
+  const { audience, loading } = useAccess();
 
   if (loading) return <div className="min-h-[70vh]" />;
 

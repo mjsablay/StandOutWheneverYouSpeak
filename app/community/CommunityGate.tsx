@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Btn, Avatar } from "@/components/ui";
-import { useAuth, initialsOf } from "@/lib/mock-auth";
+import { useAuth } from "@/lib/mock-auth";
+import { useAccess } from "@/lib/access";
 import { MEMBERS } from "@/lib/members";
 
 const FEATURES: [string, string][] = [
@@ -40,7 +41,7 @@ function LockedView({ signedIn }: { signedIn: boolean }) {
           <ul className="mt-7 space-y-4">
             {FEATURES.map(([title, body]) => (
               <li key={title} className="flex gap-3.5">
-                <span className="font-extrabold text-accent">✓</span>
+                <span className="font-extrabold text-accent"></span>
                 <span className="text-[15.5px] text-[#d4dbe8]">
                   <strong className="block text-base text-white">{title}</strong>
                   {body}
@@ -92,7 +93,7 @@ function LockedView({ signedIn }: { signedIn: boolean }) {
             ))}
           </div>
           <div className="mt-4 flex items-center gap-2 text-[13px] text-[#8fa0bf]">
-            🔒 Member profiles unlock with Speakers&apos; Circle.
+            Member profiles unlock with Speakers&apos; Circle.
           </div>
         </div>
       </div>
@@ -148,10 +149,10 @@ function MemberDirectory({ name }: { name: string }) {
             </Link>
             <div className="mb-4 flex flex-wrap gap-2">
               <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                💼 {m.company}
+                {m.company}
               </span>
               <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                📘 {m.working}
+                {m.working}
               </span>
             </div>
             <div className="flex gap-2.5">
@@ -159,7 +160,7 @@ function MemberDirectory({ name }: { name: string }) {
                 onClick={() => setSentTo(m.name)}
                 className="flex-1 rounded-lg bg-brand px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-brand-dark"
               >
-                {sentTo === m.name ? "Request sent ✓" : "Request practice"}
+                {sentTo === m.name ? "Request sent" : "Request practice"}
               </button>
               <Link
                 href="/messages"
@@ -186,7 +187,8 @@ function MemberDirectory({ name }: { name: string }) {
 /* ---------------- Gate ---------------- */
 
 export default function CommunityGate() {
-  const { user, loading, hasFullAccess } = useAuth();
+  const { user } = useAuth();
+  const { loading, fullAccess, signedIn } = useAccess();
 
   // Reserve the same footprint while auth resolves, so the page
   // doesn't collapse and re-expand on refresh.
@@ -194,8 +196,8 @@ export default function CommunityGate() {
     return (
       <div className="min-h-[520px] animate-pulse rounded-3xl bg-paper-warm" />
     );
-  if (!user) return <LockedView signedIn={false} />;
-  if (!hasFullAccess) return <LockedView signedIn />;
+  if (!signedIn) return <LockedView signedIn={false} />;
+  if (!fullAccess) return <LockedView signedIn />;
 
-  return <MemberDirectory name={user.name || initialsOf(user.email)} />;
+  return <MemberDirectory name={user?.name || "there"} />;
 }

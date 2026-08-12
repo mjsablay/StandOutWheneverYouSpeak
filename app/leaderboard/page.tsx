@@ -66,7 +66,7 @@ export default function LeaderboardPage() {
                       </Link>
                     </td>
                     <td className="hidden px-4 py-3.5 text-[13px] text-ink-soft sm:table-cell">
-                      🔥 {m.streak} days
+                      {m.streak} days
                     </td>
                     <td className="px-4 py-3.5 text-right text-[15px] font-extrabold">
                       {m.points.toLocaleString()}

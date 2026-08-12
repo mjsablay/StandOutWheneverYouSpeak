@@ -64,7 +64,7 @@ export default function CourseGrid() {
                     <span className="text-xs text-accent">▸</span>
                     <span className="flex-1">{lesson.title}</span>
                     {lesson.video && (
-                      <span className="text-[12px] text-ink-soft">🎬</span>
+                      <span className="text-[12px] text-ink-soft"></span>
                     )}
                   </li>
                 ))}

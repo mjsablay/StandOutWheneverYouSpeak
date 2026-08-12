@@ -5,19 +5,19 @@ import { getLesson } from "@/lib/courses";
 
 const MATERIAL_META = {
   exercise: {
-    icon: "✍️",
+    icon: "",
     blurb: "Work through this alongside the lesson.",
   },
   workbook: {
-    icon: "📘",
+    icon: "",
     blurb: "The full learner workbook for this chapter.",
   },
   quiz: {
-    icon: "❓",
+    icon: "",
     blurb: "Printable version of the quiz questions.",
   },
   guide: {
-    icon: "🧭",
+    icon: "",
     blurb: "A reference guide to keep after the lesson.",
   },
 } as const;
@@ -36,7 +36,6 @@ export default function LessonWorkbookScreen() {
   if (!materials.length) {
     return (
       <div className="rounded-2xl border border-line bg-paper-warm p-8 text-center">
-        <div className="mb-2 text-3xl">📘</div>
         <h2 className="mb-1 font-bold">No downloads yet</h2>
         <p className="text-[14.5px] text-ink-soft">
           Materials for this lesson are being prepared.

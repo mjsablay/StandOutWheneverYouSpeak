@@ -146,7 +146,7 @@ export default function MeetingRequests() {
         </div>
       ) : sorted.length === 0 ? (
         <div className="p-10 text-center">
-          <div className="mb-2 text-3xl">📭</div>
+          <div className="mb-2 text-3xl"></div>
           <p className="text-[15px] text-ink-soft">
             No meeting requests yet. They&apos;ll appear here as they come in
             from the Contact page.

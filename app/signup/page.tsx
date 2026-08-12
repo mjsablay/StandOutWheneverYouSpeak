@@ -27,7 +27,6 @@ function SignUpInner() {
       <Section>
         <Wrap className="max-w-[520px]">
           <div className="rounded-2xl border-2 border-accent bg-accent-soft p-8 text-center sm:p-10">
-            <div className="mb-3 text-4xl">📬</div>
             <h1 className="mb-2 text-2xl font-extrabold">Check your email</h1>
             <p className="text-[15px] text-ink-soft">
               We sent a confirmation link to{" "}

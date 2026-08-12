@@ -132,7 +132,7 @@ export default function CourseDetailPage() {
                     {lesson.title}
                   </span>
                   <span className="mt-0.5 flex flex-wrap items-center gap-2.5 text-[13px] text-ink-soft">
-                    <span>{lesson.video ? "🎬 Video" : "📝 Notes only"}</span>
+                    <span>{lesson.video ? "Video" : "Notes only"}</span>
                     {hasQuiz(lesson.slug) && (
                       <span
                         className={
@@ -141,14 +141,14 @@ export default function CourseDetailPage() {
                             : ""
                         }
                       >
-                        {hasPassed(lesson.slug) ? "✓ Quiz passed" : "❓ Quiz"}
+                        {hasPassed(lesson.slug) ? " Quiz passed" : "Quiz"}
                       </span>
                     )}
                   </span>
                 </span>
                 {locked ? (
                   <span className="flex-shrink-0 text-[13px] text-ink-soft">
-                    🔒 Locked
+                    Locked
                   </span>
                 ) : (
                   <span className="flex-shrink-0 rounded-lg bg-brand px-3.5 py-1.5 text-[13px] font-semibold text-white">

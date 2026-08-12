@@ -52,7 +52,7 @@ function CheckoutInner() {
         <Wrap className="max-w-[520px]">
           <div className="rounded-2xl border-2 border-accent bg-accent-soft p-10 text-center">
             <h1 className="mb-2 text-2xl font-extrabold">
-              You&apos;re in the Circle 🎉
+              You&apos;re in the Circle 
             </h1>
             <p className="mb-6 text-[15px] text-ink-soft">
               Your Speakers&apos; Circle membership is active. Everything is

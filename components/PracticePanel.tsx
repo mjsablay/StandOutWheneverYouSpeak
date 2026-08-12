@@ -62,7 +62,7 @@ export default function PracticePanel({
   if (locked) {
     return (
       <div className="rounded-2xl border-2 border-accent bg-accent-soft p-6">
-        <h3 className="mb-1.5 font-bold">🔒 AI practice</h3>
+        <h3 className="mb-1.5 font-bold">AI practice</h3>
         <p className="text-[14.5px] text-ink-soft">
           Unlimited AI coaching sessions are part of Speakers&apos; Circle.
         </p>
@@ -75,7 +75,7 @@ export default function PracticePanel({
   return (
     <div className="rounded-2xl border border-brand bg-white p-6 sm:p-7">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-lg font-bold">🎙️ Practice with your AI coach</h3>
+        <h3 className="text-lg font-bold">Practice with your AI coach</h3>
         <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-brand">
           Preview
         </span>

@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { NAV_LINKS, PRELAUNCH_NAV_LINKS, PRELAUNCH } from "@/lib/site";
-import { useAuth } from "@/lib/mock-auth";
-import { useAudience } from "@/lib/view-as";
+
+import { useAccess } from "@/lib/access";
 
 export default function Footer() {
-  const { isAdmin } = useAuth();
-  const { previewing } = useAudience();
+  const access = useAccess();
 
-  const fullSite = !PRELAUNCH || (isAdmin && !previewing);
+  const fullSite = !PRELAUNCH || access.admin;
   const links = fullSite ? NAV_LINKS : PRELAUNCH_NAV_LINKS;
 
   return (

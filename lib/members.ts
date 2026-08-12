@@ -47,7 +47,7 @@ export const MEMBERS: Member[] = [
     rank: 1,
     streak: 21,
     variant: "brand",
-    badges: ["Leadership Voice · in progress", "Storytelling ✓", "Top practicer"],
+    badges: ["Leadership Voice · in progress", "Storytelling", "Top practicer"],
   },
   {
     slug: "priya-raman",
@@ -67,7 +67,7 @@ export const MEMBERS: Member[] = [
     rank: 2,
     streak: 14,
     variant: "dark",
-    badges: ["Leadership Voice · in progress", "Curveballs ✓"],
+    badges: ["Leadership Voice · in progress", "Curveballs"],
   },
   {
     slug: "daniel-mercer",
@@ -87,7 +87,7 @@ export const MEMBERS: Member[] = [
     rank: 3,
     streak: 9,
     variant: "accent",
-    badges: ["Leadership Voice · in progress", "Structure ✓"],
+    badges: ["Leadership Voice · in progress", "Structure"],
   },
   {
     slug: "jordan-tao",
@@ -133,78 +133,3 @@ export const MEMBERS: Member[] = [
 
 export const getMember = (slug: string) =>
   MEMBERS.find((m) => m.slug === slug);
-
-/* ---------------- Demo notifications & messages ---------------- */
-
-export const NOTIFICATIONS = [
-  {
-    id: 1,
-    icon: "🤝",
-    text: "Priya Raman accepted your practice request",
-    time: "2 hours ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    icon: "💬",
-    text: "Daniel Mercer left feedback on your recording",
-    time: "Yesterday",
-    unread: true,
-  },
-  {
-    id: 3,
-    icon: "🏆",
-    text: "You earned 50 points for completing Compelling Delivery",
-    time: "2 days ago",
-    unread: false,
-  },
-  {
-    id: 4,
-    icon: "📅",
-    text: "Peer Practice Night starts in 3 days",
-    time: "3 days ago",
-    unread: false,
-  },
-];
-
-export const CONVERSATIONS = [
-  {
-    slug: "priya-raman",
-    initials: "PR",
-    name: "Priya Raman",
-    variant: "dark" as const,
-    preview: "Thursday at 7 works for me — shall we run the Q&A drill?",
-    time: "2h",
-    unread: true,
-    thread: [
-      {
-        from: "them" as const,
-        text: "Hi! Saw you're working on Interjecting too. Want to practise together this week?",
-      },
-      {
-        from: "me" as const,
-        text: "Yes please. I keep freezing when someone cuts in mid-point.",
-      },
-      {
-        from: "them" as const,
-        text: "Thursday at 7 works for me — shall we run the Q&A drill?",
-      },
-    ],
-  },
-  {
-    slug: "daniel-mercer",
-    initials: "DM",
-    name: "Daniel Mercer",
-    variant: "accent" as const,
-    preview: "Your opening was much stronger this time.",
-    time: "1d",
-    unread: false,
-    thread: [
-      {
-        from: "them" as const,
-        text: "Watched your recording — your opening was much stronger this time.",
-      },
-      { from: "me" as const, text: "Thanks! I cut the throat-clearing intro." },
-    ],
-  },
-];

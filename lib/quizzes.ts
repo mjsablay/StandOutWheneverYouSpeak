@@ -2,7 +2,7 @@
  * Lesson quizzes, extracted from Barry's Word documents in the course
  * materials. Learners must reach QUIZ_PASS_MARK to unlock the next lesson.
  *
- * ⚠️ One correction applied: the answer key in
+ *  One correction applied: the answer key in
  * "2. Impact Defined Quiz 070126.docx" is rotated — the Q5 answer
  * ("All of the above") appears at the end of the key rather than in
  * position 5. Corrected below; worth confirming with Barry.

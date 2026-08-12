@@ -43,7 +43,7 @@ export default function LessonVideoScreen() {
                 : "bg-brand text-white hover:bg-brand-dark"
             }`}
           >
-            {done ? "Watched ✓  +50 points" : "Mark video as watched"}
+            {done ? "Watched · +50 points" : "Mark video as watched"}
           </button>
 
           {gated && (

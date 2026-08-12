@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Check } from "lucide-react";
 import { QUIZZES, QUIZ_PASS_MARK, type QuizQuestion } from "@/lib/quizzes";
 import { useProgress } from "@/lib/progress";
 
@@ -128,7 +129,7 @@ export default function Quiz({
                       </span>
                       <span className="flex-1">{o.text}</span>
                       {submitted && isAnswer && (
-                        <span className="text-accent-ink">✓</span>
+                        <Check className="h-4 w-4 flex-shrink-0 text-accent-ink" strokeWidth={2.5} />
                       )}
                     </button>
                   );

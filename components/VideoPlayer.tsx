@@ -9,7 +9,7 @@ export default function VideoPlayer({ src, title }: Props) {
   if (!src) {
     return (
       <div className="flex aspect-video w-full flex-col items-center justify-center rounded-2xl border border-line bg-paper-warm text-center">
-        <div className="mb-3 text-4xl">🎬</div>
+        
         <p className="text-[15px] font-semibold">Video coming soon</p>
         <p className="mt-1 max-w-[320px] text-[13.5px] text-ink-soft">
           The lesson notes and exercise below are available while this

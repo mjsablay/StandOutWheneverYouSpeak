@@ -6,10 +6,12 @@ import { useState } from "react";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
 import { getMember } from "@/lib/members";
 import { useAuth } from "@/lib/mock-auth";
+import { useAccess } from "@/lib/access";
 
 export default function MemberProfilePage() {
   const { slug } = useParams<{ slug: string }>();
-  const { user, loading, hasFullAccess } = useAuth();
+  const { user } = useAuth();
+  const { loading, fullAccess } = useAccess();
   const [requested, setRequested] = useState(false);
 
   const member = getMember(slug);
@@ -32,7 +34,7 @@ export default function MemberProfilePage() {
     );
   }
 
-  const isMember = hasFullAccess;
+  const isMember = fullAccess;
 
   return (
     <Section>
@@ -72,7 +74,7 @@ export default function MemberProfilePage() {
                       onClick={() => setRequested(true)}
                       className="rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark"
                     >
-                      {requested ? "Request sent ✓" : "Request practice"}
+                      {requested ? "Request sent" : "Request practice"}
                     </button>
                     <Link
                       href="/messages"
@@ -97,17 +99,17 @@ export default function MemberProfilePage() {
             <div className="mt-5 flex flex-wrap gap-2">
               {member.school && (
                 <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  🎓 {member.school}
+                  {member.school}
                 </span>
               )}
               {member.company && (
                 <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  💼 {member.role ? `${member.role} · ` : ""}
+                  {member.role ? `${member.role} · ` : ""}
                   {member.company}
                 </span>
               )}
               <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                📍 {member.location}
+                {member.location}
               </span>
             </div>
 
@@ -128,7 +130,7 @@ export default function MemberProfilePage() {
                 </div>
               </div>
               <div>
-                <div className="text-xl font-extrabold">🔥 {member.streak}</div>
+                <div className="text-xl font-extrabold">{member.streak}</div>
                 <div className="text-xs uppercase tracking-wider text-ink-soft">
                   Day streak
                 </div>
@@ -170,7 +172,7 @@ export default function MemberProfilePage() {
               </div>
             ) : (
               <div className="rounded-xl bg-paper-warm p-5 text-[14.5px] text-ink-soft">
-                🔒 Contact details are visible to Speakers&apos; Circle members.
+                Contact details are visible to Speakers&apos; Circle members.
                 <div className="mt-3">
                   <Link
                     href={user ? "/checkout" : "/signup?plan=circle"}

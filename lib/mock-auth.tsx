@@ -73,7 +73,7 @@ type AuthValue = {
   ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (patch: Partial<Profile>) => Promise<{ error?: string }>;
-  uploadAvatar: (file: File) => Promise<{ error?: string }>;
+  uploadAvatar: (file: Blob) => Promise<{ error?: string }>;
   refresh: () => Promise<void>;
 };
 
@@ -241,17 +241,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /** Uploads an avatar to storage and saves the public URL on the profile. */
   const uploadAvatar = useCallback(
-    async (file: File) => {
+    async (file: Blob) => {
       if (!user) return { error: "Not signed in" };
       if (file.size > 2 * 1024 * 1024)
         return { error: "Image must be under 2 MB." };
 
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      // Always stored as JPEG — the cropper exports one.
+      const path = `${user.id}/avatar-${Date.now()}.jpg`;
 
       const { error: upErr } = await supabase.storage
         .from("avatars")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, file, { upsert: true, contentType: "image/jpeg" });
       if (upErr) return { error: upErr.message };
 
       const {

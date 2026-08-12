@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
-import PhotoFramer from "@/components/PhotoFramer";
+import { GraduationCap, Briefcase } from "lucide-react";
+import PhotoCropper from "@/components/PhotoCropper";
 import { useAuth, initialsOf, type Profile } from "@/lib/mock-auth";
 import { LIMITS, deriveHeadline } from "@/lib/profile-options";
 
@@ -95,6 +96,7 @@ export default function AccountPage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -172,7 +174,6 @@ export default function AccountPage() {
                   size={96}
                   variant={isMember ? "accent" : "brand"}
                   src={form.avatar_url}
-                  position={form.avatar_position}
                   alt={fullName}
                 />
               </span>
@@ -234,13 +235,13 @@ export default function AccountPage() {
               <div className="mt-5 space-y-2.5 border-t border-line pt-4">
                 {form.show_school !== false && form.school && (
                   <div className="flex items-center gap-2.5 text-[14.5px]">
-                    <span aria-hidden>🎓</span>
+                    <GraduationCap className="h-4 w-4 text-ink-soft" strokeWidth={2} />
                     <span>{form.school}</span>
                   </div>
                 )}
                 {form.show_company !== false && form.company && (
                   <div className="flex items-center gap-2.5 text-[14.5px]">
-                    <span aria-hidden>💼</span>
+                    <Briefcase className="h-4 w-4 text-ink-soft" strokeWidth={2} />
                     <span>
                       {form.role_title ? `${form.role_title} at ` : ""}
                       {form.company}
@@ -256,7 +257,7 @@ export default function AccountPage() {
         <div className="mb-6 rounded-2xl border border-line bg-white p-7">
           <h3 className="mb-1 text-[17px] font-bold">Profile photo</h3>
           <p className="mb-5 text-[14px] text-ink-soft">
-            Drag the photo or use the sliders to frame your face.
+            A clear headshot helps practice partners recognise you.
           </p>
 
           <input
@@ -264,49 +265,53 @@ export default function AccountPage() {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="hidden"
-            onChange={async (e) => {
+            onChange={(e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              setUploading(true);
               setError(null);
-              const res = await uploadAvatar(file);
-              setUploading(false);
-              if (res.error) setError(res.error);
+              setPendingFile(file);
               if (fileRef.current) fileRef.current.value = "";
             }}
           />
 
-          {form.avatar_url ? (
-            <>
-              <PhotoFramer
-                src={form.avatar_url}
-                value={form.avatar_position ?? "50% 50%"}
-                onChange={(pos) => set("avatar_position")(pos)}
-              />
+          <div className="flex flex-wrap items-center gap-6">
+            <Avatar
+              initials={initialsOf(fullName)}
+              size={96}
+              src={form.avatar_url}
+              alt={fullName}
+            />
+            <div>
               <button
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
-                className="mt-5 rounded-lg border border-line px-4 py-2 text-[14px] font-semibold hover:bg-paper-warm disabled:opacity-60"
+                className={`rounded-lg px-5 py-2.5 text-[14.5px] font-semibold disabled:opacity-60 ${
+                  form.avatar_url
+                    ? "border border-line hover:bg-paper-warm"
+                    : "bg-brand text-white hover:bg-brand-dark"
+                }`}
               >
-                {uploading ? "Uploading…" : "Replace photo"}
+                {form.avatar_url ? "Change photo" : "Upload a photo"}
               </button>
-            </>
-          ) : (
-            <div className="flex flex-wrap items-center gap-5">
-              <Avatar initials={initialsOf(fullName)} size={96} />
-              <div>
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  className="rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
-                >
-                  {uploading ? "Uploading…" : "Upload a photo"}
-                </button>
-                <p className="mt-2 text-[12.5px] text-ink-soft">
-                  JPG, PNG or WebP · max 2 MB
-                </p>
-              </div>
+              <p className="mt-2 text-[12.5px] text-ink-soft">
+                JPG, PNG or WebP · max 2 MB
+              </p>
             </div>
+          </div>
+
+          {pendingFile && (
+            <PhotoCropper
+              file={pendingFile}
+              saving={uploading}
+              onCancel={() => setPendingFile(null)}
+              onSave={async (blob) => {
+                setUploading(true);
+                const res = await uploadAvatar(blob);
+                setUploading(false);
+                setPendingFile(null);
+                if (res.error) setError(res.error);
+              }}
+            />
           )}
         </div>
 
@@ -518,7 +523,7 @@ export default function AccountPage() {
               disabled={!dirty}
               className="rounded-lg bg-accent px-6 py-2.5 text-[14.5px] font-semibold text-ink transition hover:bg-accent-dark disabled:opacity-45"
             >
-              {saved ? "Saved ✓" : "Save changes"}
+              {saved ? "Saved" : "Save changes"}
             </button>
           </div>
         </div>

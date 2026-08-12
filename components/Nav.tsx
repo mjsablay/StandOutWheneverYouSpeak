@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import {
   NAV_LINKS,
   PRELAUNCH_NAV_LINKS,
@@ -10,21 +11,21 @@ import {
   PRELAUNCH,
 } from "@/lib/site";
 import { useAuth } from "@/lib/mock-auth";
-import { useAudience } from "@/lib/view-as";
+import { useAccess } from "@/lib/access";
 import UserMenu from "./UserMenu";
 
 export default function Nav() {
   const pathname = usePathname();
-  const { user, loading, isAdmin } = useAuth();
-  const { audience, previewing } = useAudience();
+  const { loading } = useAuth();
+  const access = useAccess();
 
   // Pre-launch: everyone except an admin (viewing as themselves) sees only
   // Home, About Us and Contact.
-  const fullSite = !PRELAUNCH || (isAdmin && !previewing);
+  const fullSite = !PRELAUNCH || access.admin;
   const links = fullSite ? NAV_LINKS : PRELAUNCH_NAV_LINKS;
 
   // When an admin previews as a signed-out visitor, hide the account menu.
-  const showAsSignedIn = Boolean(user) && audience !== "visitor";
+  const showAsSignedIn = access.signedIn;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
 
@@ -64,7 +65,7 @@ export default function Nav() {
                     : "hover:text-ink"
                 }`}
               >
-                Courses <span className="text-[10px]">▾</span>
+                Courses <ChevronDown className="h-3.5 w-3.5" strokeWidth={2.5} />
               </Link>
               {coursesOpen && (
                 <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-xl border border-line bg-white p-1.5 shadow-[0_14px_34px_rgba(20,24,31,.12)]">
@@ -130,7 +131,11 @@ export default function Nav() {
             aria-expanded={mobileOpen}
             className="rounded-lg p-2 text-ink lg:hidden"
           >
-            <span className="text-xl leading-none">{mobileOpen ? "✕" : "☰"}</span>
+            {mobileOpen ? (
+              <X className="h-5 w-5" strokeWidth={2} />
+            ) : (
+              <Menu className="h-5 w-5" strokeWidth={2} />
+            )}
           </button>
         </div>
       </div>

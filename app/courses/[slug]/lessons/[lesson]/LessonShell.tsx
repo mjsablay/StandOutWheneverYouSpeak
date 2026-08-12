@@ -70,7 +70,6 @@ export default function LessonShell({ children }: { children: ReactNode }) {
             ← {course.name}
           </Link>
           <div className="rounded-2xl border-2 border-accent bg-accent-soft p-10 text-center">
-            <div className="mb-3 text-4xl">🔒</div>
             <h1 className="mb-2 text-2xl font-extrabold">
               Lesson {lesson.number}: {lesson.title}
             </h1>
@@ -91,24 +90,24 @@ export default function LessonShell({ children }: { children: ReactNode }) {
   }
 
   const tabs = [
-    { href: base, label: "Video", icon: "🎬", show: true },
+    { href: base, label: "Video", icon: "", show: true },
     {
       href: `${base}/quiz`,
       label: "Quiz",
-      icon: "❓",
+      icon: "",
       show: gated,
       done: hasPassed(lesson.slug),
     },
     {
       href: `${base}/workbook`,
       label: "Workbook",
-      icon: "📘",
+      icon: "",
       show: Boolean(lesson.materials?.length),
     },
     {
       href: `${base}/practice`,
       label: "AI Coach",
-      icon: "🎙️",
+      icon: "",
       show: Boolean(lesson.practice),
     },
   ].filter((t) => t.show);
@@ -148,7 +147,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
               >
                 <span aria-hidden>{t.icon}</span>
                 {t.label}
-                {t.done && <span className="text-accent-ink">✓</span>}
+                {t.done && <span className="text-accent-ink"></span>}
               </Link>
             );
           })}
@@ -190,7 +189,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
               <div className="text-[12.5px] uppercase tracking-wider text-ink-soft">
                 Next — pass the quiz to unlock
               </div>
-              <div className="text-[15px] font-semibold">🔒 {next.title}</div>
+              <div className="text-[15px] font-semibold">{next.title}</div>
             </div>
           ) : (
             <span />

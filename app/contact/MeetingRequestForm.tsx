@@ -69,7 +69,6 @@ export default function MeetingRequestForm() {
   if (sent) {
     return (
       <div className="rounded-2xl border-2 border-accent bg-accent-soft p-8 text-center sm:p-10">
-        <div className="mb-3 text-4xl">✅</div>
         <h3 className="mb-2 text-2xl font-extrabold">Request received</h3>
         <p className="mx-auto max-w-[440px] text-[15.5px] text-ink-soft">
           Thanks {name.split(" ")[0]}. We read every request personally and
