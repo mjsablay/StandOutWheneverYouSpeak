@@ -156,12 +156,24 @@ export const POINTS_RULES = [
  * Email addresses are deliberately NOT listed — published addresses get
  * scraped and spammed. All contact goes through the request form.
  */
+/**
+ * Public team details.
+ * Photos, headlines, bios and LinkedIn come from each founder's own profile
+ * (see the team_profiles view) — the text here is the fallback.
+ * Email addresses are deliberately absent: published addresses get scraped.
+ */
 export const TEAM = [
   {
     initials: "BK",
     name: "Barry Kuntz",
     role: "Founder & Head Coach",
-    bio: "Managing Director of Black Isle Consultants and author of Pause. Over the past ten years, Barry has taught more than 3,000 people how to structure presentations for impact and deliver them with compelling style. His method is simple: speaking with impact is a critical life skill — and anyone can learn it.",
+    headline: "Managing Director, Black Isle Consultants · Author of Pause",
+    credentials: [
+      "3,000+ people coached",
+      "10 years teaching",
+      "Author of Pause",
+    ],
+    bio: "Barry has spent the last decade teaching people how to structure a presentation for impact and deliver it with compelling style — more than 3,000 of them, across banks, law firms, universities and boardrooms. His method rests on a single conviction: speaking with impact is a critical life skill, not a talent you're born with. Everything in this platform comes from that work.",
     contactBlurb:
       "Coaching, curriculum, and corporate or team-training enquiries.",
     dark: true,
@@ -170,7 +182,13 @@ export const TEAM = [
     initials: "MS",
     name: "Michael Jordan Sablay",
     role: "Co-Founder",
-    bio: "[Add your intro here: your background, what drew you to this work, and what you want members to get out of the platform. Two to four sentences is the sweet spot.]",
+    headline: "Manager, Office of Generative AI at Deloitte",
+    credentials: [
+      "15,000 professionals enabled",
+      "$500M+ transformations",
+      "250+ consultants taught",
+    ],
+    bio: "Michael leads the Value Analytics and AI adoption strategy inside Deloitte's Office of Generative AI, where he built the enablement programme now reaching roughly 15,000 professionals across Canada and Chile. Eight years of delivering $500M+ enterprise transformations taught him that the work turns on something no system handles for you: holding a room, briefing an executive, making a complicated thing land. He teaches that skill too — 10 leadership programmes at Deloitte University for 250+ consultants, and six professionals he coaches directly. He's building Stand Out so the practice that used to require a room full of people is available to anyone, any time.",
     contactBlurb: "Partnerships, platform, product, and general enquiries.",
     dark: false,
   },
