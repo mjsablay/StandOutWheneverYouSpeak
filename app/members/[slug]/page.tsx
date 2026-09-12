@@ -2,217 +2,168 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { ExternalLink, GraduationCap, Briefcase, MapPin, Lock } from "lucide-react";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
-import { getMember } from "@/lib/members";
-import { useAuth } from "@/lib/mock-auth";
+import { useDirectory, nameOf } from "@/lib/directory";
 import { useAccess } from "@/lib/access";
+import { initialsOf } from "@/lib/mock-auth";
 
+/**
+ * A member's public profile. The route param is their user id.
+ * Email is never exposed — members connect through in-app messaging.
+ */
 export default function MemberProfilePage() {
   const { slug } = useParams<{ slug: string }>();
-  const { user } = useAuth();
-  const { loading, fullAccess } = useAccess();
-  const [requested, setRequested] = useState(false);
+  const access = useAccess();
+  const { members, loading } = useDirectory(access.signedIn);
 
-  const member = getMember(slug);
+  if (access.loading || loading) return <PageSkeleton />;
 
-  if (loading) return <PageSkeleton />;
+  if (!access.fullAccess) {
+    return (
+      <Section>
+        <Wrap className="max-w-[520px]">
+          <div className="rounded-2xl border border-line bg-white p-10 text-center">
+            <Lock className="mx-auto mb-4 h-8 w-8 text-ink-soft" strokeWidth={1.75} />
+            <h1 className="mb-2 text-2xl font-semibold">Members only</h1>
+            <p className="mb-6 text-[15px] text-ink-soft">
+              Speakers&apos; Circle members can browse the directory and
+              connect with each other.
+            </p>
+            <Link
+              href="/pricing"
+              className="inline-block rounded-lg bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark"
+            >
+              See membership
+            </Link>
+          </div>
+        </Wrap>
+      </Section>
+    );
+  }
+
+  const member = members.find((m) => m.id === slug);
 
   if (!member) {
     return (
       <Section>
         <Wrap className="max-w-[520px] text-center">
-          <h1 className="mb-3 text-2xl font-extrabold">Member not found</h1>
-          <Link
-            href="/leaderboard"
-            className="font-semibold text-brand hover:underline"
-          >
-            ← Back to leaderboard
+          <h1 className="mb-3 text-2xl font-semibold">Member not found</h1>
+          <Link href="/community" className="font-semibold text-brand hover:underline">
+            Back to the community
           </Link>
         </Wrap>
       </Section>
     );
   }
 
-  const isMember = fullAccess;
+  const rank = members.findIndex((m) => m.id === member.id) + 1;
+  const name = nameOf(member);
 
   return (
     <Section>
       <Wrap className="max-w-[820px]">
         <Link
-          href="/leaderboard"
+          href="/community"
           className="mb-6 inline-block text-[14px] font-semibold text-brand hover:underline"
         >
-          ← Back to leaderboard
+          Back to the community
         </Link>
 
-        {/* Header card */}
         <div className="overflow-hidden rounded-2xl border border-line bg-white">
           <div className="h-20 bg-brand" />
           <div className="px-8 pb-8">
-            <div className="-mt-10 mb-4">
-              <span className="inline-block rounded-full border-4 border-white">
+            <div className="-mt-12 mb-4">
+              <span className="inline-block rounded-full border-4 border-white bg-white">
                 <Avatar
-                  initials={member.initials}
-                  size={84}
-                  variant={member.variant}
+                  initials={initialsOf(name)}
+                  size={96}
+                  src={member.avatar_url}
+                  alt={name}
                 />
               </span>
             </div>
 
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h1 className="text-[28px] font-extrabold tracking-tight">
-                  {member.name}
+                <h1 className="text-[28px] font-semibold tracking-tight">
+                  {name}
                 </h1>
-                <p className="text-[15.5px] text-ink-soft">{member.headline}</p>
-              </div>
-              <div className="flex flex-wrap gap-2.5">
-                {isMember ? (
-                  <>
-                    <button
-                      onClick={() => setRequested(true)}
-                      className="rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark"
-                    >
-                      {requested ? "Request sent" : "Request practice"}
-                    </button>
-                    <Link
-                      href="/messages"
-                      className="rounded-lg border border-line px-5 py-2.5 text-[14.5px] font-semibold hover:bg-paper-warm"
-                    >
-                      Message
-                    </Link>
-                  </>
-                ) : (
-                  <Link
-                    href={user ? "/checkout" : "/signup?plan=circle"}
-                    className="rounded-lg bg-accent px-5 py-2.5 text-[14.5px] font-semibold text-ink hover:bg-accent-dark"
-                  >
-                    Unlock to connect
-                  </Link>
+                {member.headline && (
+                  <p className="text-[15.5px] text-ink-soft">{member.headline}</p>
                 )}
               </div>
+              <Link
+                href="/messages"
+                className="rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white hover:bg-brand-dark"
+              >
+                Message
+              </Link>
             </div>
 
-            <p className="mt-5 text-[15px] text-ink-soft">{member.bio}</p>
+            {member.bio && (
+              <p className="mt-5 max-w-[640px] text-[15px] leading-relaxed text-ink-soft">
+                {member.bio}
+              </p>
+            )}
 
             <div className="mt-5 flex flex-wrap gap-2">
               {member.school && (
-                <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
+                <span className="flex items-center gap-2 rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
+                  <GraduationCap className="h-3.5 w-3.5" strokeWidth={2} />
                   {member.school}
                 </span>
               )}
               {member.company && (
-                <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                  {member.role ? `${member.role} · ` : ""}
+                <span className="flex items-center gap-2 rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
+                  <Briefcase className="h-3.5 w-3.5" strokeWidth={2} />
+                  {member.job_title ? `${member.job_title} at ` : ""}
                   {member.company}
                 </span>
               )}
-              <span className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
-                {member.location}
-              </span>
+              {member.location && (
+                <span className="flex items-center gap-2 rounded-full bg-paper-warm px-3 py-1.5 text-[13px]">
+                  <MapPin className="h-3.5 w-3.5" strokeWidth={2} />
+                  {member.location}
+                </span>
+              )}
             </div>
 
-            {/* Stats */}
+            {member.linkedin_url && (
+              <a
+                href={member.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 text-[14px] font-semibold text-brand hover:underline"
+              >
+                <ExternalLink className="h-4 w-4" strokeWidth={2} />
+                {name} on LinkedIn
+              </a>
+            )}
+
             <div className="mt-6 flex flex-wrap gap-8 border-t border-line pt-5">
               <div>
-                <div className="text-xl font-extrabold">
+                <div className="text-xl font-semibold">
                   {member.points.toLocaleString()}
                 </div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
+                <div className="text-xs uppercase tracking-wide text-ink-soft">
                   Points
                 </div>
               </div>
               <div>
-                <div className="text-xl font-extrabold">#{member.rank}</div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
+                <div className="text-xl font-semibold">#{rank}</div>
+                <div className="text-xs uppercase tracking-wide text-ink-soft">
                   Rank
                 </div>
               </div>
               <div>
-                <div className="text-xl font-extrabold">{member.streak}</div>
-                <div className="text-xs uppercase tracking-wider text-ink-soft">
-                  Day streak
+                <div className="text-xl font-semibold">
+                  {member.lessons_completed}
+                </div>
+                <div className="text-xs uppercase tracking-wide text-ink-soft">
+                  Lessons completed
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact + activity */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-line bg-white p-7">
-            <h2 className="mb-4 text-lg font-bold">Contact</h2>
-            {isMember ? (
-              <div className="space-y-3 text-[15px]">
-                <div>
-                  <div className="text-[12.5px] uppercase tracking-wider text-ink-soft">
-                    Email
-                  </div>
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="font-semibold text-brand hover:underline"
-                  >
-                    {member.email}
-                  </a>
-                </div>
-                <div>
-                  <div className="text-[12.5px] uppercase tracking-wider text-ink-soft">
-                    LinkedIn
-                  </div>
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-brand hover:underline"
-                  >
-                    View profile ↗
-                  </a>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl bg-paper-warm p-5 text-[14.5px] text-ink-soft">
-                Contact details are visible to Speakers&apos; Circle members.
-                <div className="mt-3">
-                  <Link
-                    href={user ? "/checkout" : "/signup?plan=circle"}
-                    className="font-semibold text-brand hover:underline"
-                  >
-                    Upgrade to connect →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-2xl border border-line bg-white p-7">
-            <h2 className="mb-4 text-lg font-bold">Currently practising</h2>
-            <div className="mb-4 rounded-xl bg-brand-soft p-4">
-              <div className="font-semibold">{member.working}</div>
-              <div className="text-[13.5px] text-ink-soft">{member.course}</div>
-            </div>
-            <div className="mb-2 text-[12.5px] uppercase tracking-wider text-ink-soft">
-              Focus areas
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {member.focus.map((f) => (
-                <span
-                  key={f}
-                  className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px]"
-                >
-                  {f}
-                </span>
-              ))}
-            </div>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {member.badges.map((b) => (
-                <span
-                  key={b}
-                  className="rounded-full bg-accent-soft px-2.5 py-1.5 text-[12px] font-bold text-accent-ink"
-                >
-                  {b}
-                </span>
-              ))}
             </div>
           </div>
         </div>

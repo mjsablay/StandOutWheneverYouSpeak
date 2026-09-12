@@ -21,13 +21,13 @@ export default function Quiz({
   nextTitle: string | null;
 }) {
   const questions = QUIZZES[lessonSlug];
-  const { recordPass, progress } = useProgress();
+  const { recordAttempt, scoreFor } = useProgress();
   const [answers, setAnswers] = useState<Record<number, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
 
   if (!questions?.length) return null;
 
-  const previous = progress[lessonSlug];
+  const previous = scoreFor(lessonSlug);
   const total = questions.length;
   const correctCount = questions.reduce(
     (n, q, i) => n + (isCorrect(q, answers[i] ?? []) ? 1 : 0),
@@ -59,9 +59,9 @@ export default function Quiz({
             {nextTitle ? " and unlock the next lesson" : ""}
           </p>
         </div>
-        {previous && !submitted && (
+        {previous !== null && !submitted && (
           <span className="rounded-full bg-accent-soft px-3 py-1.5 text-[12.5px] font-bold text-accent-ink">
-            Passed · {previous.score}%
+            Best score · {previous}%
           </span>
         )}
       </div>
@@ -147,7 +147,7 @@ export default function Quiz({
             onClick={() => {
               setSubmitted(true);
               const s = Math.round((correctCount / total) * 100);
-              if (s >= QUIZ_PASS_MARK) recordPass(lessonSlug, s);
+              void recordAttempt(lessonSlug, s, s >= QUIZ_PASS_MARK);
             }}
             disabled={!allAnswered}
             className="rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-45"

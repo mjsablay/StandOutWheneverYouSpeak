@@ -22,7 +22,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading, hasFullAccess } = useAuth();
-  const { hasPassed } = useProgress();
+  const { hasPassed } = useProgress(slug);
 
   const data = getLesson(slug, lessonSlug);
 

@@ -13,7 +13,7 @@ export default function CourseDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { user, loading, hasFullAccess } = useAuth();
-  const { hasPassed } = useProgress();
+  const { hasPassed } = useProgress(slug);
 
   const course = getCourse(slug);
 
