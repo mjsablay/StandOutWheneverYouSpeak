@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useAuth, type OAuthProvider } from "@/lib/mock-auth";
 
 /**
- * Social sign-in buttons.
+ * Social sign-in buttons — the primary way in.
+ *
+ * These matter for more than convenience. An account created this way is
+ * proof of a person: the browser had to be signed in to a real Google,
+ * Microsoft or LinkedIn account to get here. The email path proves nothing
+ * on its own, which is how the waitlist ended up with 189 entries nobody
+ * could vouch for.
  *
  * Each provider must be enabled in the Supabase dashboard first
  * (Authentication → Providers) with a client ID and secret from that
@@ -75,12 +81,6 @@ export default function SocialSignIn({ next }: { next?: string }) {
 
   return (
     <div>
-      <div className="mb-5 flex items-center gap-3">
-        <span className="h-px flex-1 bg-line" />
-        <span className="text-[13px] font-semibold text-ink-soft">or</span>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-
       <div className="space-y-2.5">
         {PROVIDERS.map((p) => (
           <button

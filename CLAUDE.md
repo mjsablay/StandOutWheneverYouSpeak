@@ -49,6 +49,13 @@ content (founder bios, photos, LinkedIn) lives in the `site_content` table
 instead. Column-level grants through a `security_invoker` view were not
 sufficient. Test public pages with `SET LOCAL ROLE anon`.
 
+**A confirmed email address is not a person.** Corporate mail security
+(Proofpoint, Mimecast, Defender) opens every link in every message to scan it,
+and opening a magic link marks the address confirmed in `auth.users`. 29 of the
+189 waitlist entries were "confirmed" this way and no human ever arrived. The
+signal that means something is `last_sign_in_at`, or an OAuth provider on the
+account. The `admin_waitlist()` function ranks both.
+
 **`PRELAUNCH` in `lib/site.ts` is the launch switch.** While true, `middleware.ts`
 keeps everyone except admins on the waitlist home, About and Contact. Flip it
 to go live.
@@ -87,6 +94,11 @@ that shows or hides content.
 - `lib/content.ts` — the `site_content` table; editable from the admin
   console, and public by definition — never put private data in it
 - `lib/directory.ts` — the `member_directory` view (real members only)
+- `lib/waitlist.ts` / `app/admin/Waitlist.tsx` — the `admin_waitlist()`
+  function and triage screen: how each account signed up and whether anyone
+  ever used it. It is a SECURITY DEFINER function, not a view, so `auth.users`
+  is never selectable from the public schema — see the migration before
+  changing its grants
 - `lib/progress.ts` — quiz progress, stored in `member_progress` with RLS
 - `middleware.ts` — session refresh, protected routes, pre-launch gate
 - `app/admin/` — console: insights, meeting requests, About-page editor,
@@ -107,6 +119,19 @@ duplicates, not real errors. Delete them and re-run:
 
 `react-hooks/set-state-in-effect` is the lint rule that bites most often here.
 Prefer deriving state or `useSyncExternalStore` over syncing in an effect.
+
+## Signup protection
+
+The email signup form creates an account from whatever is typed into it, so
+until Turnstile is configured a script can fill the waitlist unattended — which
+is what happened between 17 and 31 August 2026. `components/Turnstile.tsx` is
+wired up but inert until `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set and the
+matching secret is pasted into Supabase → Authentication → Attack Protection.
+
+OAuth (Google, Microsoft, LinkedIn) is the primary path on both auth screens
+because it cannot be scripted the same way. Only Google is enabled in the
+Supabase dashboard so far; the other two buttons return "provider is not
+enabled" until someone adds their client ID and secret.
 
 ## Outstanding
 
