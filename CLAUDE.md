@@ -7,7 +7,7 @@ Barry Kuntz (executive speaking coach, Black Isle Consultants), who supplies
 the teaching method and the video lessons.
 
 Live at standoutwheneveryouspeak.com (Vercel). Repo:
-`mjsablay/standoutwheneveryouspeak`.
+`mjsablay/StandOutWheneverYouSpeak`.
 
 ## Working with Tori
 
@@ -82,7 +82,10 @@ that shows or hides content.
 - `lib/courses.ts` — 15 Leadership Voice + 10 Campus Voice lessons, Barry's
   four-category rubric, scoring bands
 - `lib/quizzes.ts` — 100 questions extracted from Barry's Word documents
-- `lib/access.ts` / `lib/mock-auth.tsx` — gating and auth
+- `lib/access.ts` / `lib/mock-auth.tsx` / `lib/view-as.tsx` — gating, auth,
+  and the admin preview state
+- `lib/content.ts` — the `site_content` table; editable from the admin
+  console, and public by definition — never put private data in it
 - `lib/directory.ts` — the `member_directory` view (real members only)
 - `lib/progress.ts` — quiz progress, stored in `member_progress` with RLS
 - `middleware.ts` — session refresh, protected routes, pre-launch gate
@@ -96,6 +99,11 @@ npx tsc --noEmit
 npx eslint .
 npm run build
 ```
+
+If `tsc` reports errors inside `.next/types/` in files whose names end in
+` 2.ts` — `routes.d 2.ts`, `cache-life.d 2.ts` — those are Finder-copy
+duplicates, not real errors. Delete them and re-run:
+`find .next -name "* 2.*" -o -name "* 2" | while read -r f; do rm -rf "$f"; done`
 
 `react-hooks/set-state-in-effect` is the lint rule that bites most often here.
 Prefer deriving state or `useSyncExternalStore` over syncing in an effect.
