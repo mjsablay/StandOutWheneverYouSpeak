@@ -53,7 +53,7 @@ function LockedView({ signedIn }: { signedIn: boolean }) {
         </ul>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Btn href={signedIn ? "/pricing" : "/signup"} variant="accent">
+          <Btn href={signedIn ? "/pricing" : "/request"} variant="accent">
             {signedIn ? "See membership — $10/mo" : "Request your place"}
           </Btn>
           {!signedIn && (

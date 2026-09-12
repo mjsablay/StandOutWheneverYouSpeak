@@ -24,15 +24,16 @@ export default function PricingCards() {
   // label and destination depend on who's signed in.
   const isMember = user?.tier === "circle";
 
-  // Account creation always comes first — never send a signed-out
-  // visitor straight to payment.
+  // Nobody creates an account for themselves any more — a signed-out
+  // visitor asks for a place and is invited, so both cards send them to the
+  // request form rather than to signup or straight to payment.
   const circleHref = !user
-    ? "/signup?plan=circle"
+    ? "/request"
     : isMember
       ? "/account"
       : "/checkout";
 
-  const freeHref = user ? "/account" : "/signup?plan=free";
+  const freeHref = user ? "/account" : "/request";
 
   return (
     <div className="mx-auto grid max-w-[860px] gap-6 md:grid-cols-2">
@@ -54,7 +55,7 @@ export default function PricingCards() {
           ))}
         </ul>
         <Link
-          href={loading ? "/signup?plan=free" : freeHref}
+          href={loading ? "/request" : freeHref}
           className="block w-full rounded-lg bg-brand px-5 py-2.5 text-center text-[14.5px] font-semibold text-white transition hover:bg-brand-dark"
         >
           {user ? "Go to my account" : "Create free account"}
@@ -85,7 +86,7 @@ export default function PricingCards() {
           ))}
         </ul>
         <Link
-          href={loading ? "/signup?plan=circle" : circleHref}
+          href={loading ? "/request" : circleHref}
           className="block w-full rounded-lg bg-accent px-5 py-2.5 text-center text-[14.5px] font-semibold text-ink transition hover:bg-accent-dark"
         >
           {isMember

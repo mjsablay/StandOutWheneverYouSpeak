@@ -12,6 +12,7 @@ import PreviewControl from "./PreviewControl";
 import ContentEditor from "./ContentEditor";
 import TestData from "./TestData";
 import Waitlist from "./Waitlist";
+import Requests from "./Requests";
 import {
   useAuth,
   initialsOf,
@@ -185,6 +186,8 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
+
+        <Requests isAdmin={isAdmin} />
 
         <Waitlist
           isAdmin={isAdmin}

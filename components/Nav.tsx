@@ -117,7 +117,7 @@ export default function Nav() {
                 Sign in
               </Link>
               <Link
-                href="/signup"
+                href="/request"
                 className="hidden rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark sm:inline-block"
               >
                 {PRELAUNCH ? "Request a place" : "Join free"}
@@ -179,7 +179,7 @@ export default function Nav() {
                   Sign in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/request"
                   onClick={() => setMobileOpen(false)}
                   className="mt-2.5 mb-2 rounded-lg bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
                 >

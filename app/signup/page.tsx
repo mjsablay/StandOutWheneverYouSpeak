@@ -1,163 +1,59 @@
 "use client";
 
-import { Suspense, useCallback, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Wrap, Section, Check } from "@/components/ui";
-import { useAuth } from "@/lib/mock-auth";
-import SocialSignIn from "@/components/SocialSignIn";
-import Turnstile, { captchaEnabled } from "@/components/Turnstile";
+import { Wrap, Section } from "@/components/ui";
 
-const field =
-  "w-full rounded-[10px] border border-line bg-white px-3.5 py-3 text-[15px] text-ink outline-none focus:border-transparent focus:ring-2 focus:ring-brand";
+/**
+ * /signup is now a signpost, not a form.
+ *
+ * Nobody creates their own account any more. This page used to take an email
+ * address and immediately create one, which is what let 189 unusable accounts
+ * onto the waitlist. The two real ways in are: ask for a place and be invited,
+ * or sign in with an account you already hold elsewhere.
+ *
+ * The route is kept because links to it exist in the wild.
+ */
 
-function SignUpInner() {
-  const params = useSearchParams();
-  const { signInWithEmail } = useAuth();
-
-  const plan = params.get("plan") === "circle" ? "circle" : "free";
-  const next = params.get("next") ?? (plan === "circle" ? "/checkout" : "/account");
-
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [captcha, setCaptcha] = useState<string | null>(null);
-
-  // Stable identity keeps Turnstile from re-rendering its widget on keystrokes.
-  const onToken = useCallback((t: string | null) => setCaptcha(t), []);
-
-  if (sent) {
-    return (
-      <Section>
-        <Wrap className="max-w-[520px]">
-          <div className="rounded-2xl border-2 border-accent bg-accent-soft p-8 text-center sm:p-10">
-            <h1 className="mb-2 text-2xl font-extrabold">Check your email</h1>
-            <p className="text-[15px] text-ink-soft">
-              We sent a confirmation link to{" "}
-              <strong className="text-ink">{email}</strong>. Open it and your
-              account is ready
-              {plan === "circle" ? " — then you'll complete payment." : "."}
-            </p>
-          </div>
-        </Wrap>
-      </Section>
-    );
-  }
-
+export default function SignUpPage() {
   return (
     <Section>
-      <Wrap className="max-w-[520px]">
+      <Wrap className="max-w-[560px]">
         <div className="rounded-2xl border border-line bg-white p-8 sm:p-10">
           <h1 className="mb-2 text-[28px] font-extrabold tracking-tight">
-            Create your account
+            Joining Stand Out
           </h1>
-          <p className="mb-7 text-[15px] text-ink-soft">
-            {plan === "circle"
-              ? "First create your account, then you'll complete payment for Speakers' Circle."
-              : "Join the Front Row free — no credit card required. Signing in with an account you already have is the quickest way in, and it means we know your place is really yours."}
+          <p className="mb-8 text-[15px] text-ink-soft">
+            We&apos;re opening in small groups, so places are given out rather
+            than signed up for. Tell us a little about yourself and we&apos;ll
+            invite you when there&apos;s room.
           </p>
 
-          <SocialSignIn next={next} />
+          <Link
+            href="/request"
+            className="block w-full rounded-lg bg-accent px-5 py-3.5 text-center text-[15.5px] font-semibold text-ink transition hover:bg-accent-dark"
+          >
+            Request your place
+          </Link>
 
           <div className="my-6 flex items-center gap-3">
             <span className="h-px flex-1 bg-line" />
-            <span className="text-[13px] font-semibold text-ink-soft">
-              or use your email
-            </span>
+            <span className="text-[13px] font-semibold text-ink-soft">or</span>
             <span className="h-px flex-1 bg-line" />
           </div>
 
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setBusy(true);
-              setError(null);
-              const res = await signInWithEmail(email, next, captcha);
-              setBusy(false);
-              if (res.error) setError(res.error);
-              else setSent(true);
-            }}
+          <Link
+            href="/signin"
+            className="block w-full rounded-lg border border-line bg-white px-5 py-3.5 text-center text-[15.5px] font-semibold transition hover:bg-paper-warm"
           >
-            <div className="mb-5">
-              <label
-                htmlFor="email"
-                className="mb-1.5 block text-[13px] font-semibold"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className={field}
-                placeholder="you@example.com"
-              />
-              <p className="mt-2 text-[13px] text-ink-soft">
-                We&apos;ll email you a link to confirm — no password needed. You
-                can add your name and bio once you&apos;re in.
-              </p>
-            </div>
+            Sign in to an account you already have
+          </Link>
 
-            <Turnstile onToken={onToken} />
-
-            {error && (
-              <p className="mb-4 text-[14px] font-medium text-brand">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={busy || (captchaEnabled() && !captcha)}
-              className={`w-full rounded-lg px-5 py-3 text-[15.5px] font-semibold transition disabled:opacity-60 ${
-                plan === "circle"
-                  ? "bg-accent text-ink hover:bg-accent-dark"
-                  : "bg-brand text-white hover:bg-brand-dark"
-              }`}
-            >
-              {busy
-                ? "Sending…"
-                : plan === "circle"
-                  ? "Create account & continue"
-                  : "Create my free account"}
-            </button>
-          </form>
-
-          {plan === "circle" && (
-            <ul className="mt-6 space-y-1.5 border-t border-line pt-6 text-[14px] text-ink-soft">
-              <li className="flex gap-2">
-                <Check /> Every lesson in both courses
-              </li>
-              <li className="flex gap-2">
-                <Check /> Unlimited AI practice sessions
-              </li>
-              <li className="flex gap-2">
-                <Check /> Full Member community access
-              </li>
-            </ul>
-          )}
-
-          <p className="mt-6 text-center text-[14px] text-ink-soft">
-            Already have an account?{" "}
-            <Link
-              href="/signin"
-              className="font-semibold text-brand hover:underline"
-            >
-              Sign in
-            </Link>
+          <p className="mt-6 text-center text-[13.5px] text-ink-soft">
+            Been invited by email? Open the link in that invitation and
+            you&apos;re in — there&apos;s nothing to set up.
           </p>
         </div>
       </Wrap>
     </Section>
-  );
-}
-
-export default function SignUpPage() {
-  return (
-    <Suspense fallback={null}>
-      <SignUpInner />
-    </Suspense>
   );
 }

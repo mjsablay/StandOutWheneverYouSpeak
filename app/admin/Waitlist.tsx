@@ -172,13 +172,15 @@ export default function Waitlist({
     <div className="mb-10">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-[20px] font-semibold tracking-tight">Waitlist</h2>
+          <h2 className="text-[20px] font-semibold tracking-tight">
+            Accounts awaiting approval
+          </h2>
           <p className="mt-1 text-[14px] text-ink-soft">
             {loading
               ? "Checking who's real…"
               : pending.length === 0
                 ? "Nobody waiting — the queue is clear."
-                : `${pending.length} waiting. ${people} ${people === 1 ? "has" : "have"} shown evidence of being a person; ${unproven} ${unproven === 1 ? "has" : "have"} not.`}
+                : `${pending.length} accounts created before requests replaced self-signup. ${people} ${people === 1 ? "has" : "have"} shown evidence of being a person; ${unproven} ${unproven === 1 ? "has" : "have"} not.`}
           </p>
         </div>
         <button
