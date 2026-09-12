@@ -11,6 +11,7 @@ import Insights from "./Insights";
 import PreviewControl from "./PreviewControl";
 import ContentEditor from "./ContentEditor";
 import TestData from "./TestData";
+import Waitlist from "./Waitlist";
 import {
   useAuth,
   initialsOf,
@@ -51,7 +52,9 @@ export default function AdminPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | Status>("pending");
+  const [filter, setFilter] = useState<"approved" | "declined" | "all">(
+    "approved",
+  );
   const [refreshKey, setRefreshKey] = useState(0);
 
   const load = useCallback(async () => {
@@ -138,8 +141,11 @@ export default function AdminPage() {
     0,
   );
 
+  // The waitlist has its own screen above, so this list is everyone who has
+  // already been decided on.
+  const decided = rows.filter((r) => r.status !== "pending");
   const visible =
-    filter === "all" ? rows : rows.filter((r) => r.status === filter);
+    filter === "all" ? decided : decided.filter((r) => r.status === filter);
 
   const stats = [
     { icon: Clock, label: "Awaiting approval", value: counts.pending, hot: true },
@@ -180,6 +186,12 @@ export default function AdminPage() {
           ))}
         </div>
 
+        <Waitlist
+          isAdmin={isAdmin}
+          adminId={user.id}
+          onChange={() => setRefreshKey((k) => k + 1)}
+        />
+
         <Insights />
 
         <MeetingRequests />
@@ -200,10 +212,10 @@ export default function AdminPage() {
         {/* Members */}
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-[20px] font-semibold tracking-tight">
-            Members &amp; waitlist
+            Members
           </h2>
           <div className="flex flex-wrap gap-2">
-            {(["pending", "approved", "declined", "all"] as const).map((f) => (
+            {(["approved", "declined", "all"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -232,8 +244,8 @@ export default function AdminPage() {
             </div>
           ) : visible.length === 0 ? (
             <div className="p-10 text-center text-[15px] text-ink-soft">
-              {filter === "pending"
-                ? "No one waiting — the queue is clear."
+              {filter === "all"
+                ? "No members yet — approve someone from the waitlist above."
                 : `No ${filter} members yet.`}
             </div>
           ) : (

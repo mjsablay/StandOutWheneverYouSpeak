@@ -66,7 +66,12 @@ type AuthValue = {
   isApproved: boolean;
   /** Approved AND (paid or admin) — gates Speakers' Circle content. */
   hasFullAccess: boolean;
-  signInWithEmail: (email: string, next?: string) => Promise<{ error?: string }>;
+  signInWithEmail: (
+    email: string,
+    next?: string,
+    /** Turnstile token, when a CAPTCHA is configured. */
+    captchaToken?: string | null,
+  ) => Promise<{ error?: string }>;
   signInWithProvider: (
     provider: OAuthProvider,
     next?: string,
@@ -171,13 +176,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase, loadProfile]);
 
   const signInWithEmail = useCallback(
-    async (email: string, next?: string) => {
+    async (email: string, next?: string, captchaToken?: string | null) => {
       const redirect = `${window.location.origin}/auth/callback${
         next ? `?next=${encodeURIComponent(next)}` : ""
       }`;
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: redirect },
+        options: {
+          emailRedirectTo: redirect,
+          // Only sent when a challenge is configured; Supabase rejects an
+          // unexpected token as readily as a missing one.
+          ...(captchaToken ? { captchaToken } : {}),
+        },
       });
       return error ? { error: error.message } : {};
     },
