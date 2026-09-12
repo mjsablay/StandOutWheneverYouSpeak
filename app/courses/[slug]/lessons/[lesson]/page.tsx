@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import VideoPlayer from "@/components/VideoPlayer";
 import { getLesson, videoUrl } from "@/lib/courses";
 import { hasQuiz } from "@/components/Quiz";
@@ -13,8 +12,7 @@ export default function LessonVideoScreen() {
     slug: string;
     lesson: string;
   }>();
-  const { hasPassed } = useProgress();
-  const [done, setDone] = useState(false);
+  const { hasPassed, hasWatched, markWatched } = useProgress(slug);
 
   const data = getLesson(slug, lessonSlug);
   if (!data) return null;
@@ -23,6 +21,7 @@ export default function LessonVideoScreen() {
   const base = `/courses/${slug}/lessons/${lessonSlug}`;
   const gated = hasQuiz(lesson.slug);
   const passed = hasPassed(lesson.slug);
+  const done = hasWatched(lesson.slug);
 
   return (
     <>
@@ -36,7 +35,7 @@ export default function LessonVideoScreen() {
 
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <button
-            onClick={() => setDone((v) => !v)}
+            onClick={() => void markWatched(lesson.slug, !done)}
             className={`rounded-lg px-5 py-2.5 text-[14.5px] font-semibold transition ${
               done
                 ? "bg-accent text-ink hover:bg-accent-dark"

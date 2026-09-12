@@ -68,19 +68,22 @@ export async function middleware(request: NextRequest) {
   }
 
   // ---- Pre-launch gate ----
+  // Only runs the extra role lookup for paths that are actually restricted,
+  // so ordinary page loads stay at one auth call.
   if (PRELAUNCH) {
     const allowed =
       path === "/" || PRELAUNCH_ALLOWED.some((p) => path.startsWith(p));
 
     if (!allowed) {
       // Only administrators may reach the rest of the site for now.
+      // A signed-out visitor can never be an admin — skip the lookup.
       let isAdmin = false;
       if (user) {
         const { data } = await supabase
           .from("profiles")
           .select("role")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
         isAdmin = data?.role === "admin";
       }
 
