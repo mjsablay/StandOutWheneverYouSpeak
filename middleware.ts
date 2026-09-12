@@ -20,6 +20,8 @@ const PROTECTED = [
 const PRELAUNCH_ALLOWED = [
   "/about",
   "/contact",
+  "/request",
+  "/api/waitlist",
   "/signin",
   "/signup",
   "/auth",

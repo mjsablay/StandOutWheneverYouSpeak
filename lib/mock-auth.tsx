@@ -184,12 +184,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         options: {
           emailRedirectTo: redirect,
+          // SIGN IN ONLY, NEVER SIGN UP. Left at its default this call
+          // creates an account for any address typed into the box and mails
+          // a link to it, which is how the waitlist filled with 189 accounts
+          // nobody asked for. New people go through /request and are invited.
+          shouldCreateUser: false,
           // Only sent when a challenge is configured; Supabase rejects an
           // unexpected token as readily as a missing one.
           ...(captchaToken ? { captchaToken } : {}),
         },
       });
-      return error ? { error: error.message } : {};
+      if (error) {
+        // Supabase says "Signups not allowed for otp" when the address has no
+        // account. That is not an error the person can act on as written.
+        return /signups? not allowed/i.test(error.message)
+          ? {
+              error:
+                "We don't have an account for that address yet. Request a place and we'll invite you.",
+            }
+          : { error: error.message };
+      }
+      return {};
     },
     [supabase],
   );

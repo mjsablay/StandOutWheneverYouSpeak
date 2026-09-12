@@ -94,6 +94,11 @@ that shows or hides content.
 - `lib/content.ts` — the `site_content` table; editable from the admin
   console, and public by definition — never put private data in it
 - `lib/directory.ts` — the `member_directory` view (real members only)
+- `lib/waitlist-request.ts` — the request shape and its option lists, shared
+  by the form, the API route and the admin screen. Every list here is mirrored
+  by a CHECK constraint in the migration; change both
+- `app/request/` / `app/api/waitlist/` / `app/admin/Requests.tsx` — ask,
+  store, review
 - `lib/waitlist.ts` / `app/admin/Waitlist.tsx` — the `admin_waitlist()`
   function and triage screen: how each account signed up and whether anyone
   ever used it. It is a SECURITY DEFINER function, not a view, so `auth.users`
@@ -120,18 +125,41 @@ duplicates, not real errors. Delete them and re-run:
 `react-hooks/set-state-in-effect` is the lint rule that bites most often here.
 Prefer deriving state or `useSyncExternalStore` over syncing in an effect.
 
-## Signup protection
+## How someone gets in
 
-The email signup form creates an account from whatever is typed into it, so
-until Turnstile is configured a script can fill the waitlist unattended — which
-is what happened between 17 and 31 August 2026. `components/Turnstile.tsx` is
-wired up but inert until `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set and the
-matching secret is pasted into Supabase → Authentication → Attack Protection.
+Three things used to be one thing — wanting in, proving the address is yours,
+and having an account. Keeping them apart is what the current design is for.
 
-OAuth (Google, Microsoft, LinkedIn) is the primary path on both auth screens
-because it cannot be scripted the same way. Only Google is enabled in the
-Supabase dashboard so far; the other two buttons return "provider is not
-enabled" until someone adds their client ID and secret.
+1. **Request** (`/request` → `waitlist_requests`). A form with real questions.
+   No account is created and no email is sent, so a script gets a row in a
+   table nobody can read back rather than an auth user and a magic link from
+   our domain. `anon` may INSERT and nothing else — deliberately no SELECT
+   policy, so the table can't be used to harvest addresses.
+2. **Review** (admin console → Requests). Decisions are made on what someone
+   wrote in `goal`, which is also the field a bot can't fake convincingly.
+3. **Invite** (`/api/admin/invite`). The only code path in the app that
+   creates a user. Needs `SUPABASE_SERVICE_ROLE_KEY`; without it the button
+   says so instead of failing oddly.
+4. **Join.** Accepting the invite creates the profile, and the
+   `link_waitlist_request` trigger matches it to the request by email, copies
+   the answers onto the profile and marks it `approved` — being invited *is*
+   approval, so nobody waits twice.
+
+**`shouldCreateUser: false` on the sign-in form is load-bearing.** Left at its
+default, `signInWithOtp` creates an account for any address typed into the box
+and mails a link to it. That is exactly how 189 unusable accounts arrived.
+
+OAuth (Google, Microsoft, LinkedIn) still creates an account on first use, and
+that is fine — the person demonstrably holds that account elsewhere. They land
+`pending` and show as identity-confirmed in the accounts screen. Only Google is
+enabled in the Supabase dashboard so far; the other two buttons say "provider
+is not enabled" until someone adds their client ID and secret.
+
+`components/Turnstile.tsx` is wired into the request and sign-in forms but
+inert until `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set. The half that matters is
+`TURNSTILE_SECRET_KEY`, checked server-side in `app/api/waitlist/route.ts` —
+verifying only in the browser would be theatre, since anything can post
+straight to the route.
 
 ## Outstanding
 

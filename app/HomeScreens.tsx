@@ -84,7 +84,7 @@ function VisitorHome() {
             — about 75% report some fear of public speaking.
           </p>
           <div className="flex flex-wrap justify-center gap-3.5">
-            <Btn href="/signup" variant="accent" className="px-7 py-3.5 text-base">
+            <Btn href="/request" variant="accent" className="px-7 py-3.5 text-base">
               Request your place
             </Btn>
             <Btn
@@ -138,7 +138,7 @@ function VisitorHome() {
               Request your place today. We review every request and approve
               members in small groups — you&apos;ll hear from us by email.
             </p>
-            <Btn href="/signup" variant="accent" className="px-7 py-3.5 text-base">
+            <Btn href="/request" variant="accent" className="px-7 py-3.5 text-base">
               Request your place
             </Btn>
           </div>

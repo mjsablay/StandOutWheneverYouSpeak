@@ -130,12 +130,12 @@ function SignInInner() {
           </form>
 
           <p className="mt-6 text-center text-[14px] text-ink-soft">
-            New here?{" "}
+            No account yet?{" "}
             <Link
-              href="/signup"
+              href="/request"
               className="font-semibold text-brand hover:underline"
             >
-              Create an account
+              Request your place
             </Link>
           </p>
         </div>
