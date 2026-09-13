@@ -3,6 +3,9 @@
  * Editing copy here updates it everywhere it appears.
  */
 
+/** The AI practice coach, as Barry named her in the programme blueprint. */
+export const COACH_NAME = "Katya";
+
 export const SITE = {
   name: "Stand Out Whenever You Speak",
   tagline: "Speak with impact and influence",
@@ -124,13 +127,13 @@ export const TEAM = [
     initials: "BK",
     name: "Barry Kuntz",
     role: "Founder & Head Coach",
-    headline: "Managing Director, Black Isle Consultants · Author of Pause",
+    headline: "Founder, CLEAR Executive and Corporate Development · Author of Pause",
     credentials: [
-      "3,000+ people coached",
-      "10 years teaching",
+      "3,500+ leaders coached",
+      "17 years coaching",
       "Author of Pause",
     ],
-    bio: "Barry has spent the last decade teaching people how to structure a presentation for impact and deliver it with compelling style — more than 3,000 of them, across banks, law firms, universities and boardrooms. His method rests on a single conviction: speaking with impact is a critical life skill, not a talent you're born with. Everything in this platform comes from that work.",
+    bio: "Barry has spent 17 years coaching leaders to speak with impact — more than 3,500 executives, senior managers and emerging leaders since founding CLEAR Executive and Corporate Development in 2009. Before that came a career in business leadership, including senior roles at General Motors of Canada in sales, marketing and public affairs, so he knows the pressure of a boardroom from both sides of the table. His clients have included RBC, BMO, Manulife, Air Canada, Deloitte, McKinsey and Samsung, along with university presidents, TEDx speakers and Dragons' Den contestants. His method rests on a single conviction: speaking with impact is a skill you learn, not a talent you're born with.",
     contactBlurb:
       "Coaching, curriculum, and corporate or team-training enquiries.",
     dark: true,
@@ -158,7 +161,7 @@ export const FAQS = [
   ],
   [
     "What's the difference between the Front Row and Speakers' Circle?",
-    "Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle ($10 CAD/month) unlocks every lesson, unlimited AI practice, the full member community, and all live workshops and cohort classes.",
+    "Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle ($10 CAD/month) unlocks every lesson, practice with Katya — your Speak with Impact coach — the full member community, and all live workshops and cohort classes.",
   ],
   [
     "How much does it cost?",
@@ -174,7 +177,7 @@ export const FAQS = [
   ],
   [
     "How does the AI practice work?",
-    "Your AI speaking coach runs realistic practice sessions — throwing curveball questions, interrupting like a real audience, and giving feedback on your structure and delivery. Every session remembers the last, so your weak spots become your reps.",
+    "Katya is your AI practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. She listens, gives feedback on structure and delivery, and scores you against Barry's rubric so you can see yourself improve.",
   ],
   [
     "Can I practice with real people?",
@@ -186,6 +189,6 @@ export const FAQS = [
   ],
   [
     "Who teaches the courses?",
-    "The curriculum comes from Barry Kuntz, Managing Director of Black Isle Consultants, who has taught over 3,000 people to speak with impact over the past decade.",
+    "The curriculum comes from Barry Kuntz, founder of CLEAR Executive and Corporate Development, who has coached more than 3,500 leaders to speak with impact over 17 years.",
   ],
 ] as const;

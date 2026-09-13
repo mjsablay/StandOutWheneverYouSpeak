@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "About — Stand Out Whenever You Speak",
   description:
-    "Barry Kuntz has taught over 3,000 people to speak with impact. Meet the founders behind Stand Out.",
+    "Barry Kuntz has coached more than 3,500 leaders to speak with impact. Meet the founders behind Stand Out.",
 };
 
 // Content is editable from the admin console, so don't cache indefinitely.

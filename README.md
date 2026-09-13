@@ -1,7 +1,7 @@
 # Stand Out Whenever You Speak — Platform
 
-Learning platform for the public-speaking courses of Barry Kuntz (Black Isle
-Consultants). Next.js 16 · React 19 · TypeScript · Tailwind v4 · Supabase.
+Learning platform for the public-speaking courses of Barry Kuntz (CLEAR
+Executive and Corporate Development). Next.js 16 · React 19 · TypeScript · Tailwind v4 · Supabase.
 
 Live at <https://standoutwheneveryouspeak.com>, deployed by Vercel from `main`.
 

@@ -3,7 +3,8 @@
 # Stand Out Whenever You Speak
 
 A Circle.so-style learning platform for public speaking. Built by Tori with
-Barry Kuntz (executive speaking coach, Black Isle Consultants), who supplies
+Barry Kuntz (executive communication coach, founder of CLEAR Executive and
+Corporate Development), who supplies
 the teaching method and the video lessons.
 
 Live at standoutwheneveryouspeak.com (Vercel). Repo:
@@ -85,6 +86,26 @@ used to be three hard-coded entries in `lib/site.ts` with July and August
 dates, still "upcoming" in September. Empty is now an honest state on both
 the events page and the member home.
 
+**Quiz documents must never be downloadable.** The source `.docx` for each
+quiz ends with its answer key, and `public/` is served without a session, so
+for a while anyone with the URL could fetch the answers to a quiz that gates
+the next lesson. Quizzes live in `lib/quizzes.ts` only. Don't add
+`kind: "quiz"` materials back.
+
+**The AI coach is called Katya** (`COACH_NAME` in `lib/site.ts`) — Barry's
+name for her in the programme blueprint. Front Row meets her at the end of
+Lesson 5B with the self-introduction; Speakers' Circle brings her a
+two-to-three-minute presentation on one of eighty topics. Member-facing copy
+uses the name; model prompts in `lib/courses.ts` still say "the learner".
+
+**Lesson numbering follows Barry's blueprint of 22 August 2026,** not a
+simple sequence: 01–06 (5A/5B) are Front Row; then 7A, 7A1, 7A2 (no content
+yet) and 8 are available now; 7A3–7A6 are planned. Slugs were kept when
+titles changed (`impactful-structure-explained`, `key-conversations-managed`,
+`managing-difficult-conversations`) because `member_progress` and the video
+filenames key on them. Barry's source documents — blueprint, bio, exercises,
+the 80 topics — are in iCloud under "Stand Out Whenever You Speak/New Actions".
+
 **`FREE_PREVIEW_COUNT = 7` covers lessons 01–06** because lesson 5 is split
 into 5A and 5B.
 
@@ -131,6 +152,9 @@ that shows or hides content.
   and the admin preview state
 - `lib/content.ts` — the `site_content` table; editable from the admin
   console, and public by definition — never put private data in it
+- `lib/topics.ts` / `app/topics/` — the 80 Speakers' Circle practice topics
+  and their prompts, generated from Barry's document. Regenerate from the
+  document rather than hand-editing
 - `lib/directory.ts` — the `member_directory` view (real members only)
 - `lib/events.ts` / `lib/use-events.ts` / `app/admin/Events.tsx` — live
   events: shared helpers, the home-page hook, and where admins schedule them
