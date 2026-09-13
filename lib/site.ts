@@ -13,11 +13,14 @@ export const SITE = {
 /**
  * PRE-LAUNCH MODE
  * ---------------
- * While true, everyone except administrators sees only the waitlist home,
- * About Us and Contact. Courses, events, community, leaderboard and pricing
- * are hidden from the navigation and redirect to the home page.
+ * While true, the public sees only the waitlist home, About Us and Contact;
+ * courses, events, community, leaderboard and pricing are hidden from the
+ * navigation and redirect to the home page. Approved members and admins get
+ * the whole site — cohorts are let in while the door stays shut to everyone
+ * else. Pending and declined accounts see the waitlist holding page.
  *
- * Set to false to open the full site. That single change is the launch.
+ * Set to false to open the full site to anyone who signs up. That single
+ * change is the public launch.
  */
 export const PRELAUNCH = true;
 

@@ -19,9 +19,10 @@ export default function Nav() {
   const { loading } = useAuth();
   const access = useAccess();
 
-  // Pre-launch: everyone except an admin (viewing as themselves) sees only
-  // Home, About Us and Contact.
-  const fullSite = !PRELAUNCH || access.admin;
+  // Pre-launch: the public sees only Home, About Us and Contact. Approved
+  // members and admins get the full site — `approved` covers both, and an
+  // admin previewing as "pending" or "visitor" correctly loses it.
+  const fullSite = !PRELAUNCH || access.approved;
   const links = fullSite ? NAV_LINKS : PRELAUNCH_NAV_LINKS;
 
   // When an admin previews as a signed-out visitor, hide the account menu.

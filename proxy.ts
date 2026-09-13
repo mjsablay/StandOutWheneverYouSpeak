@@ -4,8 +4,10 @@ import { PRELAUNCH } from "@/lib/site";
 
 /**
  * Refreshes the Supabase session on every request, guards private routes,
- * and — while PRELAUNCH is true — keeps everyone except administrators on
- * the waitlist home, About Us and Contact.
+ * and — while PRELAUNCH is true — keeps the public on the waitlist home,
+ * About Us and Contact. Administrators and approved members get the whole
+ * site: that is what "letting members in a group at a time" means, and it is
+ * what an invitation has to lead to.
  *
  * Next.js 16 renamed this file convention from `middleware` to `proxy`; the
  * behaviour is identical. The old name printed a deprecation warning on
@@ -81,19 +83,20 @@ export async function proxy(request: NextRequest) {
       path === "/" || PRELAUNCH_ALLOWED.some((p) => path.startsWith(p));
 
     if (!allowed) {
-      // Only administrators may reach the rest of the site for now.
-      // A signed-out visitor can never be an admin — skip the lookup.
-      let isAdmin = false;
+      // Administrators and approved members may pass. Anyone else — signed
+      // out, pending, declined — goes back to the waitlist home. A signed-out
+      // visitor can be neither, so skip the lookup for them.
+      let admitted = false;
       if (user) {
         const { data } = await supabase
           .from("profiles")
-          .select("role")
+          .select("role,status")
           .eq("id", user.id)
           .maybeSingle();
-        isAdmin = data?.role === "admin";
+        admitted = data?.role === "admin" || data?.status === "approved";
       }
 
-      if (!isAdmin) {
+      if (!admitted) {
         const url = request.nextUrl.clone();
         url.pathname = "/";
         url.search = "";

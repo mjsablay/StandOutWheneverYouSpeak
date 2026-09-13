@@ -8,7 +8,7 @@ import { useAccess } from "@/lib/access";
 export default function Footer() {
   const access = useAccess();
 
-  const fullSite = !PRELAUNCH || access.admin;
+  const fullSite = !PRELAUNCH || access.approved;
   const links = fullSite ? NAV_LINKS : PRELAUNCH_NAV_LINKS;
 
   return (

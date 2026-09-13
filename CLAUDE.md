@@ -57,8 +57,12 @@ signal that means something is `last_sign_in_at`, or an OAuth provider on the
 account. The `admin_waitlist()` function ranks both.
 
 **`PRELAUNCH` in `lib/site.ts` is the launch switch.** While true, `proxy.ts`
-keeps everyone except admins on the waitlist home, About and Contact. Flip it
-to go live.
+keeps the public on the waitlist home, About and Contact — but **approved
+members and admins get the whole site**. That is what makes an invitation
+lead somewhere; before this, the gate admitted admins only and every invited
+member was bounced straight back to the home page. `access.approved` is the
+one rule for it in the UI (Nav, UserMenu, Footer); `role`/`status` on the
+profile is the rule in the proxy. Flip the switch to open to everyone.
 
 **The scorecard is out of 15, not 20.** Barry's rubric has four categories,
 but a voice coach cannot see eye contact, so `RUBRIC` marks it `scored:
