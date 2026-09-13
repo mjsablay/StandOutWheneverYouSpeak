@@ -81,7 +81,7 @@ body {
 
 .marquee-track {
   display: flex;
-  gap: 12px;
+  gap: 0;
   width: max-content;
   animation: scroll-x 70s linear infinite;
 }
