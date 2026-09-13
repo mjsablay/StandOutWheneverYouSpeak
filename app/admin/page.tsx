@@ -1,90 +1,94 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ShieldAlert, Users, CalendarClock, BookOpen, Clock } from "lucide-react";
-import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  CalendarClock,
+  CalendarDays,
+  FileText,
+  Inbox,
+  LayoutDashboard,
+  ShieldAlert,
+  Sparkles,
+  Users,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import { Wrap, Section, Eyebrow, PageSkeleton } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/mock-auth";
+import Overview from "./Overview";
+import Requests from "./Requests";
+import Members from "./Members";
 import MeetingRequests from "./MeetingRequests";
+import Events from "./Events";
+import ContentEditor from "./ContentEditor";
 import Insights from "./Insights";
 import PreviewControl from "./PreviewControl";
-import ContentEditor from "./ContentEditor";
-import Events from "./Events";
 import TestData from "./TestData";
-import Waitlist from "./Waitlist";
-import Requests from "./Requests";
-import {
-  useAuth,
-  initialsOf,
-  ROLE_LABEL,
-  TIER_LABEL,
-  type Role,
-  type Tier,
-  type Status,
-} from "@/lib/mock-auth";
-import { COURSES } from "@/lib/courses";
-import { PRELAUNCH } from "@/lib/site";
 
-type MemberRow = {
-  id: string;
-  email: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  company: string | null;
-  school: string | null;
-  role: Role;
-  tier: Tier;
-  status: Status;
-  created_at: string;
-};
+/**
+ * The admin console as a workspace: a rail of tabs on the left, one job per
+ * tab, badges for what's waiting. The tab lives in the URL (?tab=requests)
+ * so the home page and the Overview's to-do list can link straight to it.
+ */
 
-const STATUS_STYLE: Record<Status, string> = {
-  pending: "bg-brand-soft text-brand",
-  approved: "bg-accent-soft text-accent-ink",
-  declined: "bg-paper-warm text-ink-soft",
-};
+type TabId = "overview" | "requests" | "members" | "meetings" | "events" | "content" | "insights" | "tools";
 
-export default function AdminPage() {
-  const router = useRouter();
-  const { user, loading, isAdmin } = useAuth();
+const TABS: { id: TabId; label: string; icon: LucideIcon; hint: string }[] = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard, hint: "The platform at a glance" },
+  { id: "requests", label: "Requests", icon: Inbox, hint: "People asking to join" },
+  { id: "members", label: "Members", icon: Users, hint: "Every account: approve, tier, role" },
+  { id: "meetings", label: "Meetings", icon: CalendarClock, hint: "Conversations requested through Contact" },
+  { id: "events", label: "Events", icon: CalendarDays, hint: "What members see on the calendar" },
+  { id: "content", label: "About page", icon: FileText, hint: "Headline, stats and founder bios" },
+  { id: "insights", label: "Insights", icon: Sparkles, hint: "An analyst's read of your numbers" },
+  { id: "tools", label: "Tools", icon: Wrench, hint: "Preview as a member; test data" },
+];
+
+type Badges = Partial<Record<TabId, number>>;
+
+function useBadges(enabled: boolean, refreshKey: number) {
   const supabase = useMemo(() => createClient(), []);
+  const [badges, setBadges] = useState<Badges>({});
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    (async () => {
+      const [req, meet, pend] = await Promise.all([
+        supabase.from("waitlist_requests").select("id", { count: "exact", head: true }).eq("status", "new"),
+        supabase.from("meeting_requests").select("id", { count: "exact", head: true }).eq("status", "new"),
+        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      ]);
+      if (cancelled) return;
+      setBadges({
+        requests: req.count ?? 0,
+        meetings: meet.count ?? 0,
+        members: pend.count ?? 0,
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, enabled, refreshKey]);
+  return badges;
+}
 
-  const [rows, setRows] = useState<MemberRow[]>([]);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [fetching, setFetching] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"approved" | "declined" | "all">(
-    "approved",
-  );
+function Console() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const { user, loading, isAdmin } = useAuth();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const load = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        "id,email,display_name,avatar_url,company,school,role,tier,status,created_at",
-      )
-      .order("created_at", { ascending: false });
-    if (error) setError(error.message);
-    else setRows((data ?? []) as MemberRow[]);
-    setFetching(false);
-  }, [supabase]);
+  const tab = (TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : "overview") as TabId;
+  const go = (id: string) => router.push(id === "overview" ? "/admin" : `/admin?tab=${id}`);
+
+  const badges = useBadges(isAdmin, refreshKey);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/signin?next=/admin");
   }, [loading, user, router]);
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    let cancelled = false;
-    void Promise.resolve().then(() => {
-      if (!cancelled) load();
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [isAdmin, load, refreshKey]);
 
   if (loading || !user) return <PageSkeleton />;
 
@@ -92,19 +96,11 @@ export default function AdminPage() {
     return (
       <Section>
         <Wrap className="max-w-[520px]">
-          <div className="rounded-2xl border border-line bg-white p-10 text-center">
-            <ShieldAlert
-              className="mx-auto mb-4 h-8 w-8 text-ink-soft"
-              strokeWidth={1.75}
-            />
-            <h1 className="mb-2 text-2xl font-semibold">Administrators only</h1>
-            <p className="mb-6 text-[15px] text-ink-soft">
-              Ask an administrator if you need access to this area.
-            </p>
-            <Link
-              href="/account"
-              className="inline-block rounded-lg bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark"
-            >
+          <div className="rounded-3xl border border-line bg-white p-10 text-center shadow-card">
+            <ShieldAlert className="mx-auto mb-4 h-8 w-8 text-ink-soft" strokeWidth={1.75} />
+            <h1 className="display mb-2 text-[26px]">Administrators only</h1>
+            <p className="mb-6 text-[15px] text-ink-soft">Ask an administrator if you need access to this area.</p>
+            <Link href="/account" className="inline-block rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark">
               Back to my profile
             </Link>
           </div>
@@ -113,268 +109,78 @@ export default function AdminPage() {
     );
   }
 
-  const patch = async (id: string, changes: Partial<MemberRow>) => {
-    setBusy(id);
-    setError(null);
-    const payload: Record<string, unknown> = { ...changes };
-    if (changes.status === "approved") {
-      payload.approved_at = new Date().toISOString();
-      payload.approved_by = user.id;
-    }
-    const { error } = await supabase.from("profiles").update(payload).eq("id", id);
-    if (error) setError(error.message);
-    else setRows((r) => r.map((x) => (x.id === id ? { ...x, ...changes } : x)));
-    setBusy(null);
-  };
-
-  const counts = {
-    pending: rows.filter((r) => r.status === "pending").length,
-    approved: rows.filter((r) => r.status === "approved").length,
-    circle: rows.filter((r) => r.tier === "circle").length,
-    declined: rows.filter((r) => r.status === "declined").length,
-  };
-
-  const lessonsLive = COURSES.reduce(
-    (n, c) => n + (c.comingSoon ? 0 : c.lessons.length),
-    0,
-  );
-  const videosLive = COURSES.reduce(
-    (n, c) => n + c.lessons.filter((l) => l.video).length,
-    0,
-  );
-
-  // The waitlist has its own screen above, so this list is everyone who has
-  // already been decided on.
-  const decided = rows.filter((r) => r.status !== "pending");
-  const visible =
-    filter === "all" ? decided : decided.filter((r) => r.status === filter);
-
-  const stats = [
-    { icon: Clock, label: "Awaiting approval", value: counts.pending, hot: true },
-    { icon: Users, label: "Approved members", value: counts.approved },
-    { icon: CalendarClock, label: "Speakers' Circle", value: counts.circle },
-    { icon: BookOpen, label: "Lessons live", value: lessonsLive },
-  ];
+  const current = TABS.find((t) => t.id === tab)!;
+  const bump = () => setRefreshKey((k) => k + 1);
 
   return (
-    <Section className="py-10">
+    <Section className="py-10 sm:py-12">
       <Wrap>
         <div className="mb-8">
-          <h1 className="text-[32px] font-semibold tracking-tight">
-            Admin console
-          </h1>
-          <p className="mt-1.5 text-[16px] text-ink-soft">
-            {PRELAUNCH
-              ? "The site is in pre-launch — only you can see beyond the waitlist."
-              : "The site is live to all members."}
-          </p>
+          <Eyebrow>Admin console</Eyebrow>
+          <h1 className="display text-[clamp(28px,4vw,40px)]">{current.label}</h1>
+          <p className="mt-1.5 text-[15px] text-ink-soft">{current.hint}</p>
         </div>
 
-        {/* Stats */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map(({ icon: Icon, label, value, hot }) => (
-            <div
-              key={label}
-              className={`rounded-2xl border bg-white p-5 ${
-                hot && value > 0 ? "border-brand" : "border-line"
-              }`}
-            >
-              <Icon className="mb-3 h-5 w-5 text-ink-soft" strokeWidth={2} />
-              <div className="text-[28px] font-semibold leading-none">
-                {value}
-              </div>
-              <div className="mt-1.5 text-[13px] text-ink-soft">{label}</div>
-            </div>
-          ))}
-        </div>
-
-        <Requests isAdmin={isAdmin} />
-
-        <Waitlist
-          isAdmin={isAdmin}
-          adminId={user.id}
-          onChange={() => setRefreshKey((k) => k + 1)}
-        />
-
-        <Insights />
-
-        <MeetingRequests />
-
-        <Events />
-
-        <ContentEditor />
-
-        <PreviewControl />
-
-        <TestData
-          members={rows.map((r) => ({
-            id: r.id,
-            display_name: r.display_name,
-            email: r.email,
-          }))}
-          onChange={() => setRefreshKey((k) => k + 1)}
-        />
-
-        {/* Members */}
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-[20px] font-semibold tracking-tight">
-            Members
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {(["approved", "declined", "all"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`rounded-lg px-3.5 py-1.5 text-[13.5px] font-semibold capitalize transition ${
-                  filter === f
-                    ? "bg-brand text-white"
-                    : "border border-line bg-white hover:bg-paper-warm"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-5 rounded-xl border border-brand bg-brand-soft p-4 text-[14px]">
-            {error}
-          </div>
-        )}
-
-        <div className="mb-8 overflow-hidden rounded-2xl border border-line bg-white">
-          {fetching ? (
-            <div className="p-10 text-center text-[15px] text-ink-soft">
-              Loading members…
-            </div>
-          ) : visible.length === 0 ? (
-            <div className="p-10 text-center text-[15px] text-ink-soft">
-              {filter === "all"
-                ? "No members yet — approve someone from the waitlist above."
-                : `No ${filter} members yet.`}
-            </div>
-          ) : (
-            <div className="divide-y divide-line">
-              {visible.map((r) => (
-                <div
-                  key={r.id}
-                  className="flex flex-wrap items-center gap-4 px-6 py-4"
-                >
-                  <Avatar
-                    initials={initialsOf(r.display_name || r.email)}
-                    size={40}
-                    src={r.avatar_url}
-                  />
-                  <div className="min-w-[190px] flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[15px] font-semibold">
-                        {r.display_name || r.email.split("@")[0]}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${STATUS_STYLE[r.status]}`}
-                      >
-                        {r.status}
-                      </span>
-                      {r.role === "admin" && (
-                        <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
-                          Admin
+        <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+          {/* Rail */}
+          <nav aria-label="Console sections" className="lg:sticky lg:top-24 lg:self-start">
+            <ul className="-mx-6 flex gap-1 overflow-x-auto px-6 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
+              {TABS.map(({ id, label, icon: Icon }) => {
+                const on = id === tab;
+                const badge = badges[id];
+                return (
+                  <li key={id} className="shrink-0">
+                    <button
+                      onClick={() => go(id)}
+                      aria-current={on ? "page" : undefined}
+                      className={`flex w-full items-center gap-2.5 rounded-full px-3.5 py-2 text-[14px] font-semibold transition lg:rounded-xl ${
+                        on ? "bg-brand text-white" : "text-ink-soft hover:bg-paper-soft hover:text-ink"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" strokeWidth={2} />
+                      <span className="flex-1 text-left">{label}</span>
+                      {badge ? (
+                        <span
+                          className={`min-w-5 rounded-full px-1.5 py-0.5 text-center text-[11px] font-bold ${
+                            on ? "bg-white/20 text-white" : "bg-brand text-white"
+                          }`}
+                        >
+                          {badge}
                         </span>
-                      )}
-                    </div>
-                    <div className="text-[13px] text-ink-soft">
-                      {r.email}
-                      {r.company ? ` · ${r.company}` : ""}
-                    </div>
-                  </div>
-
-                  {r.status !== "approved" && (
-                    <button
-                      disabled={busy === r.id}
-                      onClick={() => patch(r.id, { status: "approved" })}
-                      className="rounded-lg bg-accent px-4 py-2 text-[13.5px] font-semibold text-ink hover:bg-accent-dark disabled:opacity-50"
-                    >
-                      Approve
+                      ) : null}
                     </button>
-                  )}
-                  {r.status === "pending" && (
-                    <button
-                      disabled={busy === r.id}
-                      onClick={() => patch(r.id, { status: "declined" })}
-                      className="rounded-lg border border-line px-4 py-2 text-[13.5px] font-semibold hover:bg-paper-warm disabled:opacity-50"
-                    >
-                      Decline
-                    </button>
-                  )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-                  <select
-                    value={r.tier}
-                    onChange={(e) => patch(r.id, { tier: e.target.value as Tier })}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-[13.5px]"
-                    aria-label="Subscription"
-                  >
-                    {(["free", "circle"] as Tier[]).map((v) => (
-                      <option key={v} value={v}>
-                        {TIER_LABEL[v]}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    value={r.role}
-                    onChange={(e) => patch(r.id, { role: e.target.value as Role })}
-                    className="rounded-lg border border-line bg-white px-3 py-2 text-[13.5px]"
-                    aria-label="Role"
-                  >
-                    {(["member", "admin"] as Role[]).map((v) => (
-                      <option key={v} value={v}>
-                        {ROLE_LABEL[v]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Content status */}
-        <div className="rounded-2xl border border-line bg-white">
-          <div className="border-b border-line bg-paper-warm px-6 py-4">
-            <h2 className="font-semibold">Content</h2>
-          </div>
-          <div className="divide-y divide-line">
-            {COURSES.map((c) => (
-              <div
-                key={c.slug}
-                className="flex flex-wrap items-center gap-4 px-6 py-4"
-              >
-                <div className="min-w-[200px] flex-1">
-                  <div className="text-[15px] font-semibold">{c.name}</div>
-                  <div className="text-[13px] text-ink-soft">
-                    {c.lessons.length} lessons ·{" "}
-                    {c.lessons.filter((l) => l.video).length} with video
-                  </div>
-                </div>
-                <span
-                  className={`rounded-full px-2.5 py-1 text-[12px] font-semibold ${
-                    c.comingSoon
-                      ? "bg-paper-warm text-ink-soft"
-                      : "bg-accent-soft text-accent-ink"
-                  }`}
-                >
-                  {c.comingSoon ? "Coming soon" : "Live"}
-                </span>
+          {/* The job */}
+          <div className="min-w-0">
+            {tab === "overview" && <Overview go={go} />}
+            {tab === "requests" && <Requests isAdmin />}
+            {tab === "members" && <Members adminId={user.id} />}
+            {tab === "meetings" && <MeetingRequests />}
+            {tab === "events" && <Events />}
+            {tab === "content" && <ContentEditor />}
+            {tab === "insights" && <Insights />}
+            {tab === "tools" && (
+              <div className="space-y-6">
+                <PreviewControl />
+                <TestData onChange={bump} />
               </div>
-            ))}
-            <div className="px-6 py-4 text-[13.5px] text-ink-soft">
-              {videosLive} lesson videos are wired up. They play locally but
-              show a placeholder on the live site until video hosting is
-              configured.
-            </div>
+            )}
           </div>
         </div>
       </Wrap>
     </Section>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Console />
+    </Suspense>
   );
 }

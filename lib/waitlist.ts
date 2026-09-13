@@ -130,5 +130,16 @@ export function useWaitlist(enabled: boolean) {
     [supabase],
   );
 
-  return { rows, loading, error, reload: load, setStatus };
+  /** Tier and role live on the profile; admins may change either. */
+  const patch = useCallback(
+    async (id: string, changes: Partial<Pick<WaitlistRow, "tier" | "role">>) => {
+      const { error } = await supabase.from("profiles").update(changes).eq("id", id);
+      if (error) return { error: error.message };
+      setRows((r) => r.map((x) => (x.id === id ? { ...x, ...changes } : x)));
+      return {};
+    },
+    [supabase],
+  );
+
+  return { rows, loading, error, reload: load, setStatus, patch };
 }

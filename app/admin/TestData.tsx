@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlaskConical, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/mock-auth";
@@ -29,14 +29,32 @@ const SAMPLE_NOTIFICATIONS = [
 ];
 
 export default function TestData({
-  members,
+  members: given,
   onChange,
 }: {
-  members: Member[];
+  /** Optional — when omitted, approved members are loaded here. */
+  members?: Member[];
   onChange: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const { user } = useAuth();
+  const [loaded, setLoaded] = useState<Member[]>([]);
+  const members = given ?? loaded;
+
+  useEffect(() => {
+    if (given) return;
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("id,display_name,email")
+      .eq("status", "approved")
+      .then(({ data }) => {
+        if (!cancelled) setLoaded((data ?? []) as Member[]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, given]);
   const [partner, setPartner] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);

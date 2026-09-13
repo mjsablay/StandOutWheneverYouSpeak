@@ -192,16 +192,19 @@ that shows or hides content.
   by a CHECK constraint in the migration; change both
 - `app/request/` / `app/api/waitlist/` / `app/admin/Requests.tsx` — ask,
   store, review
-- `lib/waitlist.ts` / `app/admin/Waitlist.tsx` — the `admin_waitlist()`
-  function and triage screen: how each account signed up and whether anyone
-  ever used it. It is a SECURITY DEFINER function, not a view, so `auth.users`
-  is never selectable from the public schema — see the migration before
+- `lib/waitlist.ts` / `app/admin/Members.tsx` — the `admin_waitlist()`
+  function and the one Members screen: every account with how it signed up,
+  whether anyone ever used it, and the approve / decline / tier / role
+  controls. The function is SECURITY DEFINER, not a view, so `auth.users` is
+  never selectable from the public schema — see the migration before
   changing its grants
 - `lib/progress.ts` — quiz progress, stored in `member_progress` with RLS
 - `proxy.ts` — session refresh, protected routes, pre-launch gate (Next 16's
   name for middleware; same behaviour)
-- `app/admin/` — console: insights, meeting requests, About-page editor,
-  preview control, member approvals
+- `app/admin/` — the console. `page.tsx` is a shell with a tab rail
+  (`?tab=requests` etc., so links can deep-link) and one component per tab:
+  Overview (real numbers + a to-do list), Requests, Members, MeetingRequests,
+  Events, ContentEditor, Insights, and Tools (PreviewControl, TestData)
 
 ## Lesson video behaviour
 
