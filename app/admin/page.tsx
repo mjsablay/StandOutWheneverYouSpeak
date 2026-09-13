@@ -10,6 +10,7 @@ import MeetingRequests from "./MeetingRequests";
 import Insights from "./Insights";
 import PreviewControl from "./PreviewControl";
 import ContentEditor from "./ContentEditor";
+import Events from "./Events";
 import TestData from "./TestData";
 import Waitlist from "./Waitlist";
 import Requests from "./Requests";
@@ -198,6 +199,8 @@ export default function AdminPage() {
         <Insights />
 
         <MeetingRequests />
+
+        <Events />
 
         <ContentEditor />
 

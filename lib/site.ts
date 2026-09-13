@@ -88,55 +88,24 @@ export const COMPANIES: [string, string][] = [
 // Course + lesson structure now lives in lib/courses.ts (it carries video
 // filenames and per-lesson slugs). Import COURSES from there.
 
-export const UPCOMING_EVENTS = [
-  {
-    month: "Jul",
-    day: "30",
-    title: "Peer Practice Night — Spontaneous Speaking",
-    details: "6:30 PM ET · Zoom · Small-group breakout rooms",
-    tier: "member" as const,
-  },
-  {
-    month: "Aug",
-    day: "06",
-    title: "Open House — What It Takes to Speak Like a Pro",
-    details: "7:00 PM ET · Zoom · Open to everyone",
-    tier: "free" as const,
-  },
-  {
-    month: "Aug",
-    day: "13",
-    title: "Handling Curveballs — Live Workshop",
-    details: "7:00 PM ET · Zoom · Hosted by Barry Kuntz",
-    tier: "member" as const,
-  },
-];
-
-export const PAST_EVENTS = [
-  {
-    month: "Jul",
-    day: "16",
-    title: "Storytelling for Impact — Workshop",
-    details: "Recap & recording available to members",
-  },
-  {
-    month: "Jul",
-    day: "09",
-    title: "Managing Nerves — Open House",
-    details: "Recap & recording available to members",
-  },
-];
 
 
+
+/**
+ * How points are earned. `live` means the platform actually awards it today
+ * (see migration 0008 — points come from a database trigger, never from the
+ * browser). The rest are planned and shown as such, so the leaderboard never
+ * promises something that can't happen yet.
+ */
 export const POINTS_RULES = [
-  ["Complete a lesson", 50],
-  ["Submit a lesson exercise", 25],
-  ["AI practice session", 15],
-  ["Live peer practice session", 40],
-  ["Give feedback on a member's recording", 20],
-  ["Attend a live event", 40],
-  ["Finish a full course", 300],
-  ["7-day streak bonus", 100],
+  { label: "Watch a lesson", points: 50, live: true },
+  { label: "Pass a lesson quiz", points: 25, live: true },
+  { label: "AI practice session", points: 15, live: false },
+  { label: "Live peer practice session", points: 40, live: false },
+  { label: "Give feedback on a member's recording", points: 20, live: false },
+  { label: "Attend a live event", points: 40, live: false },
+  { label: "Finish a full course", points: 300, live: false },
+  { label: "7-day streak bonus", points: 100, live: false },
 ] as const;
 
 /**
@@ -213,7 +182,7 @@ export const FAQS = [
   ],
   [
     "How do points and the leaderboard work?",
-    "You earn points for completing lessons, practicing, giving feedback, and attending events. Points place you on the leaderboard and reward showing up consistently — including streak bonuses for practicing multiple days in a row.",
+    "You earn points for watching lessons and passing their quizzes today, with practice sessions, feedback and live events joining as those features open. Points place you on the leaderboard and reward showing up consistently.",
   ],
   [
     "Who teaches the courses?",
