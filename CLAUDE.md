@@ -33,6 +33,18 @@ lucide icons, including for check marks and the mobile menu.
 
 Brand colours: dark blue `#1D4F91`, green `#6CC24A`, grey `#E8E8E8`, white.
 
+**The look is deliberate — keep to it.** Tori asked for the polish of
+heygen.com, translated into the brand rather than copied: white ground,
+neutrals that lean toward the blue (`paper-soft`, `line`) instead of flat
+grey, oversized tight headlines in Manrope (the `.display` class), pill
+buttons and pill eyebrows, `rounded-3xl` cards with a hairline border and
+`shadow-card`, and one flourish only — the soft colour glow behind the hero.
+Everything comes from `components/ui.tsx` and the tokens in
+`app/globals.css`; use `Btn`, `Eyebrow`, `SectionHead` and `Section` rather
+than restyling by hand, so the theme stays one theme. The coaching
+illustration on the home page (`CoachMock`) is drawn in HTML from the real
+rubric so it stays true as the product changes.
+
 ## Things that will surprise you
 
 **`lib/mock-auth.tsx` is real Supabase auth.** The filename is a leftover from

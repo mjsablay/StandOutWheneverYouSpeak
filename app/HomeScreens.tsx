@@ -1,23 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { Wrap, Section, SectionHead, Btn } from "@/components/ui";
+import { Wrap, Section, SectionHead, Eyebrow, Btn, Check, Avatar } from "@/components/ui";
 import LogoMarquee from "@/components/LogoMarquee";
 import {
-  Users,
-  MessageCircle,
+  ArrowRight,
   BookOpen,
   CalendarDays,
+  CheckCircle2,
+  Circle,
+  MessageCircle,
   Mic,
+  Play,
+  Quote,
   Trophy,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
-import { COURSES, FREE_PREVIEW_COUNT } from "@/lib/courses";
-import { FAQS, PRELAUNCH } from "@/lib/site";
+import { COURSES, FREE_PREVIEW_COUNT, RUBRIC_MAX, SCORED_RUBRIC } from "@/lib/courses";
+import { FAQS, PRELAUNCH, COACH_NAME } from "@/lib/site";
 import { useUpcomingEvents } from "@/lib/use-events";
 import { dateParts, timeLabel } from "@/lib/events";
+
+/** Barry's headshot, in the public avatars bucket. Shown in the hero and the founder band. */
+const FOUNDER_PHOTO =
+  "https://rnkihywxdvhpefgxuzeg.supabase.co/storage/v1/object/public/avatars/founders/barry-kuntz-2026.jpg";
 
 /* ============================ shared bits ============================ */
 
@@ -39,27 +48,124 @@ function Card({
   return (
     <Link
       href={href}
-      className={`block rounded-2xl border bg-white p-6 transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(20,24,31,.08)] ${
+      className={`group block rounded-3xl border bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-lift ${
         accent ? "border-accent" : "border-line"
       }`}
     >
-      <Icon className="mb-3 h-6 w-6 text-brand" strokeWidth={1.75} />
+      <span
+        className={`mb-4 flex h-10 w-10 items-center justify-center rounded-full ${
+          accent ? "bg-accent-soft text-accent-ink" : "bg-brand-soft text-brand"
+        }`}
+      >
+        <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+      </span>
       <h3 className="mb-1 text-[17px] font-bold">{title}</h3>
-      <p className="text-[13.5px] text-ink-soft">{body}</p>
-      <div className="mt-3 text-[13px] font-bold text-brand">{cta} →</div>
+      <p className="text-[14px] leading-relaxed text-ink-soft">{body}</p>
+      <span className="mt-4 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-brand">
+        {cta}
+        <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" strokeWidth={2.5} />
+      </span>
     </Link>
   );
 }
 
-function Greeting({ name, sub }: { name: string; sub: string }) {
+function Greeting({
+  name,
+  sub,
+  tag,
+}: {
+  name: string;
+  sub: string;
+  tag?: string;
+}) {
   const hour = new Date().getHours();
   const part = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   return (
-    <div className="mb-8">
-      <h1 className="text-[clamp(28px,4vw,40px)] font-extrabold tracking-tight">
+    <div className="mb-10">
+      {tag && <Eyebrow>{tag}</Eyebrow>}
+      <h1 className="display text-[clamp(32px,4.6vw,52px)]">
         {part}, {name.split(" ")[0]}.
       </h1>
-      <p className="mt-2 text-[17px] text-ink-soft">{sub}</p>
+      <p className="mt-3 text-[18px] text-ink-soft">{sub}</p>
+    </div>
+  );
+}
+
+/**
+ * A still of a coaching session — the product, drawn in HTML rather than
+ * screenshotted, so it stays true as the real thing changes. Scores use the
+ * real rubric: three audible categories, fifteen points.
+ */
+function CoachMock({ compact = false }: { compact?: boolean }) {
+  const scores: Record<string, number> = { structure: 5, delivery: 4, "on-message": 4 };
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  return (
+    <div
+      className={`rounded-3xl border border-line bg-white shadow-card ${compact ? "p-5" : "p-6 sm:p-7"}`}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Avatar initials="K" size={30} variant="dark" />
+          <div>
+            <div className="text-[13.5px] font-bold leading-tight">{COACH_NAME}</div>
+            <div className="text-[11.5px] text-ink-soft">Speak with Impact coach</div>
+          </div>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-ink">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+          Listening
+        </span>
+      </div>
+
+      <div className="space-y-2.5">
+        <p className="max-w-[88%] rounded-2xl rounded-tl-md bg-paper-soft px-4 py-2.5 text-[13.5px] leading-snug">
+          Headline first. What&apos;s the one thing you want the room to walk away with?
+        </p>
+        <p className="ml-auto max-w-[88%] rounded-2xl rounded-tr-md bg-brand px-4 py-2.5 text-[13.5px] leading-snug text-white">
+          The Q3 number is down — and that&apos;s the best news we&apos;ve had all year.
+        </p>
+      </div>
+
+      <div className="my-4 flex h-8 items-end justify-center gap-1" aria-hidden>
+        {[14, 24, 18, 30, 22, 12, 26, 20, 16, 28, 18, 10].map((h, i) => (
+          <span
+            key={i}
+            className="wave-bar w-1.5 rounded-full bg-brand"
+            style={{ height: h, animationDelay: `${i * 80}ms` }}
+          />
+        ))}
+      </div>
+
+      <div className="rounded-2xl bg-paper-soft p-4">
+        <div className="mb-3 flex items-baseline justify-between">
+          <span className="text-[12px] font-bold uppercase tracking-wider text-ink-soft">
+            Last session
+          </span>
+          <span className="text-[13px] font-bold">
+            {total}
+            <span className="text-ink-soft">/{RUBRIC_MAX}</span>
+            <span className="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-bold text-accent-ink">
+              Very Good
+            </span>
+          </span>
+        </div>
+        <div className="space-y-2">
+          {SCORED_RUBRIC.map((c) => (
+            <div key={c.id} className="flex items-center gap-3 text-[12.5px]">
+              <span className="w-[150px] shrink-0 truncate font-medium">{c.name}</span>
+              <span className="flex flex-1 gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <span
+                    key={n}
+                    className={`h-1.5 flex-1 rounded-full ${n <= (scores[c.id] ?? 0) ? "bg-brand" : "bg-line"}`}
+                  />
+                ))}
+              </span>
+              <span className="w-4 text-right font-bold text-ink-soft">{scores[c.id]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -67,109 +173,278 @@ function Greeting({ name, sub }: { name: string; sub: string }) {
 /* ============================ visitor ============================ */
 
 function VisitorHome() {
+  const leadership = COURSES[0];
+  const lessonThree = leadership.lessons[2];
+
   return (
     <>
-      <header className="py-20 text-center sm:py-24">
-        <Wrap>
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-4 py-1.5 text-[13px] font-bold text-accent-ink">
-            <span className="h-2 w-2 rounded-full bg-accent" />
+      {/* Hero */}
+      <header className="hero-glow relative overflow-hidden pb-10 pt-20 sm:pt-28">
+        <Wrap className="text-center">
+          <Eyebrow>
+            <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
             Now accepting founding members
-          </span>
-          <h1 className="mx-auto mb-6 max-w-[760px] text-[clamp(40px,6vw,64px)] font-extrabold leading-[1.06] tracking-[-0.03em]">
+          </Eyebrow>
+          <h1 className="display mx-auto mb-6 max-w-[860px] text-[clamp(46px,7.4vw,86px)]">
             Stand out whenever you speak.
           </h1>
-          <p className="mx-auto mb-4 max-w-[580px] text-[19px] text-ink-soft">
-            Around three in four people fear public speaking. Learn the
-            structure, practice with an AI coach and real peers, and perform
-            when it counts.
+          <p className="mx-auto mb-9 max-w-[560px] text-[19px] leading-relaxed text-ink-soft">
+            Learn Barry Kuntz&apos;s method, practise with {COACH_NAME}, and
+            perform when it counts.
           </p>
-          <p className="mx-auto mb-9 max-w-[560px] text-[13.5px] text-ink-soft">
-            <a
-              href="https://nationalsocialanxietycenter.com/social-anxiety/public-speaking-anxiety/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:text-ink"
-            >
-              National Social Anxiety Center
-            </a>{" "}
-            — about 75% report some fear of public speaking.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3.5">
-            <Btn href="/request" variant="accent" className="px-7 py-3.5 text-base">
+          <div className="flex flex-wrap justify-center gap-3">
+            <Btn href="/request" variant="brand" className="px-7 py-3.5 text-[16px]">
               Request your place
             </Btn>
             <Btn
               href={PRELAUNCH ? "/about" : "/courses"}
-              variant="ghost"
-              className="px-7 py-3.5 text-base"
+              variant="white"
+              className="px-7 py-3.5 text-[16px]"
             >
-              {PRELAUNCH ? "Meet the coaches →" : "See what's inside →"}
+              {PRELAUNCH ? "Meet the coaches" : "See what's inside"}
+              <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
             </Btn>
           </div>
-          <p className="mt-4 text-[13.5px] text-ink-soft">
-            Free to request. We&apos;re approving members in small groups so
-            every cohort gets proper attention.
+          <p className="mt-5 text-[13.5px] text-ink-soft">
+            Free to request. Members are approved in small groups so every
+            cohort gets proper attention.
           </p>
+        </Wrap>
+
+        {/* Product tiles */}
+        <Wrap className="mt-16">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="relative overflow-hidden rounded-3xl border border-line bg-ink shadow-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={FOUNDER_PHOTO}
+                alt="Barry Kuntz"
+                className="aspect-[4/3] w-full object-cover object-[50%_28%] opacity-90"
+              />
+              <span className="absolute left-1/2 top-[38%] flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-lift">
+                <Play className="ml-0.5 h-5 w-5" strokeWidth={2.5} fill="currentColor" />
+              </span>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent p-5 text-left text-white">
+                <div className="text-[11.5px] font-bold uppercase tracking-wider text-white/70">
+                  Lesson {lessonThree.number} · {leadership.name}
+                </div>
+                <div className="text-[17px] font-bold">{lessonThree.title}</div>
+              </div>
+            </div>
+
+            <CoachMock compact />
+
+            <div className="flex flex-col justify-between rounded-3xl border border-line bg-paper-soft p-6 text-left shadow-card">
+              <div>
+                <div className="mb-3 text-[11.5px] font-bold uppercase tracking-wider text-ink-soft">
+                  This week
+                </div>
+                <div className="display text-[44px] text-brand">+150</div>
+                <div className="text-[14px] text-ink-soft">points · 3 lessons watched</div>
+              </div>
+              <ul className="mt-6 space-y-2.5 text-[14px]">
+                {[
+                  ["Impactful Structure", "watched · quiz passed"],
+                  ["Compelling Delivery", "watched"],
+                  ["Masterful Notes — Designed", "up next"],
+                ].map(([t, s], i) => (
+                  <li key={t} className="flex items-center gap-2.5">
+                    {i < 2 ? (
+                      <CheckCircle2 className="h-4 w-4 text-accent" strokeWidth={2.5} />
+                    ) : (
+                      <Circle className="h-4 w-4 text-line" strokeWidth={2.5} />
+                    )}
+                    <span className="font-medium">{t}</span>
+                    <span className="ml-auto text-[12.5px] text-ink-soft">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </Wrap>
       </header>
 
       <LogoMarquee />
 
-      <Section alt>
+      {/* The method */}
+      <Section>
         <Wrap>
           <SectionHead
+            center
+            eyebrow="The method"
             title="One loop. Every rep compounds."
-            sub="Speaking well isn't a talent — it's a cycle. What you learn shapes how you practice, and every practice changes how you perform."
+            sub="Speaking well isn't a talent — it's a cycle. What you learn shapes how you practise, and every practice changes how you perform."
           />
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["Learn", "Short, focused lessons on structure, delivery, and staying on message — built from 17 years of coaching 3,500+ leaders."],
-              ["Practice", "Rehearse with Katya, an AI speaking coach who pushes back, throws curveballs, and gives feedback — then practice live with peers."],
-              ["Perform", "Walk into the classroom, boardroom, or interview having already been there — and earn points every step of the way."],
-            ].map(([title, body], i) => (
-              <div key={title} className="rounded-2xl border border-line bg-white p-8">
-                <div className="mb-4 flex h-[34px] w-[34px] items-center justify-center rounded-full bg-brand-soft text-[15px] font-bold text-brand">
-                  {i + 1}
+              [BookOpen, "Learn", "Short, focused lessons on structure, delivery and staying on message — built from 17 years of coaching 3,500+ leaders."],
+              [Mic, "Practise", `Bring a two-minute piece to ${COACH_NAME}. She listens, pushes back like a real audience, and scores you against Barry's rubric.`],
+              [Trophy, "Perform", "Walk into the boardroom, the classroom or the interview having already been there — and earn points every step of the way."],
+            ].map(([Icon, title, body]) => {
+              const I = Icon as LucideIcon;
+              return (
+                <div key={title as string} className="rounded-3xl border border-line bg-white p-8 shadow-card">
+                  <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-brand">
+                    <I className="h-5 w-5" strokeWidth={2} />
+                  </span>
+                  <h3 className="mb-2 text-[21px] font-bold">{title as string}</h3>
+                  <p className="text-[15px] leading-relaxed text-ink-soft">{body as string}</p>
                 </div>
-                <h3 className="mb-2 text-xl font-bold">{title}</h3>
-                <p className="text-[15px] text-ink-soft">{body}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Wrap>
       </Section>
 
-      <Section>
-        <Wrap>
-          <div className="rounded-3xl bg-brand px-6 py-14 text-center text-white sm:px-10">
-            <h2 className="text-[clamp(28px,4vw,40px)] font-extrabold leading-tight tracking-tight">
-              Ready to be remembered?
-            </h2>
-            <p className="mx-auto mb-7 mt-3 max-w-[520px] text-[17px] text-[#cddcf0]">
-              Request your place today. We review every request and approve
-              members in small groups — you&apos;ll hear from us by email.
-            </p>
-            <Btn href="/request" variant="accent" className="px-7 py-3.5 text-base">
-              Request your place
-            </Btn>
-          </div>
-        </Wrap>
-      </Section>
-
+      {/* Katya */}
       <Section alt>
         <Wrap>
-          <SectionHead title="Frequently asked questions." center />
-          <div className="mx-auto max-w-[760px]">
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
+            <div>
+              <Eyebrow>{COACH_NAME}, your AI coach</Eyebrow>
+              <h2 className="display mb-5 text-[clamp(32px,4.6vw,52px)]">
+                A coach who listens, pushes back, and scores you honestly.
+              </h2>
+              <p className="mb-6 text-[17px] leading-relaxed text-ink-soft">
+                You meet {COACH_NAME}{" "}
+                at the end of Lesson 5B with your 60-second self-introduction. In Speakers&apos; Circle you bring
+                her a presentation on any of eighty topics, and she coaches you
+                the way Barry would — one strength, then the two things to fix.
+              </p>
+              <ul className="mb-8 space-y-3 text-[15.5px]">
+                {[
+                  "Interrupts and questions like a real audience",
+                  "Scores structure, delivery and staying on message out of 15",
+                  "Remembers nothing you'd rather she didn't — every rep is a fresh start",
+                ].map((f) => (
+                  <li key={f} className="flex gap-3">
+                    <Check /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Btn href="/request" variant="brand">
+                Request your place
+              </Btn>
+            </div>
+            <CoachMock />
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Courses */}
+      <Section>
+        <Wrap>
+          <SectionHead
+            center
+            eyebrow="Courses"
+            title="Two courses. One skill."
+            sub="Being remembered for what you say — at work, or on campus."
+          />
+          <div className="grid gap-5 md:grid-cols-2">
+            {COURSES.map((c) => {
+              const withVideo = c.lessons.filter((l) => l.video).length;
+              return (
+                <div
+                  key={c.slug}
+                  className={`relative overflow-hidden rounded-3xl border border-line p-8 shadow-card sm:p-10 ${
+                    c.comingSoon ? "bg-paper-soft" : "bg-brand text-white"
+                  }`}
+                >
+                  <div
+                    className={`mb-4 text-[12.5px] font-bold uppercase tracking-[0.1em] ${
+                      c.comingSoon ? "text-ink-soft" : "text-white/70"
+                    }`}
+                  >
+                    {c.audience}
+                  </div>
+                  <h3 className="display mb-3 text-[32px]">{c.name}</h3>
+                  <p
+                    className={`mb-7 max-w-[420px] text-[15.5px] leading-relaxed ${
+                      c.comingSoon ? "text-ink-soft" : "text-white/85"
+                    }`}
+                  >
+                    {c.blurb}
+                  </p>
+                  <div
+                    className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13.5px] font-medium ${
+                      c.comingSoon ? "text-ink-soft" : "text-white/80"
+                    }`}
+                  >
+                    <span>{c.lessons.length} lessons</span>
+                    {withVideo > 0 && <span>{withVideo} with video</span>}
+                    <span>{c.level}</span>
+                    {c.comingSoon && (
+                      <span className="rounded-full bg-white px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-brand">
+                        Coming soon
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Founder */}
+      <Section alt className="py-16 sm:py-20">
+        <Wrap>
+          <div className="mx-auto flex max-w-[860px] flex-col items-center gap-8 text-center sm:flex-row sm:text-left">
+            <Avatar initials="BK" size={132} variant="dark" src={FOUNDER_PHOTO} alt="Barry Kuntz" position="50% 20%" />
+            <div>
+              <Quote className="mb-3 h-6 w-6 text-brand" strokeWidth={2} />
+              <p className="display text-[clamp(22px,2.8vw,30px)] leading-[1.25] tracking-[-0.02em]">
+                Speaking with impact is a skill you learn, not a talent you&apos;re born with.
+              </p>
+              <p className="mt-4 text-[14.5px] text-ink-soft">
+                <strong className="text-ink">Barry Kuntz</strong> · Founder &amp; Head Coach ·{" "}
+                <Link href="/about" className="font-semibold text-brand hover:underline">
+                  Meet the founders
+                </Link>
+              </p>
+            </div>
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* FAQ */}
+      <Section>
+        <Wrap>
+          <SectionHead center eyebrow="Questions" title="Good to know before you ask." />
+          <div className="mx-auto max-w-[800px] rounded-3xl border border-line bg-white px-6 shadow-card sm:px-8">
             {FAQS.map(([q, a]) => (
-              <details key={q} className="group border-b border-line">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
+              <details key={q} className="group border-b border-line last:border-0">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[16.5px] font-semibold [&::-webkit-details-marker]:hidden">
                   {q}
-                  <span className="text-2xl font-normal leading-none text-brand group-open:hidden">+</span>
-                  <span className="hidden text-2xl font-normal leading-none text-brand group-open:inline">–</span>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-paper-soft text-brand transition group-open:rotate-45">
+                    <span className="text-lg leading-none">+</span>
+                  </span>
                 </summary>
-                <p className="pb-6 text-[15.5px] text-ink-soft">{a}</p>
+                <p className="pb-6 text-[15px] leading-relaxed text-ink-soft">{a}</p>
               </details>
             ))}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* CTA */}
+      <Section className="pt-0">
+        <Wrap>
+          <div className="relative overflow-hidden rounded-[32px] bg-brand px-6 py-16 text-center text-white sm:px-10 sm:py-20">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl"
+            />
+            <h2 className="display relative text-[clamp(32px,4.6vw,52px)]">
+              Ready to be remembered?
+            </h2>
+            <p className="relative mx-auto mb-8 mt-4 max-w-[520px] text-[17px] text-white/80">
+              Request your place today. We read every request and approve
+              members in small groups — you&apos;ll hear from us by email.
+            </p>
+            <Btn href="/request" variant="accent" className="relative px-7 py-3.5 text-[16px]">
+              Request your place
+            </Btn>
           </div>
         </Wrap>
       </Section>
@@ -180,21 +455,43 @@ function VisitorHome() {
 /* ============================ pending ============================ */
 
 function PendingHome({ name }: { name: string }) {
+  const steps = [
+    ["Requested", "We have your request.", true],
+    ["Reviewing", "Barry and Michael read every one.", false],
+    ["Invited", "You'll get an email the moment your place is ready.", false],
+  ] as const;
+
   return (
     <Section>
-      <Wrap className="max-w-[720px]">
+      <Wrap className="max-w-[760px]">
         <Greeting
           name={name}
-          sub="Your request is with us — we approve members in small groups."
+          tag="Waitlist"
+          sub="Your request is with us — members are approved in small groups."
         />
-        <div className="mb-6 rounded-2xl border-2 border-accent bg-accent-soft p-7">
-          <div className="mb-2 text-3xl"></div>
-          <h2 className="mb-1.5 text-xl font-extrabold">You&apos;re on the waitlist</h2>
-          <p className="text-[15px] text-ink-soft">
-            We&apos;ll email you the moment your place is ready. Nothing else to
-            do for now.
-          </p>
+
+        <div className="mb-6 rounded-3xl border border-line bg-white p-7 shadow-card sm:p-8">
+          <ol className="grid gap-5 sm:grid-cols-3">
+            {steps.map(([title, body, done], i) => (
+              <li key={title} className="flex gap-3">
+                {done ? (
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" strokeWidth={2.5} />
+                ) : i === 1 ? (
+                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center">
+                    <span className="h-3 w-3 animate-pulse rounded-full bg-brand" />
+                  </span>
+                ) : (
+                  <Circle className="mt-0.5 h-5 w-5 shrink-0 text-line" strokeWidth={2.5} />
+                )}
+                <div>
+                  <div className="text-[15px] font-bold">{title}</div>
+                  <div className="text-[13.5px] text-ink-soft">{body}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
           {PRELAUNCH ? (
             <>
@@ -242,54 +539,58 @@ function MemberHome({
   const { events: upcoming, loading: eventsLoading } = useUpcomingEvents(2);
 
   return (
-    <Section>
+    <Section className="pt-14 sm:pt-20">
       <Wrap>
         <Greeting
           name={name}
+          tag={admin ? "Administrator" : paid ? "Speakers' Circle" : "Front Row"}
           sub={
             paid
-              ? "Pick up where you left off, or put in a rep with Katya."
+              ? `Pick up where you left off, or put in a rep with ${COACH_NAME}.`
               : "You have the first six lessons of Leadership Voice — let's use them."
           }
         />
 
         {/* Continue learning */}
-        <div className="mb-6 overflow-hidden rounded-2xl border border-line bg-white">
-          <div className="flex flex-wrap items-center justify-between gap-5 p-7">
-            <div>
-              <div className="mb-1.5 text-[12.5px] font-bold uppercase tracking-wider text-ink-soft">
-                Continue learning
-              </div>
-              <h2 className="text-[22px] font-extrabold tracking-tight">
-                {course.name}
-              </h2>
-              <p className="mt-1 text-[14.5px] text-ink-soft">
-                Next up: {nextLesson.title} · {openLessons} of{" "}
-                {course.lessons.length} lessons unlocked
-              </p>
+        <div className="mb-5 grid gap-6 rounded-3xl border border-line bg-white p-7 shadow-card sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <div className="mb-2 text-[12.5px] font-bold uppercase tracking-[0.1em] text-ink-soft">
+              Continue learning · {course.name}
             </div>
-            <Link
-              href={`/courses/${course.slug}/lessons/${nextLesson.slug}`}
-              className="rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-white hover:bg-brand-dark"
-            >
-              Start lesson
-            </Link>
+            <h2 className="display text-[clamp(24px,3vw,34px)]">
+              Lesson {nextLesson.number}: {nextLesson.title}
+            </h2>
+            <p className="mt-2 max-w-[560px] text-[15px] leading-relaxed text-ink-soft">
+              {nextLesson.summary}
+            </p>
+            <div className="mt-5 flex items-center gap-3 text-[13px] text-ink-soft">
+              <span className="h-1.5 w-40 overflow-hidden rounded-full bg-paper-warm">
+                <span
+                  className="block h-full rounded-full bg-accent"
+                  style={{ width: `${(openLessons / course.lessons.length) * 100}%` }}
+                />
+              </span>
+              {openLessons} of {course.lessons.length} lessons unlocked
+            </div>
           </div>
-          <div className="h-1.5 w-full bg-paper-warm">
-            <div
-              className="h-full bg-accent"
-              style={{ width: `${(openLessons / course.lessons.length) * 100}%` }}
-            />
+          <div className="flex flex-wrap gap-3">
+            <Btn href={`/courses/${course.slug}/lessons/${nextLesson.slug}`} variant="brand">
+              <Play className="h-4 w-4" strokeWidth={2.5} fill="currentColor" />
+              Start lesson
+            </Btn>
+            <Btn href={`/courses/${course.slug}`} variant="white">
+              All lessons
+            </Btn>
           </div>
         </div>
 
         {/* Quick actions */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card
             href={paid ? "/topics" : `/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
             icon={Mic}
-            title="Practice"
-            body={paid ? "Eighty topics to choose from. Frame one, make your notes, bring it to Katya." : "Run a coaching session against Barry's rubric."}
+            title="Practise"
+            body={paid ? `Eighty topics. Frame one, make your notes, bring it to ${COACH_NAME}.` : `Run a coaching session with ${COACH_NAME} against Barry's rubric.`}
             cta={paid ? "Choose a topic" : "Start a rep"}
             accent
           />
@@ -306,52 +607,49 @@ function MemberHome({
 
         {/* Admin shortcut */}
         {admin && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink bg-ink p-6 text-white">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-ink p-6 text-white sm:p-7">
             <div>
-              <div className="mb-1 text-[12.5px] font-bold uppercase tracking-wider text-white/70">
+              <div className="mb-1 text-[12.5px] font-bold uppercase tracking-[0.1em] text-white/60">
                 Administrator
               </div>
               <p className="text-[15.5px]">
-                Review waitlist requests, meeting bookings, and member access.
+                Requests to join, accounts, events, and the About page.
               </p>
             </div>
-            <Link
-              href="/admin"
-              className="rounded-lg bg-white px-5 py-2.5 text-[14.5px] font-semibold text-ink hover:bg-white/90"
-            >
+            <Btn href="/admin" variant="white">
               Open admin console
-            </Link>
+            </Btn>
           </div>
         )}
 
         {/* Upgrade nudge for free members */}
         {!paid && !admin && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-5 rounded-2xl border-2 border-accent bg-accent-soft p-7">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-5 rounded-3xl bg-brand p-7 text-white sm:p-8">
             <div className="max-w-[560px]">
-              <h3 className="mb-1.5 text-lg font-extrabold">
-                Unlock the rest of the course
-              </h3>
-              <p className="text-[14.5px] text-ink-soft">
-                Speakers&apos; Circle opens every lesson, unlimited AI practice,
+              <h3 className="display mb-2 text-[24px]">Unlock the rest of the course</h3>
+              <p className="text-[15px] text-white/80">
+                Speakers&apos; Circle opens every lesson, practice with {COACH_NAME},
                 the member community, and all live workshops — $10 CAD/month.
               </p>
             </div>
-            <Link
-              href="/pricing"
-              className="rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-white hover:bg-brand-dark"
-            >
+            <Btn href="/pricing" variant="accent">
               See what&apos;s included
-            </Link>
+            </Btn>
           </div>
         )}
 
         {/* Next event */}
-        <div className="rounded-2xl border border-line bg-white p-7">
-          <div className="mb-4 text-[12.5px] font-bold uppercase tracking-wider text-ink-soft">
-            Coming up
+        <div className="rounded-3xl border border-line bg-white p-7 shadow-card">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] text-ink-soft">
+              Coming up
+            </div>
+            <Link href="/events" className="text-[13.5px] font-semibold text-brand hover:underline">
+              All events
+            </Link>
           </div>
           {upcoming.length === 0 ? (
-            <p className="py-3 text-[14.5px] text-ink-soft">
+            <p className="py-2 text-[14.5px] text-ink-soft">
               {eventsLoading
                 ? "Checking the calendar…"
                 : "Nothing scheduled yet — the first open house will be announced by email."}
@@ -364,7 +662,7 @@ function MemberHome({
                   key={e.id}
                   className="flex flex-wrap items-center gap-5 border-b border-line py-3.5 last:border-0"
                 >
-                  <div className="min-w-[58px] rounded-lg bg-brand-soft px-2 py-2 text-center text-brand">
+                  <div className="min-w-[58px] rounded-xl bg-brand-soft px-2 py-2 text-center text-brand">
                     <span className="block text-[11px] font-bold uppercase">{month}</span>
                     <span className="block text-xl font-extrabold leading-tight">{day}</span>
                   </div>
@@ -374,10 +672,7 @@ function MemberHome({
                       {[timeLabel(e.starts_at), e.details].filter(Boolean).join(" · ")}
                     </div>
                   </div>
-                  <Link
-                    href="/events"
-                    className="text-[14px] font-semibold text-brand hover:underline"
-                  >
+                  <Link href="/events" className="text-[14px] font-semibold text-brand hover:underline">
                     Details
                   </Link>
                 </div>

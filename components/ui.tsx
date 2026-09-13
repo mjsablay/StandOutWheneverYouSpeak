@@ -12,7 +12,7 @@ export function Wrap({
   className?: string;
 }) {
   return (
-    <div className={`mx-auto max-w-[1120px] px-6 ${className}`}>{children}</div>
+    <div className={`mx-auto max-w-[1180px] px-6 ${className}`}>{children}</div>
   );
 }
 
@@ -27,16 +27,17 @@ export function Section({
 }) {
   return (
     <section
-      className={`py-16 sm:py-20 ${alt ? "bg-paper-warm" : ""} ${className}`}
+      className={`py-20 sm:py-28 ${alt ? "bg-paper-soft" : ""} ${className}`}
     >
       {children}
     </section>
   );
 }
 
+/** Small pill above a heading. Says what the section is, in two words. */
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <span className="mb-5 inline-block text-[13px] font-bold uppercase tracking-[0.12em] text-brand">
+    <span className="mb-5 inline-flex items-center gap-2 rounded-full bg-brand-soft px-3.5 py-1.5 text-[13px] font-semibold text-brand">
       {children}
     </span>
   );
@@ -55,13 +56,13 @@ export function SectionHead({
 }) {
   return (
     <div
-      className={`mb-11 max-w-[640px] ${center ? "mx-auto text-center" : ""}`}
+      className={`mb-12 max-w-[720px] ${center ? "mx-auto text-center" : ""}`}
     >
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-      <h2 className="text-[clamp(28px,4vw,40px)] font-extrabold leading-tight tracking-tight">
-        {title}
-      </h2>
-      {sub && <p className="mt-3.5 text-[17px] text-ink-soft">{sub}</p>}
+      <h2 className="display text-[clamp(32px,4.6vw,52px)]">{title}</h2>
+      {sub && (
+        <p className="mt-4 text-[18px] leading-relaxed text-ink-soft">{sub}</p>
+      )}
     </div>
   );
 }
@@ -71,18 +72,19 @@ export function SectionHead({
 type BtnProps = {
   href: string;
   children: ReactNode;
-  variant?: "brand" | "accent" | "ghost";
+  variant?: "brand" | "accent" | "white" | "ghost";
   className?: string;
   external?: boolean;
 };
 
 const btnBase =
-  "inline-block rounded-lg px-5 py-2.5 text-[14.5px] font-semibold transition";
+  "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2";
 
 const btnVariants = {
   brand: "bg-brand text-white hover:bg-brand-dark",
   accent: "bg-accent text-ink hover:bg-accent-dark",
-  ghost: "text-ink-soft hover:text-ink",
+  white: "border border-line bg-white text-ink hover:bg-paper-soft",
+  ghost: "text-ink hover:bg-paper-soft",
 };
 
 export function Btn({
@@ -178,9 +180,9 @@ export function PageSkeleton() {
     <Section>
       <Wrap>
         <div className="min-h-[60vh] animate-pulse">
-          <div className="mb-4 h-4 w-28 rounded bg-paper-warm" />
-          <div className="mb-3 h-10 w-2/3 max-w-[420px] rounded bg-paper-warm" />
-          <div className="h-4 w-full max-w-[560px] rounded bg-paper-warm" />
+          <div className="mb-4 h-4 w-28 rounded-full bg-paper-warm" />
+          <div className="mb-3 h-10 w-2/3 max-w-[420px] rounded-xl bg-paper-warm" />
+          <div className="h-4 w-full max-w-[560px] rounded-full bg-paper-warm" />
         </div>
       </Wrap>
     </Section>
