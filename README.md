@@ -1,7 +1,9 @@
 # Stand Out Whenever You Speak — Platform
 
 Learning platform for the public-speaking courses of Barry Kuntz (Black Isle
-Consultants). Next.js 16 · React 19 · TypeScript · Tailwind v4.
+Consultants). Next.js 16 · React 19 · TypeScript · Tailwind v4 · Supabase.
+
+Live at <https://standoutwheneveryouspeak.com>, deployed by Vercel from `main`.
 
 ## Running locally
 
@@ -10,11 +12,14 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:3000>. Copy `.env.example` to `.env.local` first and
+fill in the Supabase values — the site does nothing without them.
 
-Before pushing, always check the build compiles:
+Before opening a pull request:
 
 ```bash
+npx tsc --noEmit
+npx eslint .
 npm run build
 ```
 
@@ -22,59 +27,53 @@ npm run build
 
 ```
 app/                    Routes (one folder per page)
-  courses/[slug]/                  course detail
-  courses/[slug]/lessons/[lesson]/ lesson player screen
-  members/[slug]/                  member profiles
-components/             Shared UI (Nav, Footer, VideoPlayer, ui.tsx)
+  request/                         ask for a place (no account is created)
+  admin/                           console: requests, accounts, insights, content
+  courses/[slug]/lessons/[lesson]/ lesson: video, quiz, practice, workbook
+  api/waitlist, api/admin/invite   the only routes that write on a visitor's behalf
+components/             Shared UI (Nav, VideoPlayer, SocialSignIn, Turnstile, ui.tsx)
 lib/
-  site.ts               Site copy — bios, events, FAQs, nav
-  courses.ts            Courses, lessons, video filenames
-  members.ts            Demo member directory
-  mock-auth.tsx         ⚠️ Simulated login — replaced by Supabase
-public/logos/           35 client logos (committed)
-public/videos/          Lesson videos (NOT committed — see below)
+  site.ts               Site copy, nav, FAQs, and the PRELAUNCH switch
+  courses.ts            Courses, lessons, Barry's rubric, video filenames
+  access.ts             The one place the UI asks "what may this person see"
+  mock-auth.tsx         Real Supabase auth — the name is a leftover, see CLAUDE.md
+  waitlist-request.ts   Shape of a request, shared by form, API and admin
+proxy.ts                Session refresh, protected routes, pre-launch gate
+supabase/migrations/    Schema, applied to the live project
+scripts/                upload-lesson-videos.mjs
 ```
 
 To change wording anywhere on the site, edit `lib/site.ts` or
-`lib/courses.ts` rather than the page components.
+`lib/courses.ts` rather than the page components. The About page's copy is
+edited from the admin console instead.
+
+## How someone gets in
+
+1. **Request** a place at `/request`. A row is stored; no account exists yet.
+2. An admin **reviews** the answers in the console and clicks Invite.
+3. The **invitation** email creates the account, already approved.
+
+Sign-in is by Google, Microsoft, LinkedIn, or an emailed link. The email form
+cannot create accounts — only an invitation can.
 
 ## Lesson videos
 
-The 10 Leadership Voice videos total ~1.2 GB and are **deliberately not in
-git**. GitHub rejects any single file over 100 MB, and most of these exceed
-that.
+The ten recordings (1.13 GB) are **not in git**; GitHub rejects files over
+100 MB. They live in `public/videos/` on your machine, git-ignored, and are
+hosted for production in Supabase Storage (`lesson-videos` bucket). The
+`NEXT_PUBLIC_VIDEO_BASE_URL` variable in Vercel points the player at it.
 
-They live in `public/videos/` on your machine, which `.gitignore` excludes.
-Video playback therefore works in local development, and the deployed site
-shows a "coming soon" placeholder until the videos are hosted properly.
+To upload new or replaced recordings:
 
-**To make videos work in production**, upload them to a video host and set
-one environment variable in Vercel:
-
-```
-NEXT_PUBLIC_VIDEO_BASE_URL=https://your-host/path-to-videos
+```bash
+node scripts/upload-lesson-videos.mjs
 ```
 
-`videoUrl()` in `lib/courses.ts` resolves each lesson's filename against
-that base. No code changes needed — set the variable and redeploy.
-
-Options, roughly in order of recommendation:
-
-| Host | Why |
-|---|---|
-| **Supabase Storage** | Already in the stack; simple; fine at this scale |
-| **Mux / Cloudflare Stream** | Adaptive streaming, analytics, harder to copy |
-| **Unlisted YouTube / Vimeo** | Free and fast, but needs an embed-based player |
-
-## Simulated auth and payment
-
-`lib/mock-auth.tsx` fakes sign-in using `localStorage` so the whole site is
-clickable before the backend exists. **It is not secure** — anyone can grant
-themselves paid access from the browser console. A "Preview mode" banner
-makes this visible. It gets replaced by Supabase Auth, with paid content
-protected by Row-Level Security in the database.
+It skips files already present and prints the value to set in Vercel.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` and fill in as services are connected.
-Never commit `.env.local`.
+Documented in `.env.example`. Never commit `.env.local`.
+
+`CLAUDE.md` holds the things that will surprise you — read it before changing
+auth, permissions, or anything in the `private` schema.

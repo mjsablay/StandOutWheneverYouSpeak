@@ -3,6 +3,15 @@
 import Link from "next/link";
 import { Wrap, Section, SectionHead, Btn } from "@/components/ui";
 import LogoMarquee from "@/components/LogoMarquee";
+import {
+  Users,
+  MessageCircle,
+  BookOpen,
+  CalendarDays,
+  Mic,
+  Trophy,
+  type LucideIcon,
+} from "lucide-react";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
 import { COURSES, FREE_PREVIEW_COUNT } from "@/lib/courses";
@@ -12,14 +21,14 @@ import { UPCOMING_EVENTS, FAQS, PRELAUNCH } from "@/lib/site";
 
 function Card({
   href,
-  icon,
+  icon: Icon,
   title,
   body,
   cta,
   accent,
 }: {
   href: string;
-  icon: string;
+  icon: LucideIcon;
   title: string;
   body: string;
   cta: string;
@@ -32,7 +41,7 @@ function Card({
         accent ? "border-accent" : "border-line"
       }`}
     >
-      <div className="mb-3 text-2xl">{icon}</div>
+      <Icon className="mb-3 h-6 w-6 text-brand" strokeWidth={1.75} />
       <h3 className="mb-1 text-[17px] font-bold">{title}</h3>
       <p className="text-[13.5px] text-ink-soft">{body}</p>
       <div className="mt-3 text-[13px] font-bold text-brand">{cta} →</div>
@@ -189,14 +198,14 @@ function PendingHome({ name }: { name: string }) {
             <>
               <Card
                 href="/about"
-                icon=""
+                icon={Users}
                 title="Meet the coaches"
                 body="Barry has taught over 3,000 people to speak with impact."
                 cta="Read more"
               />
               <Card
                 href="/contact"
-                icon=""
+                icon={MessageCircle}
                 title="Have a question?"
                 body="Ask us anything about the programme before you start."
                 cta="Get in touch"
@@ -204,8 +213,8 @@ function PendingHome({ name }: { name: string }) {
             </>
           ) : (
             <>
-              <Card href="/courses" icon="" title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
-              <Card href="/events" icon="" title="Free open houses" body="Some events are open to everyone." cta="See events" />
+              <Card href="/courses" icon={BookOpen} title="Preview the courses" body="See every lesson you'll get access to." cta="Browse" />
+              <Card href="/events" icon={CalendarDays} title="Free open houses" body="Some events are open to everyone." cta="See events" />
             </>
           )}
         </div>
@@ -275,7 +284,7 @@ function MemberHome({
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card
             href={`/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
-            icon=""
+            icon={Mic}
             title="Practice"
             body="Run a coaching session against Barry's rubric."
             cta="Start a rep"
@@ -283,13 +292,13 @@ function MemberHome({
           />
           <Card
             href={paid ? "/community" : "/pricing"}
-            icon=""
+            icon={Users}
             title="Community"
             body={paid ? "Find a practice partner this week." : "Unlock peer practice with Speakers' Circle."}
             cta={paid ? "Meet members" : "See pricing"}
           />
-          <Card href="/events" icon="" title="Events" body="Live workshops and practice nights." cta="What's on" />
-          <Card href="/leaderboard" icon="" title="Leaderboard" body="See where you stand this month." cta="View ranks" />
+          <Card href="/events" icon={CalendarDays} title="Events" body="Live workshops and practice nights." cta="What's on" />
+          <Card href="/leaderboard" icon={Trophy} title="Leaderboard" body="See where you stand this month." cta="View ranks" />
         </div>
 
         {/* Admin shortcut */}

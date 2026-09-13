@@ -342,6 +342,3 @@ export const TIER_LABEL: Record<Tier, string> = {
   free: "Front Row",
   circle: "Speakers' Circle",
 };
-
-/** Kept for compatibility with existing imports. */
-export type MockUser = Profile;
