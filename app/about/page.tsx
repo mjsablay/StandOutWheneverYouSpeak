@@ -48,9 +48,11 @@ function FounderTile({ person, flip }: { person: Founder; flip: boolean }) {
   );
 
   return (
-    <div className="grid overflow-hidden rounded-[28px] border border-line bg-white shadow-card md:grid-cols-[minmax(260px,0.9fr)_1.4fr]">
-      <div className={`aspect-[4/5] md:aspect-auto md:min-h-[440px] ${flip ? "md:order-2" : ""}`}>
-        {photo}
+    <div className="grid overflow-hidden rounded-[28px] border border-line bg-white shadow-card md:grid-cols-[minmax(280px,0.85fr)_1.45fr] md:items-center">
+      <div className={`p-3 md:p-4 ${flip ? "md:order-2" : ""}`}>
+        <div className="aspect-[4/5] overflow-hidden rounded-[20px] bg-paper-soft">
+          {photo}
+        </div>
       </div>
       <div className="flex flex-col justify-center p-8 sm:p-10">
         <div className="mb-2 text-[12.5px] font-bold uppercase tracking-[0.1em] text-brand">
