@@ -68,14 +68,18 @@ limit). They play from `public/videos` locally and resolve against
 `NEXT_PUBLIC_VIDEO_BASE_URL` in production, which is **not set**, so in
 production every lesson video 404s.
 
-**They do not fit the Supabase free tier, and the plan that says to put them
-there is wrong.** Free allows 1 GB of storage — the recordings are 1.13 GB —
-and 5 GB of egress a month, while one member watching the whole course pulls
-1.13 GB. That is about four members a month. All ten are 1080p at 2.0-4.4
-Mbps, roughly 2.7 Mbps average for talking-head footage, so compressing to
-around 1.2 Mbps would more than halve both numbers. `avconvert` (built into
-macOS) cannot do this — it ignores the target and can produce files *larger*
-than the source. It needs ffmpeg.
+**They need the Supabase Pro plan, which Tori chose deliberately.** Free
+allows 1 GB total, 5 GB of egress a month, and — the one that really bites —
+**50 MB per file**. Nine of the ten recordings are bigger than that, so on
+free most are rejected outright. Pro raises those to 100 GB, 250 GB and 50 GB
+per file. The `lesson-videos` bucket already exists (migration 0007).
+
+The files are uncompressed on purpose: all ten are 1080p at 2.0-4.4 Mbps,
+roughly double what talking-head footage needs, and compressing to about
+1.2 Mbps would halve storage and bandwidth. Tori decided against it for now,
+so don't quietly re-encode them. If it ever comes up, macOS's built-in
+`avconvert` is not the tool — it ignores the target bitrate and, asked for
+720p, produced a file *larger* than the source. That needs ffmpeg.
 
 ## Permissions — three independent axes
 

@@ -5,6 +5,7 @@
  *   node scripts/upload-lesson-videos.mjs           # upload what's missing
  *   node scripts/upload-lesson-videos.mjs --check   # report only, change nothing
  *   node scripts/upload-lesson-videos.mjs --force   # re-upload everything
+ *   node scripts/upload-lesson-videos.mjs --free    # check against free limits
  *
  * Reads NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from
  * .env.local. The key is never printed; it goes straight from the file to the
@@ -13,11 +14,14 @@
  * Safe to run repeatedly: a file already in the bucket at the same size is
  * skipped, so an interrupted run continues where it stopped.
  *
- * MIND THE FREE TIER. Supabase free allows 1 GB of storage and 5 GB of
- * egress per month. These recordings are about 1.13 GB, so they do not fit,
- * and one member watching the whole course costs about 1.13 GB of egress —
- * roughly four members a month before the cap. The script refuses to start a
- * run it expects to fail; --force overrides that if you have upgraded.
+ * THIS NEEDS THE PRO PLAN. Free allows 1 GB of storage, 5 GB of egress a
+ * month, and — the one that really bites — 50 MB per file. Nine of the ten
+ * recordings are bigger than 50 MB, so on free most of them are rejected
+ * outright. Pro raises those to 100 GB, 250 GB and 50 GB per file.
+ *
+ * The size check therefore assumes Pro. Pass --free to check against the
+ * free-tier ceilings instead, which is worth doing if a run fails and you
+ * want to know whether the upgrade actually went through.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -29,11 +33,15 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VIDEO_DIR = path.join(ROOT, "public", "videos");
 const BUCKET = "lesson-videos";
-const FREE_TIER_BYTES = 1024 ** 3;
-
 const args = new Set(process.argv.slice(2));
 const CHECK_ONLY = args.has("--check");
 const FORCE = args.has("--force");
+const ASSUME_FREE = args.has("--free");
+
+// Supabase plan ceilings that matter here.
+const PLAN = ASSUME_FREE
+  ? { name: "free", total: 1024 ** 3, perFile: 50 * 1024 ** 2 }
+  : { name: "Pro", total: 100 * 1024 ** 3, perFile: 50 * 1024 ** 3 };
 
 const mb = (b) => `${(b / 1024 / 1024).toFixed(0)} MB`;
 
@@ -90,14 +98,28 @@ for (const name of files) {
 
 console.log(`\n  ${files.length} videos, ${mb(totalBytes)} total\n`);
 
-if (totalBytes > FREE_TIER_BYTES && !FORCE) {
+const tooBig = local.filter((f) => f.size > PLAN.perFile);
+
+if (totalBytes > PLAN.total && !FORCE) {
   fail(
-    `That is ${mb(totalBytes)}, and the Supabase free tier holds 1 GB.\n` +
-      "  This run would fail partway through, so it has not started.\n\n" +
-      "  Compress the recordings, upgrade the Supabase plan, or host them\n" +
-      "  somewhere built for video. Re-run with --force to try anyway.",
+    `That is ${mb(totalBytes)}, and the ${PLAN.name} plan holds ` +
+      `${mb(PLAN.total)}.\n` +
+      "  This run would fail partway through, so it has not started.\n" +
+      "  Re-run with --force to try anyway.",
   );
 }
+
+if (tooBig.length > 0 && !FORCE) {
+  fail(
+    `${tooBig.length} of ${local.length} files are over the ${PLAN.name} ` +
+      `per-file limit of ${mb(PLAN.perFile)}:\n` +
+      tooBig.map((f) => `    ${f.name}  ${mb(f.size)}`).join("\n") +
+      "\n\n  On the free plan this is expected — the ceiling is 50 MB and\n" +
+      "  these are lesson recordings. Upgrading to Pro is what fixes it.",
+  );
+}
+
+console.log(`  Checking against ${PLAN.name} plan limits.\n`);
 
 const supabase = createClient(url, key, {
   auth: { autoRefreshToken: false, persistSession: false },
