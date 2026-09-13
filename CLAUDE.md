@@ -70,6 +70,21 @@ false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive every total. It stays in the
 rubric members read, labelled "not scored by voice". Don't invent a number
 for it; that was the demo's mistake.
 
+**Points are awarded by a database trigger, never by the browser.**
+`award_progress_points` on `member_progress` (migration 0008) writes
+`points_ledger` rows when `watched` or `quiz_passed` first becomes true — 50
+and 25 — and a unique index on (user, action, lesson) means flipping a flag
+on and off pays once. Before this, nothing in the codebase ever wrote a
+ledger row; the "+50 points" label was decoration. `POINTS_RULES` in
+`lib/site.ts` carries `live` so the leaderboard shows which rules actually
+pay today. When a new way to earn points exists, award it server-side and
+flip its `live` flag — don't insert from the client.
+
+**Events come from the `events` table, edited in the admin console.** They
+used to be three hard-coded entries in `lib/site.ts` with July and August
+dates, still "upcoming" in September. Empty is now an honest state on both
+the events page and the member home.
+
 **`FREE_PREVIEW_COUNT = 7` covers lessons 01–06** because lesson 5 is split
 into 5A and 5B.
 
@@ -117,6 +132,8 @@ that shows or hides content.
 - `lib/content.ts` — the `site_content` table; editable from the admin
   console, and public by definition — never put private data in it
 - `lib/directory.ts` — the `member_directory` view (real members only)
+- `lib/events.ts` / `lib/use-events.ts` / `app/admin/Events.tsx` — live
+  events: shared helpers, the home-page hook, and where admins schedule them
 - `lib/waitlist-request.ts` — the request shape and its option lists, shared
   by the form, the API route and the admin screen. Every list here is mirrored
   by a CHECK constraint in the migration; change both

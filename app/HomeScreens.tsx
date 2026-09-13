@@ -15,7 +15,9 @@ import {
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
 import { COURSES, FREE_PREVIEW_COUNT } from "@/lib/courses";
-import { UPCOMING_EVENTS, FAQS, PRELAUNCH } from "@/lib/site";
+import { FAQS, PRELAUNCH } from "@/lib/site";
+import { useUpcomingEvents } from "@/lib/use-events";
+import { dateParts, timeLabel } from "@/lib/events";
 
 /* ============================ shared bits ============================ */
 
@@ -237,6 +239,7 @@ function MemberHome({
   const course = COURSES[0];
   const nextLesson = course.lessons[0];
   const openLessons = paid ? course.lessons.length : FREE_PREVIEW_COUNT;
+  const { events: upcoming, loading: eventsLoading } = useUpcomingEvents(2);
 
   return (
     <Section>
@@ -347,27 +350,40 @@ function MemberHome({
           <div className="mb-4 text-[12.5px] font-bold uppercase tracking-wider text-ink-soft">
             Coming up
           </div>
-          {UPCOMING_EVENTS.slice(0, 2).map((e) => (
-            <div
-              key={e.title}
-              className="flex flex-wrap items-center gap-5 border-b border-line py-3.5 last:border-0"
-            >
-              <div className="min-w-[58px] rounded-lg bg-brand-soft px-2 py-2 text-center text-brand">
-                <span className="block text-[11px] font-bold uppercase">{e.month}</span>
-                <span className="block text-xl font-extrabold leading-tight">{e.day}</span>
-              </div>
-              <div className="flex-1 min-w-[200px]">
-                <div className="text-[15.5px] font-semibold">{e.title}</div>
-                <div className="text-[13.5px] text-ink-soft">{e.details}</div>
-              </div>
-              <Link
-                href="/events"
-                className="text-[14px] font-semibold text-brand hover:underline"
-              >
-                Details
-              </Link>
-            </div>
-          ))}
+          {upcoming.length === 0 ? (
+            <p className="py-3 text-[14.5px] text-ink-soft">
+              {eventsLoading
+                ? "Checking the calendar…"
+                : "Nothing scheduled yet — the first open house will be announced by email."}
+            </p>
+          ) : (
+            upcoming.map((e) => {
+              const { month, day } = dateParts(e.starts_at);
+              return (
+                <div
+                  key={e.id}
+                  className="flex flex-wrap items-center gap-5 border-b border-line py-3.5 last:border-0"
+                >
+                  <div className="min-w-[58px] rounded-lg bg-brand-soft px-2 py-2 text-center text-brand">
+                    <span className="block text-[11px] font-bold uppercase">{month}</span>
+                    <span className="block text-xl font-extrabold leading-tight">{day}</span>
+                  </div>
+                  <div className="min-w-[200px] flex-1">
+                    <div className="text-[15.5px] font-semibold">{e.title}</div>
+                    <div className="text-[13.5px] text-ink-soft">
+                      {[timeLabel(e.starts_at), e.details].filter(Boolean).join(" · ")}
+                    </div>
+                  </div>
+                  <Link
+                    href="/events"
+                    className="text-[14px] font-semibold text-brand hover:underline"
+                  >
+                    Details
+                  </Link>
+                </div>
+              );
+            })
+          )}
         </div>
       </Wrap>
     </Section>

@@ -125,14 +125,25 @@ export default function LeaderboardPage() {
           <div className="rounded-2xl border border-line bg-white p-7">
             <h3 className="mb-4 text-lg font-semibold">How you earn points</h3>
             <ul>
-              {POINTS_RULES.map(([label, pts]) => (
+              {POINTS_RULES.map(({ label, points, live }) => (
                 <li
                   key={label}
-                  className="flex items-center justify-between border-b border-line py-2.5 text-[14.5px] last:border-0"
+                  className={`flex items-center justify-between border-b border-line py-2.5 text-[14.5px] last:border-0 ${
+                    live ? "" : "text-ink-soft"
+                  }`}
                 >
-                  {label}
-                  <span className="ml-4 whitespace-nowrap font-semibold text-brand">
-                    +{pts}
+                  <span>
+                    {label}
+                    {!live && (
+                      <span className="ml-2 rounded-full bg-paper-warm px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+                        Soon
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className={`ml-4 whitespace-nowrap font-semibold ${live ? "text-brand" : ""}`}
+                  >
+                    +{points}
                   </span>
                 </li>
               ))}
