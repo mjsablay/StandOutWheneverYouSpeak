@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import PracticePanel from "@/components/PracticePanel";
-import { getLesson, RUBRIC } from "@/lib/courses";
+import { getLesson, RUBRIC, RUBRIC_MAX } from "@/lib/courses";
 
 export default function LessonPracticeScreen() {
   const { slug, lesson: lessonSlug } = useParams<{
@@ -22,14 +22,19 @@ export default function LessonPracticeScreen() {
           How the coach scores you
         </h3>
         <p className="mb-4 text-[13.5px] text-ink-soft">
-          Barry&apos;s Speak with Impact rubric — four categories, 1–5 each,
-          20 total.
+          Barry&apos;s Speak with Impact rubric — four categories, 1–5 each.
+          Voice practice marks the three it can hear, out of {RUBRIC_MAX}.
         </p>
         <ul className="space-y-3.5">
           {RUBRIC.map((c, i) => (
             <li key={c.id}>
               <div className="text-[14px] font-bold">
                 {["I", "II", "III", "IV"][i]}. {c.name}
+                {!c.scored && (
+                  <span className="ml-2 rounded-full bg-paper-warm px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+                    Not scored by voice
+                  </span>
+                )}
               </div>
               <ul className="mt-1 space-y-0.5">
                 {c.looksFor.map((l) => (
