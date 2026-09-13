@@ -217,10 +217,15 @@ npx eslint .
 npm run build
 ```
 
-If `tsc` reports errors inside `.next/types/` in files whose names end in
-` 2.ts` — `routes.d 2.ts`, `cache-life.d 2.ts` — those are Finder-copy
-duplicates, not real errors. Delete them and re-run:
+**The project lives in `~/Developer/standout-platform`, deliberately outside
+iCloud Drive.** It was in `~/Documents` until 13 September 2026, and iCloud's
+Desktop & Documents sync kept resolving conflicts on `.next`, `node_modules`
+and freshly-written files by creating " 2" / " 3" copies — one of which
+reached the repo (#15, removed in #16). If ` 2.ts` duplicates ever reappear
+under `.next/types/`, something has put the folder back inside a synced
+location; delete them with
 `find .next -name "* 2.*" -o -name "* 2" | while read -r f; do rm -rf "$f"; done`
+and check for stray copies before every commit.
 
 `react-hooks/set-state-in-effect` is the lint rule that bites most often here.
 Prefer deriving state or `useSyncExternalStore` over syncing in an effect.
