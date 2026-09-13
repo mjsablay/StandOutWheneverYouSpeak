@@ -16,6 +16,7 @@ import { PRELAUNCH } from "@/lib/site";
 
 const PROTECTED = [
   "/account",
+  "/topics",
   "/admin",
   "/messages",
   "/notifications",

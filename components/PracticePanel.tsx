@@ -15,6 +15,7 @@
  */
 
 import { useState } from "react";
+import { COACH_NAME } from "@/lib/site";
 import {
   RUBRIC,
   SCORED_RUBRIC,
@@ -80,7 +81,7 @@ export default function PracticePanel({
   return (
     <div className="rounded-2xl border border-brand bg-white p-6 sm:p-7">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-lg font-bold">Practice with your AI coach</h3>
+        <h3 className="text-lg font-bold">Practice with {COACH_NAME}</h3>
         <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-brand">
           Preview
         </span>
@@ -96,7 +97,7 @@ export default function PracticePanel({
       {stage === "idle" && (
         <>
           <p className="mb-5 text-[14.5px] text-ink-soft">
-            The coach listens, pushes back like a real audience, and scores you
+            {COACH_NAME} listens, pushes back like a real audience, and scores you
             against the Speak with Impact rubric — structure, delivery, and
             staying on message. Eye contact isn&apos;t assessed in voice
             practice yet.
@@ -121,9 +122,9 @@ export default function PracticePanel({
               />
             ))}
           </div>
-          <p className="mb-1 text-[15px] font-semibold">Coach is listening…</p>
+          <p className="mb-1 text-[15px] font-semibold">{COACH_NAME} is listening…</p>
           <p className="mb-5 text-[13.5px] text-ink-soft">
-            In the live version this is a spoken back-and-forth — the coach
+            In the live version this is a spoken back-and-forth — {COACH_NAME}
             interrupts, questions, and reacts in real time.
           </p>
           <button

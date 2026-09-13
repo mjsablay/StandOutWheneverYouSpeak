@@ -44,8 +44,8 @@ export const FALLBACK_HERO: AboutHero = {
 };
 
 export const FALLBACK_STATS: AboutStat[] = [
-  { figure: "3,000+", label: "people coached" },
-  { figure: "10 years", label: "of teaching this method" },
+  { figure: "3,500+", label: "leaders coached" },
+  { figure: "17 years", label: "of coaching this method" },
   { figure: "35", label: "organisations trained" },
 ];
 

@@ -106,7 +106,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
     },
     {
       href: `${base}/practice`,
-      label: "AI Coach",
+      label: "Katya",
       icon: "",
       show: Boolean(lesson.practice),
     },

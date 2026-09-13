@@ -26,7 +26,7 @@ export type Lesson = {
   summary: string;
   video?: string;
   materials?: Material[];
-  /** Scenario the AI coach runs for this lesson. */
+  /** Scenario Katya, the AI coach, runs for this lesson. */
   practice?: {
     brief: string;
     prompt: string;
@@ -78,11 +78,10 @@ export const COURSES: Course[] = [
             file: "be-remarkable-workbook.docx",
             kind: "workbook",
           },
-          { label: "Quiz", file: "be-remarkable-quiz.docx", kind: "quiz" },
         ],
         practice: {
           brief:
-            "Introduce yourself and what you do in 60 seconds, in a way the coach will actually remember afterwards.",
+            "Introduce yourself and what you do in 60 seconds, in a way Katya will actually remember afterwards.",
           prompt:
             "Ask the learner to introduce themselves and what they do in about 60 seconds, aiming to be remembered. Afterwards, tell them specifically what you still recall and what slipped away.",
         },
@@ -100,7 +99,6 @@ export const COURSES: Course[] = [
             file: "impact-defined-exercise.docx",
             kind: "exercise",
           },
-          { label: "Quiz", file: "impact-defined-quiz.docx", kind: "quiz" },
         ],
         practice: {
           brief:
@@ -112,7 +110,7 @@ export const COURSES: Course[] = [
       {
         slug: "impactful-structure-explained",
         number: "03",
-        title: "Impactful Structure Explained",
+        title: "Impactful Structure",
         summary:
           "The structure behind presentations that land — how to order your thinking so an audience can follow and retain it.",
         video: "impactful-structure-explained.mp4",
@@ -121,11 +119,6 @@ export const COURSES: Course[] = [
             label: "Exercise",
             file: "impactful-structure-explained-exercise.docx",
             kind: "exercise",
-          },
-          {
-            label: "Quiz",
-            file: "impactful-structure-explained-quiz.docx",
-            kind: "quiz",
           },
         ],
         practice: {
@@ -148,15 +141,10 @@ export const COURSES: Course[] = [
             file: "compelling-delivery-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "compelling-delivery-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "Deliver a short piece in clear bursts with purposeful pauses. The coach listens for pace and filler.",
+            "Deliver a short piece in clear bursts with purposeful pauses. Katya listens for pace and filler.",
           prompt:
             "Ask the learner to deliver a two-minute piece focusing on bursts and silent pauses. Call out filler words, rushed sections, and places a pause would have landed better.",
         },
@@ -174,15 +162,10 @@ export const COURSES: Course[] = [
             file: "masterful-notes-designed-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "masterful-notes-designed-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "Talk the coach through the notes you have built, and why each cue is there.",
+            "Talk Katya through the notes you have built, and why each cue is there.",
           prompt:
             "Ask the learner to describe the notes they have prepared for a real talk. Probe whether each note is a cue or a sentence, and push them toward cues.",
         },
@@ -200,15 +183,10 @@ export const COURSES: Course[] = [
             file: "masterful-notes-delivered-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "masterful-notes-delivered-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "Deliver from cues, not sentences. The coach listens for reading rather than speaking.",
+            "Meet Katya. Deliver your self-introduction from cues, not sentences — she listens for reading rather than speaking.",
           prompt:
             "Ask the learner to deliver a piece from their notes. Flag any stretch that sounds read aloud rather than spoken from ideas.",
         },
@@ -226,15 +204,10 @@ export const COURSES: Course[] = [
             file: "pesky-nerves-managed-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "pesky-nerves-managed-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "Open a high-stakes talk cold. The coach helps you steady the first thirty seconds.",
+            "Open a high-stakes talk cold. Katya helps you steady the first thirty seconds.",
           prompt:
             "Ask the learner to deliver the opening of a talk that makes them nervous, with no warm-up. Focus feedback on the first thirty seconds and on what steadied or destabilised them.",
         },
@@ -242,9 +215,9 @@ export const COURSES: Course[] = [
       {
         slug: "key-conversations-managed",
         number: "07A",
-        title: "Key Conversations Managed",
+        title: "Key Conversations Influenced",
         summary:
-          "The conversations that decide outcomes — how to prepare for and steer them.",
+          "Build influence before you explain. Use CALE to create stronger, more productive conversations.",
         video: "key-conversations-managed.mp4",
         materials: [
           {
@@ -252,25 +225,20 @@ export const COURSES: Course[] = [
             file: "key-conversations-managed-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "key-conversations-managed-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "Role-play a conversation that matters. The coach plays the other party.",
+            "Role-play a conversation that matters. Katya plays the other party.",
           prompt:
             "Ask the learner to describe a real high-stakes conversation, then play the other party realistically — including resistance — while they practise steering it.",
         },
       },
       {
         slug: "flexing-your-style-with-acts",
-        number: "07B",
+        number: "07A1",
         title: "Flexing Your Style with ACTS",
         summary:
-          "The ACTS framework for reading the person in front of you and adapting how you communicate.",
+          "Read the room and flex your approach to connect with Activators, Creators, Team Players and Specialists.",
         video: "flexing-your-style-with-acts.mp4",
         materials: [
           {
@@ -278,36 +246,33 @@ export const COURSES: Course[] = [
             file: "flexing-your-style-with-acts-exercise.docx",
             kind: "exercise",
           },
-          {
-            label: "Quiz",
-            file: "flexing-your-style-with-acts-quiz.docx",
-            kind: "quiz",
-          },
         ],
         practice: {
           brief:
-            "The coach adopts a communication style. Read it and flex to match.",
+            "Katya adopts a communication style. Read it and flex to match.",
           prompt:
             "Adopt a distinct communication style without naming it. Have the learner identify it and adapt their approach, then reveal the style and assess how well they flexed.",
         },
       },
       {
+        slug: "influencing-without-authority",
+        number: "07A2",
+        title: "Influencing without Authority",
+        summary:
+          "Win support across teams by building common ground, credibility and momentum without relying on title.",
+      },
+      {
         slug: "managing-difficult-conversations",
         number: "08",
-        title: "Managing Difficult Conversations",
+        title: "Difficult Conversations Managed",
         summary:
-          "Staying clear and composed when the subject is uncomfortable and the stakes are high.",
+          "Stay calm, curious and constructive when the stakes rise and conversations become uncomfortable.",
         video: "managing-difficult-conversations.mp4",
         materials: [
           {
             label: "Exercise",
             file: "managing-difficult-conversations-exercise.docx",
             kind: "exercise",
-          },
-          {
-            label: "Quiz",
-            file: "managing-difficult-conversations-quiz.docx",
-            kind: "quiz",
           },
           {
             label: "Field guide",
@@ -317,58 +282,44 @@ export const COURSES: Course[] = [
         ],
         practice: {
           brief:
-            "Deliver difficult news to the coach, who will not make it easy.",
+            "Deliver difficult news to Katya, who will not make it easy.",
           prompt:
             "Play someone receiving difficult news — defensive, then emotional. Have the learner stay clear and composed without becoming cold.",
         },
       },
       {
-        slug: "handling-curveballs",
-        number: "09",
-        title: "Handling Curveballs",
-        summary:
-          "Recovering when the unexpected question, interruption, or objection arrives mid-point.",
-        practice: {
-          brief:
-            "Present while the coach interrupts with the questions you least want.",
-          prompt:
-            "Let the learner begin a presentation, then interrupt with hard, unexpected questions at the worst moments. Assess how well they acknowledge, recover, and return to their message.",
-        },
-      },
-      {
         slug: "interjecting",
-        number: "10",
+        number: "07A3",
         title: "Interjecting",
         summary:
-          "How to enter a conversation that is already moving — without apologising for taking the floor.",
+          "Step in confidently and respectfully — without sounding abrupt or derailing the conversation.",
       },
       {
         slug: "meeting-recovery",
-        number: "11",
+        number: "07A4",
         title: "Meeting Recovery",
         summary:
-          "Bringing a meeting back on track once it has drifted, stalled, or turned tense.",
+          "Recognize when a meeting is drifting and bring the discussion back to purpose, priorities and action.",
       },
       {
         slug: "spontaneous-speaking",
-        number: "12",
+        number: "07A5",
         title: "Spontaneous Speaking",
         summary:
-          "Structure you can reach for when you are asked to speak with no time to prepare.",
+          "Organize your thinking quickly and respond with clarity when you have little or no preparation.",
       },
       {
-        slug: "making-strong-connections",
-        number: "13",
-        title: "Making Strong Connections",
+        slug: "handling-curveballs",
+        number: "07A6",
+        title: "Handling Curveballs",
         summary:
-          "Building the rapport that makes everything else you say land more easily.",
-        materials: [
-          {
-            label: "Field guide",
-            file: "making-strong-connections-field-guide.pdf",
-            kind: "guide",
-          },
-        ],
+          "Stay composed, think on your feet and respond effectively when the unexpected happens.",
+        practice: {
+          brief:
+            "Present while Katya interrupts with the questions you least want.",
+          prompt:
+            "Have the learner present a topic of their choice, then interrupt with the questions they would least want. Assess how they hold their composure and return to their structure.",
+        },
       },
     ],
   },

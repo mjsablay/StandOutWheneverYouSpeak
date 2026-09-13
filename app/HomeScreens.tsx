@@ -123,8 +123,8 @@ function VisitorHome() {
           />
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["Learn", "Short, focused lessons on structure, delivery, and staying on message — built from a decade of coaching 3,000+ speakers."],
-              ["Practice", "Rehearse with an AI speaking coach that pushes back, throws curveballs, and gives feedback — then practice live with peers."],
+              ["Learn", "Short, focused lessons on structure, delivery, and staying on message — built from 17 years of coaching 3,500+ leaders."],
+              ["Practice", "Rehearse with Katya, an AI speaking coach who pushes back, throws curveballs, and gives feedback — then practice live with peers."],
               ["Perform", "Walk into the classroom, boardroom, or interview having already been there — and earn points every step of the way."],
             ].map(([title, body], i) => (
               <div key={title} className="rounded-2xl border border-line bg-white p-8">
@@ -202,7 +202,7 @@ function PendingHome({ name }: { name: string }) {
                 href="/about"
                 icon={Users}
                 title="Meet the coaches"
-                body="Barry has taught over 3,000 people to speak with impact."
+                body="Barry has coached more than 3,500 leaders to speak with impact."
                 cta="Read more"
               />
               <Card
@@ -248,7 +248,7 @@ function MemberHome({
           name={name}
           sub={
             paid
-              ? "Pick up where you left off, or put in a rep with the coach."
+              ? "Pick up where you left off, or put in a rep with Katya."
               : "You have the first six lessons of Leadership Voice — let's use them."
           }
         />
@@ -286,11 +286,11 @@ function MemberHome({
         {/* Quick actions */}
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card
-            href={`/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
+            href={paid ? "/topics" : `/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
             icon={Mic}
             title="Practice"
-            body="Run a coaching session against Barry's rubric."
-            cta="Start a rep"
+            body={paid ? "Eighty topics to choose from. Frame one, make your notes, bring it to Katya." : "Run a coaching session against Barry's rubric."}
+            cta={paid ? "Choose a topic" : "Start a rep"}
             accent
           />
           <Card

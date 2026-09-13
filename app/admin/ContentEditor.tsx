@@ -172,7 +172,7 @@ export default function ContentEditor() {
                             ),
                           )
                         }
-                        placeholder="3,000+"
+                        placeholder="3,500+"
                       />
                       <input
                         className={field}
@@ -269,7 +269,7 @@ export default function ContentEditor() {
                         onChange={(e) =>
                           setFounder(i, { headline: e.target.value })
                         }
-                        placeholder="Managing Director, Black Isle Consultants"
+                        placeholder="Founder, CLEAR Executive and Corporate Development"
                       />
 
                       <label className="mb-1.5 block text-[13px] font-semibold">
@@ -291,7 +291,7 @@ export default function ContentEditor() {
                               .filter(Boolean),
                           })
                         }
-                        placeholder={"3,000+ people coached\n10 years teaching"}
+                        placeholder={"3,500+ leaders coached\n17 years coaching"}
                       />
 
                       <label className="mb-1.5 block text-[13px] font-semibold">
