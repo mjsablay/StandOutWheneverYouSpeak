@@ -60,6 +60,12 @@ account. The `admin_waitlist()` function ranks both.
 keeps everyone except admins on the waitlist home, About and Contact. Flip it
 to go live.
 
+**The scorecard is out of 15, not 20.** Barry's rubric has four categories,
+but a voice coach cannot see eye contact, so `RUBRIC` marks it `scored:
+false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive every total. It stays in the
+rubric members read, labelled "not scored by voice". Don't invent a number
+for it; that was the demo's mistake.
+
 **`FREE_PREVIEW_COUNT = 7` covers lessons 01–06** because lesson 5 is split
 into 5A and 5B.
 

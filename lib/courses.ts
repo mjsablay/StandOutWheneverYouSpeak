@@ -475,10 +475,17 @@ export const FREE_PREVIEW_COUNT = 7;
  * scores against, 1–5 each, 20 total. Source: the rubric PDF in the
  * Leadership Voice course materials.
  */
+/**
+ * `scored` marks what a voice coach can actually hear. Eye contact is part
+ * of Barry's method and stays in the rubric members read, but it is not
+ * assessed or totalled until a camera-based version exists — an invented
+ * number here would be a fake in a product whose promise is honest feedback.
+ */
 export const RUBRIC = [
   {
     id: "structure",
     name: "Impactful Structure",
+    scored: true,
     looksFor: [
       "Clear headline or conclusion",
       "Relevant main points",
@@ -489,6 +496,7 @@ export const RUBRIC = [
   {
     id: "delivery",
     name: "Compelling Delivery",
+    scored: true,
     looksFor: [
       "Ideas delivered in clear bursts",
       "Purposeful silent pauses",
@@ -499,6 +507,7 @@ export const RUBRIC = [
   {
     id: "eye-contact",
     name: "Commanding Eye Contact",
+    scored: false,
     looksFor: [
       "Steady audience connection",
       "Eye contact at the start of ideas",
@@ -509,6 +518,7 @@ export const RUBRIC = [
   {
     id: "on-message",
     name: "Staying on Message",
+    scored: true,
     looksFor: [
       "Focus on the core message",
       "Limited drifting or unnecessary detail",
@@ -518,16 +528,24 @@ export const RUBRIC = [
   },
 ] as const;
 
+/** The categories a session is actually marked on. */
+export const SCORED_RUBRIC = RUBRIC.filter((c) => c.scored);
+
+/** Five points per scored category — 15 while eye contact is unassessed. */
+export const RUBRIC_MAX = SCORED_RUBRIC.length * 5;
+
+// Barry's bands were written for a total out of 20 (17 / 13 / 9 / 5 / 1).
+// Kept as fractions so they hold whatever the scored total is.
 const SCORE_BANDS = [
-  { min: 17, label: "Excellent" },
-  { min: 13, label: "Very Good" },
-  { min: 9, label: "Good" },
-  { min: 5, label: "Fair" },
-  { min: 1, label: "Poor" },
+  { atLeast: 17 / 20, label: "Excellent" },
+  { atLeast: 13 / 20, label: "Very Good" },
+  { atLeast: 9 / 20, label: "Good" },
+  { atLeast: 5 / 20, label: "Fair" },
+  { atLeast: 0, label: "Poor" },
 ] as const;
 
-export const scoreBand = (total: number) =>
-  SCORE_BANDS.find((b) => total >= b.min)?.label ?? "Poor";
+export const scoreBand = (total: number, max: number = RUBRIC_MAX) =>
+  SCORE_BANDS.find((b) => total / max >= b.atLeast)?.label ?? "Poor";
 
 /**
  * The coaching rule from Barry's rubric, used as the system instruction

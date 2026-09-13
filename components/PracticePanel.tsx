@@ -15,7 +15,13 @@
  */
 
 import { useState } from "react";
-import { RUBRIC, scoreBand, type Lesson } from "@/lib/courses";
+import {
+  RUBRIC,
+  SCORED_RUBRIC,
+  RUBRIC_MAX,
+  scoreBand,
+  type Lesson,
+} from "@/lib/courses";
 
 type Scores = Record<string, number>;
 
@@ -28,7 +34,6 @@ const DEMO: {
   scores: {
     structure: 4,
     delivery: 3,
-    "eye-contact": 3,
     "on-message": 4,
   },
   strength:
@@ -92,8 +97,9 @@ export default function PracticePanel({
         <>
           <p className="mb-5 text-[14.5px] text-ink-soft">
             The coach listens, pushes back like a real audience, and scores you
-            against the Speak with Impact rubric — structure, delivery, eye
-            contact, and staying on message.
+            against the Speak with Impact rubric — structure, delivery, and
+            staying on message. Eye contact isn&apos;t assessed in voice
+            practice yet.
           </p>
           <button
             onClick={() => setStage("live")}
@@ -134,7 +140,7 @@ export default function PracticePanel({
           <div className="mb-5 flex items-baseline gap-3">
             <span className="text-[40px] font-extrabold leading-none">
               {total}
-              <span className="text-xl text-ink-soft">/20</span>
+              <span className="text-xl text-ink-soft">/{RUBRIC_MAX}</span>
             </span>
             <span className="rounded-full bg-accent-soft px-3 py-1 text-[13px] font-bold text-accent-ink">
               {scoreBand(total)}
@@ -142,7 +148,7 @@ export default function PracticePanel({
           </div>
 
           <div className="mb-5 space-y-2.5">
-            {RUBRIC.map((c) => {
+            {SCORED_RUBRIC.map((c) => {
               const s = DEMO.scores[c.id] ?? 0;
               return (
                 <div key={c.id} className="flex items-center gap-3">
@@ -165,6 +171,19 @@ export default function PracticePanel({
                 </div>
               );
             })}
+            {RUBRIC.filter((c) => !c.scored).map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center gap-3 text-ink-soft"
+              >
+                <span className="w-[150px] flex-shrink-0 text-[13.5px] font-semibold">
+                  {c.name}
+                </span>
+                <span className="text-[13px]">
+                  Not assessed in voice practice
+                </span>
+              </div>
+            ))}
           </div>
 
           <div className="space-y-3">
