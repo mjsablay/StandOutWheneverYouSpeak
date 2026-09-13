@@ -6,6 +6,10 @@ import { PRELAUNCH } from "@/lib/site";
  * Refreshes the Supabase session on every request, guards private routes,
  * and — while PRELAUNCH is true — keeps everyone except administrators on
  * the waitlist home, About Us and Contact.
+ *
+ * Next.js 16 renamed this file convention from `middleware` to `proxy`; the
+ * behaviour is identical. The old name printed a deprecation warning on
+ * every start.
  */
 
 const PROTECTED = [
@@ -27,7 +31,7 @@ const PRELAUNCH_ALLOWED = [
   "/auth",
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

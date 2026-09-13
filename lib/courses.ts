@@ -518,7 +518,7 @@ export const RUBRIC = [
   },
 ] as const;
 
-export const SCORE_BANDS = [
+const SCORE_BANDS = [
   { min: 17, label: "Excellent" },
   { min: 13, label: "Very Good" },
   { min: 9, label: "Good" },

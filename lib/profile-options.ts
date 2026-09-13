@@ -19,9 +19,6 @@ export const LIMITS = {
   linkedin: 200,
 } as const;
 
-/** Kept for backwards compatibility with existing imports. */
-export const BIO_MAX = LIMITS.bio;
-
 export type HeadlineMode = "custom" | "school" | "work";
 
 /** Builds the headline shown on a profile, based on the member's choice. */

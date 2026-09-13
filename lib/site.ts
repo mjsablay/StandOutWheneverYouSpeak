@@ -22,14 +22,6 @@ export const SITE = {
 export const PRELAUNCH = true;
 
 /** Paths anyone may visit during pre-launch. */
-export const PUBLIC_PATHS = [
-  "/",
-  "/about",
-  "/contact",
-  "/signin",
-  "/signup",
-  "/auth",
-] as const;
 
 export const NAV_LINKS = [
   { href: "/courses", label: "Courses" },
@@ -132,13 +124,6 @@ export const PAST_EVENTS = [
   },
 ];
 
-export const LEADERBOARD = [
-  { rank: 1, initials: "AK", name: "Aisha K.", streak: 21, points: 2485 },
-  { rank: 2, initials: "PR", name: "Priya R.", streak: 14, points: 2210 },
-  { rank: 3, initials: "DM", name: "Daniel M.", streak: 9, points: 1940 },
-  { rank: 4, initials: "JT", name: "Jordan T.", streak: 6, points: 1720 },
-  { rank: 5, initials: "SL", name: "Sam L.", streak: 3, points: 1455 },
-];
 
 export const POINTS_RULES = [
   ["Complete a lesson", 50],

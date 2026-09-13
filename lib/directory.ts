@@ -62,9 +62,3 @@ export function useDirectory(enabled = true) {
 
 export const nameOf = (m: { display_name: string | null }) =>
   m.display_name || "Member";
-
-/** Where a member sits on the leaderboard, 1-indexed. */
-export const rankOf = (members: DirectoryMember[], id: string) => {
-  const i = members.findIndex((m) => m.id === id);
-  return i === -1 ? null : i + 1;
-};

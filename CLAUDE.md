@@ -56,7 +56,7 @@ and opening a magic link marks the address confirmed in `auth.users`. 29 of the
 signal that means something is `last_sign_in_at`, or an OAuth provider on the
 account. The `admin_waitlist()` function ranks both.
 
-**`PRELAUNCH` in `lib/site.ts` is the launch switch.** While true, `middleware.ts`
+**`PRELAUNCH` in `lib/site.ts` is the launch switch.** While true, `proxy.ts`
 keeps everyone except admins on the waitlist home, About and Contact. Flip it
 to go live.
 
@@ -118,7 +118,8 @@ that shows or hides content.
   is never selectable from the public schema — see the migration before
   changing its grants
 - `lib/progress.ts` — quiz progress, stored in `member_progress` with RLS
-- `middleware.ts` — session refresh, protected routes, pre-launch gate
+- `proxy.ts` — session refresh, protected routes, pre-launch gate (Next 16's
+  name for middleware; same behaviour)
 - `app/admin/` — console: insights, meeting requests, About-page editor,
   preview control, member approvals
 

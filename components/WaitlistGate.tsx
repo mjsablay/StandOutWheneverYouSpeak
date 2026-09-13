@@ -28,8 +28,6 @@ export default function WaitlistGate({ children }: { children: ReactNode }) {
     <Section>
       <Wrap className="max-w-[600px]">
         <div className="rounded-2xl border border-line bg-white p-8 text-center sm:p-12">
-          
-
           <h1 className="mb-3 text-[28px] font-extrabold tracking-tight">
             {declined
               ? "We couldn't approve this account"
