@@ -22,6 +22,8 @@ import { useState } from "react";
 type Props = {
   src: string | null;
   title: string;
+  /** Start immediately — only for a player the viewer opened on purpose. */
+  autoPlay?: boolean;
 };
 
 function Unavailable({ failed }: { failed: boolean }) {
@@ -39,7 +41,7 @@ function Unavailable({ failed }: { failed: boolean }) {
   );
 }
 
-export default function VideoPlayer({ src, title }: Props) {
+export default function VideoPlayer({ src, title, autoPlay = false }: Props) {
   // Remember WHICH source failed rather than that one did. Navigating to
   // another lesson then clears itself, with no effect syncing state — the
   // pattern react-hooks/set-state-in-effect exists to prevent.
@@ -59,6 +61,7 @@ export default function VideoPlayer({ src, title }: Props) {
         src={src}
         onError={() => setFailedSrc(src)}
         controls
+        autoPlay={autoPlay}
         controlsList="nodownload"
         preload="metadata"
         playsInline
