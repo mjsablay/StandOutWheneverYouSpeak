@@ -183,6 +183,14 @@ that is fine — the person demonstrably holds that account elsewhere. They land
 enabled in the Supabase dashboard so far; the other two buttons say "provider
 is not enabled" until someone adds their client ID and secret.
 
+**Auth emails go through Resend, not Supabase's default sender.** The
+default is a shared address, rate-limited to a few messages an hour, and the
+first invitation sent from it went straight to junk. SMTP is configured in the
+Supabase dashboard (Authentication → Emails), the domain is verified in Resend,
+and the invite template text is kept in `Advoc(Motiv)8/Invite-Email-Template.md`
+so it can be reviewed outside the dashboard. If invitations start landing in
+junk again, check the domain is still verified before touching anything else.
+
 `components/Turnstile.tsx` is wired into the request and sign-in forms but
 inert until `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set. The half that matters is
 `TURNSTILE_SECRET_KEY`, checked server-side in `app/api/waitlist/route.ts` —
