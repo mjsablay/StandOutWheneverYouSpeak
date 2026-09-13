@@ -63,10 +63,23 @@ to go live.
 **`FREE_PREVIEW_COUNT = 7` covers lessons 01–06** because lesson 5 is split
 into 5A and 5B.
 
-**Lesson videos are git-ignored** (10 MP4s, 1.2 GB — over GitHub's file limit).
-They play from `public/videos` locally and resolve against
-`NEXT_PUBLIC_VIDEO_BASE_URL` in production. Hosting them on Supabase Storage is
-the highest-value outstanding task.
+**Lesson videos are git-ignored** (10 MP4s, 1.13 GB — over GitHub's file
+limit). They play from `public/videos` locally and resolve against
+`NEXT_PUBLIC_VIDEO_BASE_URL` in production, which is **not set**, so in
+production every lesson video 404s.
+
+**They need the Supabase Pro plan, which Tori chose deliberately.** Free
+allows 1 GB total, 5 GB of egress a month, and — the one that really bites —
+**50 MB per file**. Nine of the ten recordings are bigger than that, so on
+free most are rejected outright. Pro raises those to 100 GB, 250 GB and 50 GB
+per file. The `lesson-videos` bucket already exists (migration 0007).
+
+The files are uncompressed on purpose: all ten are 1080p at 2.0-4.4 Mbps,
+roughly double what talking-head footage needs, and compressing to about
+1.2 Mbps would halve storage and bandwidth. Tori decided against it for now,
+so don't quietly re-encode them. If it ever comes up, macOS's built-in
+`avconvert` is not the tool — it ignores the target bitrate and, asked for
+720p, produced a file *larger* than the source. That needs ffmpeg.
 
 ## Permissions — three independent axes
 
@@ -108,6 +121,14 @@ that shows or hides content.
 - `middleware.ts` — session refresh, protected routes, pre-launch gate
 - `app/admin/` — console: insights, meeting requests, About-page editor,
   preview control, member approvals
+
+## Lesson video behaviour
+
+`components/VideoPlayer.tsx` shows the same honest panel whether a lesson has
+no recording yet or the file fails to load. It listens for the error on the
+`<video>` element's own `src` — a failing `<source>` child fires its error on
+the child, where React's `onError` never sees it, which is how the production
+breakage went unnoticed.
 
 ## Verifying
 
@@ -166,7 +187,10 @@ straight to the route.
 Planned in detail in `Advoc(Motiv)8/Audit-Stripe-and-Voice-Agent-Plan.md`
 (outside this repo), in recommended order:
 
-1. Host the lesson videos (~1 hour, highest impact)
+1. Host the lesson videos — still the highest-impact task, but it is a
+   hosting *decision* before it is an hour's work; see the video note above.
+   `scripts/upload-lesson-videos.mjs` does the upload once somewhere has been
+   chosen, and refuses to start a run that would hit the free-tier ceiling
 2. Stripe Checkout + webhook — `profiles.tier` is what every gate reads, and a
    webhook is the only thing that should ever change it
 3. Text AI coach, validated against Barry's rubric before building voice
