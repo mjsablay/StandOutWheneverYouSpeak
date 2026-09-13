@@ -44,7 +44,7 @@ export default function UserMenu({
 
   if (!user) return null;
 
-  const fullSite = !PRELAUNCH || access.admin;
+  const fullSite = !PRELAUNCH || access.approved;
   const totalUnread = unreadMessages + unreadNotifications;
 
   // Community lives in the main navigation — deliberately not repeated here.

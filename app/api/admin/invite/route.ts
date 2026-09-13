@@ -78,7 +78,9 @@ export async function POST(request: NextRequest) {
   const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(
     req.email,
     {
-      redirectTo: `${origin}/auth/callback?next=/account`,
+      // The member home greets them and leads with "Start lesson";
+      // /account would greet them with a profile form.
+      redirectTo: `${origin}/auth/callback?next=/`,
       data: { first_name: req.first_name, last_name: req.last_name },
     },
   );
