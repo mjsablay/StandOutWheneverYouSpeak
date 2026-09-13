@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import { Wrap, Section, Avatar } from "@/components/ui";
+import { Eye, ExternalLink, Layers, Target, Volume2 } from "lucide-react";
+import { Wrap, Section, SectionHead, Eyebrow, Btn } from "@/components/ui";
+import LogoMarquee from "@/components/LogoMarquee";
 import { createClient } from "@/lib/supabase/server";
+import { RUBRIC } from "@/lib/courses";
 import {
   CONTENT_KEYS,
   FALLBACK_HERO,
@@ -21,6 +23,73 @@ export const metadata: Metadata = {
 
 // Content is editable from the admin console, so don't cache indefinitely.
 export const revalidate = 60;
+
+const RUBRIC_ICONS = [Layers, Volume2, Eye, Target] as const;
+
+function FounderTile({ person, flip }: { person: Founder; flip: boolean }) {
+  const photo = person.photo_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={person.photo_url}
+      alt={person.name}
+      className="h-full w-full object-cover"
+      style={{ objectPosition: person.photo_position || "50% 50%" }}
+    />
+  ) : (
+    <div
+      className={`flex h-full w-full items-center justify-center ${
+        person.dark ? "bg-brand text-white" : "bg-accent text-ink"
+      }`}
+    >
+      <span className="display text-[72px]">
+        {person.initials || initialsFrom(person.name)}
+      </span>
+    </div>
+  );
+
+  return (
+    <div className="grid overflow-hidden rounded-[28px] border border-line bg-white shadow-card md:grid-cols-[minmax(260px,0.9fr)_1.4fr]">
+      <div className={`aspect-[4/5] md:aspect-auto md:min-h-[440px] ${flip ? "md:order-2" : ""}`}>
+        {photo}
+      </div>
+      <div className="flex flex-col justify-center p-8 sm:p-10">
+        <div className="mb-2 text-[12.5px] font-bold uppercase tracking-[0.1em] text-brand">
+          {person.role}
+        </div>
+        <h3 className="display text-[clamp(28px,3.4vw,38px)]">{person.name}</h3>
+        {person.headline && (
+          <p className="mt-2 text-[15.5px] text-ink-soft">{person.headline}</p>
+        )}
+        {person.credentials?.length > 0 && (
+          <div className="my-5 flex flex-wrap gap-2">
+            {person.credentials.map((c) => (
+              <span
+                key={c}
+                className="rounded-full bg-paper-soft px-3 py-1.5 text-[13px] font-semibold"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="max-w-[560px] whitespace-pre-line text-[15.5px] leading-relaxed text-ink-soft">
+          {person.bio}
+        </p>
+        {person.linkedin && (
+          <a
+            href={person.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-line px-4 py-2 text-[14px] font-semibold transition hover:bg-paper-soft"
+          >
+            <ExternalLink className="h-4 w-4 text-brand" strokeWidth={2} />
+            {person.name.split(" ")[0]} on LinkedIn
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default async function AboutPage() {
   let hero: AboutHero = FALLBACK_HERO;
@@ -46,127 +115,117 @@ export default async function AboutPage() {
   return (
     <>
       {/* Statement */}
-      <Section className="pb-8 pt-16 sm:pt-20">
-        <Wrap className="max-w-[820px]">
-          <h1 className="text-[clamp(34px,5.5vw,54px)] font-semibold leading-[1.1] tracking-tight">
+      <header className="hero-glow relative overflow-hidden pb-16 pt-20 sm:pb-20 sm:pt-28">
+        <Wrap className="max-w-[900px] text-center">
+          <Eyebrow>About</Eyebrow>
+          <h1 className="display text-[clamp(38px,6vw,72px)]">
             {hero.headline}
             <br />
             <span className="text-brand">{hero.headline_accent}</span>
           </h1>
-          <p className="mt-6 max-w-[620px] text-[19px] leading-relaxed text-ink-soft">
+          <p className="mx-auto mt-7 max-w-[620px] text-[19px] leading-relaxed text-ink-soft">
             {hero.body}
           </p>
         </Wrap>
-      </Section>
 
-      {/* Proof */}
-      {stats.length > 0 && (
-        <Section alt className="py-12">
-          <Wrap>
-            <div className="grid gap-8 text-center sm:grid-cols-3">
+        {/* Proof */}
+        {stats.length > 0 && (
+          <Wrap className="mt-14">
+            <div className="grid gap-4 rounded-[28px] border border-line bg-white p-2 shadow-card sm:grid-cols-3">
               {stats.map((s) => (
-                <div key={s.label}>
-                  <div className="text-[38px] font-semibold leading-none tracking-tight text-brand">
+                <div key={s.label} className="rounded-3xl px-6 py-7 text-center">
+                  <div className="display text-[clamp(38px,5vw,56px)] text-brand">
                     {s.figure}
                   </div>
-                  <div className="mt-2 text-[15px] text-ink-soft">{s.label}</div>
+                  <div className="mt-1 text-[14.5px] text-ink-soft">{s.label}</div>
                 </div>
               ))}
             </div>
           </Wrap>
-        </Section>
-      )}
+        )}
+      </header>
 
-      {/* Founders */}
+      {/* The method */}
       <Section>
         <Wrap>
-          <h2 className="mb-10 text-[26px] font-semibold tracking-tight">
-            The founders
-          </h2>
-
-          <div className="space-y-8">
-            {founders.map((person) => (
-              <div
-                key={person.name}
-                className="overflow-hidden rounded-2xl border border-line bg-white"
-              >
-                <div className="grid gap-8 p-8 sm:p-10 md:grid-cols-[200px_1fr]">
-                  <div>
-                    <Avatar
-                      initials={person.initials || initialsFrom(person.name)}
-                      size={168}
-                      variant={person.dark ? "brand" : "accent"}
-                      src={person.photo_url || null}
-                      position={person.photo_position}
-                      alt={person.name}
-                    />
-                  </div>
-
-                  <div>
-                    <div className="mb-1 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-brand">
-                      {person.role}
-                    </div>
-                    <h3 className="text-[28px] font-semibold tracking-tight">
-                      {person.name}
-                    </h3>
-                    {person.headline && (
-                      <p className="mt-1 text-[15.5px] text-ink-soft">
-                        {person.headline}
-                      </p>
-                    )}
-
-                    {person.credentials?.length > 0 && (
-                      <div className="my-5 flex flex-wrap gap-2">
-                        {person.credentials.map((c) => (
-                          <span
-                            key={c}
-                            className="rounded-full bg-paper-warm px-3 py-1.5 text-[13px] font-medium"
-                          >
-                            {c}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <p className="max-w-[640px] whitespace-pre-line text-[16px] leading-relaxed text-ink-soft">
-                      {person.bio}
-                    </p>
-
-                    {person.linkedin && (
-                      <a
-                        href={person.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-5 inline-flex items-center gap-2 text-[14.5px] font-semibold text-brand hover:underline"
-                      >
-                        <ExternalLink className="h-4 w-4" strokeWidth={2} />
-                        {person.name} on LinkedIn
-                      </a>
-                    )}
-                  </div>
+          <SectionHead
+            center
+            eyebrow="The method"
+            title="Four things Barry listens for."
+            sub="Speak with Impact is a rubric, not a mood. Every lesson, every practice session and every score comes back to these four."
+          />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {RUBRIC.map((c, i) => {
+              const Icon = RUBRIC_ICONS[i] ?? Layers;
+              return (
+                <div key={c.id} className="rounded-3xl border border-line bg-white p-7 shadow-card">
+                  <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-brand">
+                    <Icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
+                  <h3 className="mb-3 text-[19px] font-bold leading-snug">{c.name}</h3>
+                  <ul className="space-y-1.5 text-[14px] text-ink-soft">
+                    {c.looksFor.map((l) => (
+                      <li key={l} className="flex gap-2">
+                        <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-accent" />
+                        {l}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Founders */}
+      <Section alt>
+        <Wrap>
+          <SectionHead
+            eyebrow="The founders"
+            title="A coach with the method. A builder who needed it."
+            sub="Barry supplies seventeen years of coaching; Michael turns it into something you can practise on a Tuesday night."
+          />
+          <div className="space-y-6">
+            {founders.map((person, i) => (
+              <FounderTile key={person.name} person={person} flip={i % 2 === 1} />
             ))}
           </div>
         </Wrap>
       </Section>
 
+      {/* Where the method has been */}
+      <div className="border-y border-line">
+        <LogoMarquee />
+      </div>
+
       {/* Close */}
-      <Section alt className="py-14">
-        <Wrap className="max-w-[640px] text-center">
-          <h2 className="text-[26px] font-semibold tracking-tight">
-            Want to work with us?
-          </h2>
-          <p className="mx-auto mt-3 mb-7 max-w-[480px] text-[16px] text-ink-soft">
-            Coaching for yourself, training for a team, or a speaking
-            engagement — tell us what you need.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block rounded-lg bg-brand px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-brand-dark"
-          >
-            Get in touch
-          </Link>
+      <Section>
+        <Wrap>
+          <div className="relative overflow-hidden rounded-[32px] bg-brand px-6 py-16 text-center text-white sm:px-10 sm:py-20">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl"
+            />
+            <h2 className="display relative text-[clamp(32px,4.6vw,52px)]">
+              Want to work with us?
+            </h2>
+            <p className="relative mx-auto mb-8 mt-4 max-w-[500px] text-[17px] text-white/80">
+              Coaching for yourself, training for a team, or a speaking
+              engagement — tell us what you need and we&apos;ll come back with times.
+            </p>
+            <div className="relative flex flex-wrap justify-center gap-3">
+              <Btn href="/contact" variant="accent" className="px-7 py-3.5 text-[16px]">
+                Start a conversation
+              </Btn>
+              <Link
+                href="/request"
+                className="inline-flex items-center rounded-full border border-white/30 px-7 py-3.5 text-[16px] font-semibold text-white transition hover:bg-white/10"
+              >
+                Request a place
+              </Link>
+            </div>
+          </div>
         </Wrap>
       </Section>
     </>
