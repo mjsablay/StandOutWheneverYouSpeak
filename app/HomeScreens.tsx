@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Wrap, Section, SectionHead, Eyebrow, Btn, Check, Avatar } from "@/components/ui";
 import LogoMarquee from "@/components/LogoMarquee";
 import VideoPlayer from "@/components/VideoPlayer";
@@ -17,13 +17,11 @@ import {
   Quote,
   Trophy,
   Users,
-  X,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
 import { COURSES, FREE_PREVIEW_COUNT, RUBRIC_MAX, SCORED_RUBRIC, videoUrl } from "@/lib/courses";
-import { TOPIC_COUNT } from "@/lib/topics";
 import { FAQS, PRELAUNCH, COACH_NAME } from "@/lib/site";
 import { useUpcomingEvents } from "@/lib/use-events";
 import { dateParts, timeLabel } from "@/lib/events";
@@ -175,86 +173,57 @@ function CoachMock({ compact = false }: { compact?: boolean }) {
 }
 
 /**
- * The free first lesson, playable from the home page. The recording lives in
- * the public lesson-videos bucket, so a visitor can watch it without an
- * account — that is the point of a free first lesson.
+ * The free first lesson, playable from the home page. The poster is the
+ * recording's own title card (public/lesson-1-poster.jpg, a frame from the
+ * file), and the recording streams from the public bucket, so a visitor can
+ * watch it without an account — which is the point of a free first lesson.
  */
-function LessonPreviewTile({ lesson }: { lesson: (typeof COURSES)[0]["lessons"][0] }) {
-  const [open, setOpen] = useState(false);
+function LessonPreview({ lesson }: { lesson: (typeof COURSES)[0]["lessons"][0] }) {
+  const [playing, setPlaying] = useState(false);
   const src = videoUrl(lesson.video);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
-
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="group relative overflow-hidden rounded-3xl border border-line bg-ink text-left shadow-card"
-        aria-label={`Watch lesson ${lesson.number}: ${lesson.title}`}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={FOUNDER_PHOTO}
-          alt=""
-          className="aspect-[4/3] w-full object-cover object-[50%_28%] opacity-90 transition group-hover:scale-[1.02]"
-        />
-        <span className="absolute left-1/2 top-[38%] flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-ink shadow-lift transition group-hover:scale-105">
-          <Play className="ml-0.5 h-5 w-5" strokeWidth={2.5} fill="currentColor" />
-        </span>
-        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent p-5 text-white">
-          <span className="block text-[11.5px] font-bold uppercase tracking-wider text-white/70">
-            Watch the first lesson · free · 2 min
-          </span>
-          <span className="block text-[17px] font-bold">
-            Lesson {lesson.number}: {lesson.title}
-          </span>
-        </span>
-      </button>
-
-      {open && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={lesson.title}
-        >
-          <div className="w-full max-w-[960px]" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3 flex items-center justify-between text-white">
-              <div>
-                <div className="text-[12px] font-bold uppercase tracking-wider text-white/70">
-                  Lesson {lesson.number} · Leadership Voice
-                </div>
-                <div className="text-[18px] font-bold">{lesson.title}</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-full bg-white/10 p-2 transition hover:bg-white/20"
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" strokeWidth={2} />
-              </button>
-            </div>
-            <VideoPlayer src={src} title={lesson.title} autoPlay />
-            <p className="mt-4 text-center text-[14px] text-white/80">
-              Liked it? The next five are free too.{" "}
-              <Link href="/request" className="font-semibold text-white underline underline-offset-2">
-                Request your place
-              </Link>
-            </p>
-          </div>
-        </div>
-      )}
-    </>
+    <figure className="mx-auto max-w-[960px]">
+      <div className="overflow-hidden rounded-[28px] border border-line bg-ink shadow-lift">
+        {playing ? (
+          <VideoPlayer src={src} title={lesson.title} autoPlay />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            className="group relative block w-full text-left"
+            aria-label={`Play lesson ${lesson.number}: ${lesson.title}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/lesson-1-poster.jpg"
+              alt=""
+              className="aspect-video w-full object-cover"
+            />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-white text-ink shadow-lift transition group-hover:scale-105">
+                <Play className="ml-1 h-7 w-7" strokeWidth={2.5} fill="currentColor" />
+              </span>
+            </span>
+            <span className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 bg-gradient-to-t from-ink/85 to-transparent p-6 text-white">
+              <span>
+                <span className="block text-[11.5px] font-bold uppercase tracking-wider text-white/70">
+                  Lesson {lesson.number} · {COURSES[0].name}
+                </span>
+                <span className="block text-[20px] font-bold">{lesson.title}</span>
+              </span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-[12.5px] font-semibold backdrop-blur">
+                Free · 1:55
+              </span>
+            </span>
+          </button>
+        )}
+      </div>
+      <figcaption className="mt-4 text-center text-[14.5px] text-ink-soft">
+        The first lesson of Leadership Voice, free to watch. Fourteen more,
+        eighty practice topics and {COACH_NAME} are behind the door.
+      </figcaption>
+    </figure>
   );
 }
 
@@ -298,67 +267,9 @@ function VisitorHome() {
           </p>
         </Wrap>
 
-        {/* Three things that are true: the free first lesson, playable; how
-            Katya coaches, in Barry's own loop; what Front Row includes. */}
-        <Wrap className="mt-16">
-          <div className="grid gap-4 md:grid-cols-3">
-            <LessonPreviewTile lesson={leadership.lessons[0]} />
-
-            <div className="flex flex-col rounded-3xl border border-line bg-white p-6 text-left shadow-card">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <Avatar initials="K" size={30} variant="dark" />
-                  <div>
-                    <div className="text-[13.5px] font-bold leading-tight">{COACH_NAME}</div>
-                    <div className="text-[11.5px] text-ink-soft">Your AI practice coach</div>
-                  </div>
-                </div>
-                <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand">
-                  Lesson 5B
-                </span>
-              </div>
-              <p className="mb-4 text-[14px] leading-relaxed text-ink-soft">
-                You meet her with your 60-second self-introduction. Then the loop
-                Barry teaches:
-              </p>
-              <ol className="mb-5 space-y-2">
-                {["Deliver", "Feedback", "Retry", "Improve"].map((step, i) => (
-                  <li key={step} className="flex items-center gap-3 text-[14.5px]">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand text-[11.5px] font-bold text-white">
-                      {i + 1}
-                    </span>
-                    <span className="font-semibold">{step}</span>
-                    {i === 1 && (
-                      <span className="text-[12.5px] text-ink-soft">
-                        one strength, two things to fix
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-auto text-[12.5px] text-ink-soft">
-                Scored on structure, delivery and staying on message — out of {RUBRIC_MAX}.
-              </p>
-            </div>
-
-            <div className="flex flex-col rounded-3xl border border-line bg-paper-soft p-6 text-left shadow-card">
-              <div className="mb-1 text-[11.5px] font-bold uppercase tracking-wider text-ink-soft">
-                Front Row · free
-              </div>
-              <div className="display mb-4 text-[26px]">The first six lessons, and {COACH_NAME}.</div>
-              <ul className="mb-5 space-y-2 text-[14px]">
-                {leadership.lessons.slice(0, FREE_PREVIEW_COUNT).map((l) => (
-                  <li key={l.slug} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
-                    <span className="font-medium">{l.title}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-auto text-[12.5px] text-ink-soft">
-                Speakers&apos; Circle adds every lesson, {TOPIC_COUNT} practice topics, and live workshops.
-              </p>
-            </div>
-          </div>
+        {/* The product itself: the free first lesson, playable here. */}
+        <Wrap className="mt-14">
+          <LessonPreview lesson={leadership.lessons[0]} />
         </Wrap>
       </header>
 

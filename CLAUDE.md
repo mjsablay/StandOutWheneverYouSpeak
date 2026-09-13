@@ -43,10 +43,12 @@ add it to `COMPANIES` in `lib/site.ts` and to the script's `COMMONS` or
 wrong size. The caption under the row is "Barry's coaching clients have
 included" — the 3,500 figure is people, not organizations; don't put it there.
 
-**The home-page hero tiles are real, not drawn.** The first plays Lesson 1
-from the public bucket; the second is Barry's coaching loop; the third lists
-the Front Row lessons from `COURSES`. They replaced three illustrations with
-invented numbers. Keep them true.
+**The hero shows one thing: the free first lesson, playable.** Three tiles
+of illustration came before it (invented points, a drawn transcript, then a
+"loop" and a lesson list Tori found meaningless — she was right). The frame's
+poster is `public/lesson-1-poster.jpg`, a real frame from the recording's
+title card at 3.2 s, so the play button sits on a title, not on Barry's face.
+If Lesson 1 is ever re-recorded, regrab the poster.
 
 **The look is deliberate — keep to it.** Tori asked for the polish of
 heygen.com, translated into the brand rather than copied: white ground,
