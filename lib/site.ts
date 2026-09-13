@@ -76,7 +76,7 @@ export const COMPANIES: [string, string][] = [
   ["Merrithew", "merrithew"],
   ["VGW", "vgw"],
   ["CPA Canada", "cpa"],
-  ["Equitable Bank", "equitable"],
+  ["EQ Bank", "equitable"],
   ["401 Group of Companies", "401-group"],
   ["Maersk", "maersk"],
   ["Coeur Mining", "coeur"],

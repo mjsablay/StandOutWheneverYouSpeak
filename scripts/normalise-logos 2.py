@@ -13,64 +13,9 @@ where <slug> is the second value in COMPANIES in lib/site.ts.
 Add a company: put its image in the deck, add a line to DECK_MAP and to
 COMPANIES, and re-run. Needs Pillow (pip3 install --user pillow).
 """
-import io, json, math, os, sys, time, urllib.parse, urllib.request, zipfile, tempfile
+import math, os, sys, zipfile, tempfile
 from collections import deque
 from PIL import Image
-
-UA = {"User-Agent": "StandOutWheneverYouSpeak/1.0 (site logo sourcing; contact via standoutwheneveryouspeak.com)"}
-
-# Where an official vector exists on Wikimedia Commons, use it instead of the
-# deck's raster: it is the current mark, at any size, with a clean edge.
-# Commons renders the SVG to PNG for us. The rest stay on the deck copy —
-# small private companies whose logos aren't on Commons, a few (CIBC, Citi,
-# RBC) where the Commons search only turned up subsidiaries, and The Globe
-# and Mail, whose Commons vector is a white wordmark for dark grounds.
-COMMONS = {
-    "bmo": "File:BMO Logo.svg",
-    "manulife": "File:Manulife logo (2018).svg",
-    "lubrizol": "File:Lubrizol Logo 2017.png",
-    "tjx": "File:TJX Logo.svg",
-    "kijiji": "File:Kijiji (ca) Logo 2019.svg",
-    "indeed": "File:Indeed logo.svg",
-    "samsung": "File:Samsung wordmark.svg",
-    "nissan": "File:Nissan 2020 logo.svg",
-    "gm": "File:General Motors (2021).svg",
-    "fortinet": "File:Fortinet logo.svg",
-    "air-canada": "File:Air Canada logo.svg",
-    "deloitte": "File:Logo of Deloitte.svg",
-    "wrigley": "File:Wrigley Logo.svg",
-    "canaccord": "File:Canaccord Genuity Logo.png",
-    "equitable": "File:Logo of EQ Bank.svg",
-    "maersk": "File:Maersk Group Logo.svg",
-    "coeur": "File:Coeur Mining Logo.png",
-    "desjardins": "File:Desjardins Group logo.svg",
-}
-
-
-def commons_image(title, width=1200):
-    """The Commons rendering of a file at `width` px, as a PIL image."""
-    q = urllib.parse.urlencode({"action": "query", "titles": title, "prop": "imageinfo",
-                                "iiprop": "url", "iiurlwidth": str(width), "format": "json"})
-    for attempt in range(5):
-        try:
-            r = json.load(urllib.request.urlopen(
-                urllib.request.Request("https://commons.wikimedia.org/w/api.php?" + q, headers=UA), timeout=30))
-            info = next(iter(r["query"]["pages"].values()))["imageinfo"][0]
-            url = info.get("thumburl") or info["url"]
-            data = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60).read()
-            return Image.open(io.BytesIO(data))
-        except urllib.error.HTTPError as e:
-            if e.code == 429:
-                time.sleep(15 * (attempt + 1))
-                continue
-            raise
-    raise RuntimeError(f"could not fetch {title}")
-
-
-def has_transparent_corners(im):
-    im = im.convert("RGBA")
-    w, h = im.size
-    return all(im.getpixel(p)[3] < 20 for p in [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)])
 
 # Deck image number → slug. Marks whose corners are the logo itself get no
 # knockout; a few sit in off-white boxes and need a looser tolerance.
@@ -84,7 +29,7 @@ DECK_MAP = {
 }
 NO_KNOCKOUT = {"rbc", "bmo"}
 TOLERANCE = {"sunlife": 90}
-KEEP_EXISTING = set()  # slugs to leave untouched from a previous run
+KEEP_EXISTING = {"coeur"}  # deck copy has a transparency checkerboard baked in
 PRE_CROP = {"sunlife": 0.05}  # a hairline border around a white square; cut it off first
 
 BOX_W, BOX_H, TARGET = 480, 128, 150
@@ -136,14 +81,6 @@ def main(deck):
         media = os.path.join(tmp, "ppt", "media")
         files = {int("".join(c for c in f if c.isdigit())): os.path.join(media, f) for f in os.listdir(media)}
         for n, slug in DECK_MAP.items():
-            if slug in COMMONS:
-                im = commons_image(COMMONS[slug]).convert("RGBA")
-                time.sleep(2)  # be a polite client
-                if not has_transparent_corners(im):
-                    im = knockout(im, TOLERANCE.get(slug, 48))
-                normalise(trim(im)).save(os.path.join(out, f"{slug}.png"), optimize=True)
-                print("wrote", slug, "(Commons)")
-                continue
             src = os.path.join(out, f"{slug}.png") if slug in KEEP_EXISTING else files[n]
             im = Image.open(src).convert("RGBA")
             if slug in PRE_CROP:

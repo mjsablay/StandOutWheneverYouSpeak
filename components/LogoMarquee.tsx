@@ -13,7 +13,7 @@ export default function LogoMarquee() {
   return (
     <section className="bg-white py-12" aria-label="Organizations Barry has coached">
       <p className="mb-8 text-center text-[13.5px] font-medium text-ink-soft">
-        Barry has coached leaders at these organizations, among 3,500 others.
+        Barry&apos;s coaching clients have included
       </p>
       <div className="marquee">
         <div className="marquee-track items-center">
@@ -24,7 +24,7 @@ export default function LogoMarquee() {
               alt={name}
               width={240}
               height={64}
-              className="h-[52px] w-auto flex-shrink-0 px-7 opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0"
+              className="h-[56px] w-auto flex-shrink-0 px-8"
               unoptimized
             />
           ))}
