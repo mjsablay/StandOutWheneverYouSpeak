@@ -33,12 +33,15 @@ lucide icons, including for check marks and the mobile menu.
 
 Brand colours: dark blue `#1D4F91`, green `#6CC24A`, grey `#E8E8E8`, white.
 
-**The client logos are generated, not hand-edited.** `public/logos/*.png` are
-cut from Barry's "Client Logos" deck by `scripts/normalise-logos.py`:
-background knocked out, trimmed, scaled to one visual weight on a transparent
-480×128 canvas, so they sit on plain white at a single height. To add a
-client, add it to the deck and to `COMPANIES` in `lib/site.ts`, then re-run
-the script. Don't drop a logo in by hand — it will be the one wrong size.
+**The client logos are generated, not hand-edited.** `public/logos/*.png` come
+from `scripts/normalise-logos.py`: the official vector from Wikimedia Commons
+where one exists (19 of 35), otherwise the raster from Barry's "Client Logos"
+deck; background knocked out, trimmed, scaled to one visual weight on a
+transparent 480×128 canvas, shown in colour at one height. To add a client,
+add it to `COMPANIES` in `lib/site.ts` and to the script's `COMMONS` or
+`DECK_MAP`, then re-run. Don't drop a logo in by hand — it will be the one
+wrong size. The caption under the row is "Barry's coaching clients have
+included" — the 3,500 figure is people, not organizations; don't put it there.
 
 **The home-page hero tiles are real, not drawn.** The first plays Lesson 1
 from the public bucket; the second is Barry's coaching loop; the third lists
