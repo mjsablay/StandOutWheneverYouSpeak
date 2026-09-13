@@ -34,14 +34,14 @@ export default function Nav() {
     href === "/" ? pathname === "/" : pathname.startsWith(href.split("#")[0]);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-line bg-white/92 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-6">
-        <Link href="/" className="text-[17px] font-extrabold tracking-tight">
-          STAND OUT<span className="text-accent">.</span>
+    <nav className="sticky top-0 z-50 border-b border-line/70 bg-white/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between px-6">
+        <Link href="/" className="display text-[19px] tracking-[-0.03em]">
+          Stand Out<span className="text-accent">.</span>
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-6 text-[14.5px] font-medium text-ink-soft lg:flex">
+        <div className="hidden items-center gap-7 text-[14.5px] font-medium text-ink-soft lg:flex">
           <Link
             href="/"
             className={
@@ -69,7 +69,7 @@ export default function Nav() {
                 Courses <ChevronDown className="h-3.5 w-3.5" strokeWidth={2.5} />
               </Link>
               {coursesOpen && (
-                <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-xl border border-line bg-white p-1.5 shadow-[0_14px_34px_rgba(20,24,31,.12)]">
+                <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
                   {COURSE_LINKS.map((c) => (
                     <Link
                       key={c.href}
@@ -113,13 +113,13 @@ export default function Nav() {
             <>
               <Link
                 href="/signin"
-                className="hidden text-[14.5px] font-semibold text-ink-soft hover:text-ink sm:inline-block"
+                className="hidden rounded-full px-4 py-2.5 text-[14.5px] font-semibold text-ink transition hover:bg-paper-soft sm:inline-block"
               >
                 Sign in
               </Link>
               <Link
                 href="/request"
-                className="hidden rounded-lg bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark sm:inline-block"
+                className="hidden rounded-full bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark sm:inline-block"
               >
                 {PRELAUNCH ? "Request a place" : "Join free"}
               </Link>
@@ -130,7 +130,7 @@ export default function Nav() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
-            className="rounded-lg p-2 text-ink lg:hidden"
+            className="rounded-full p-2 text-ink hover:bg-paper-soft lg:hidden"
           >
             {mobileOpen ? (
               <X className="h-5 w-5" strokeWidth={2} />
@@ -144,7 +144,7 @@ export default function Nav() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t border-line bg-white lg:hidden">
-          <div className="mx-auto flex max-w-[1120px] flex-col px-6 py-3">
+          <div className="mx-auto flex max-w-[1180px] flex-col px-6 py-3">
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
@@ -166,7 +166,7 @@ export default function Nav() {
               <Link
                 href="/account"
                 onClick={() => setMobileOpen(false)}
-                className="mt-4 mb-2 rounded-lg bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
+                className="mt-4 mb-2 rounded-full bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
               >
                 My account
               </Link>
@@ -175,16 +175,16 @@ export default function Nav() {
                 <Link
                   href="/signin"
                   onClick={() => setMobileOpen(false)}
-                  className="mt-4 rounded-lg border border-line px-5 py-3 text-center text-[15px] font-semibold"
+                  className="mt-4 rounded-full border border-line px-5 py-3 text-center text-[15px] font-semibold"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/request"
                   onClick={() => setMobileOpen(false)}
-                  className="mt-2.5 mb-2 rounded-lg bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
+                  className="mt-2.5 mb-2 rounded-full bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
                 >
-                  Join free
+                  {PRELAUNCH ? "Request a place" : "Join free"}
                 </Link>
               </>
             )}

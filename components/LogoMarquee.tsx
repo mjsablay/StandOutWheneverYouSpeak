@@ -6,18 +6,18 @@ export default function LogoMarquee() {
 
   return (
     <section
-      className="border-b border-line bg-white py-13"
-      aria-label="Clients we have worked with"
+      className="bg-white py-12"
+      aria-label="Organizations Barry has coached"
     >
-      <p className="mb-7 text-center text-[13px] font-bold uppercase tracking-[0.12em] text-ink-soft">
-        Trusted by teams at leading organizations
+      <p className="mb-7 text-center text-[13.5px] font-medium text-ink-soft">
+        Barry has coached leaders at these organizations, among 3,500 others.
       </p>
       <div className="marquee">
         <div className="marquee-track">
           {chips.map(([name, slug], i) => (
             <div
               key={`${slug}-${i}`}
-              className="flex h-[78px] flex-shrink-0 items-center justify-center rounded-xl border border-line bg-white px-6"
+              className="flex h-[72px] flex-shrink-0 items-center justify-center rounded-2xl bg-paper-soft px-7"
             >
               <Image
                 src={`/logos/${slug}.png`}
