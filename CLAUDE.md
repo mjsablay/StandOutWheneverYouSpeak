@@ -170,6 +170,31 @@ ledger row; the "+50 points" label was decoration. `POINTS_RULES` in
 pay today. When a new way to earn points exists, award it server-side and
 flip its `live` flag — don't insert from the client.
 
+**The member home and `/courses` divide the course between them.** Home
+(`app/MemberHome.tsx`, routed by audience from `app/HomeScreens.tsx`) answers
+"where am I and what is next": the lesson the member is up to, the three
+after it, and one row of tiles. `/courses` (`app/courses/CourseScreen.tsx`)
+answers "what is the whole thing": all fifteen lessons. Both read the same
+`member_progress` through `useProgress`, and for a while both rendered the
+entire syllabus — built the same week in two sessions — so "Course page →"
+led to a screen the member had just read. Keep the split: if the home page
+starts listing every lesson again, it has re-grown the duplicate.
+
+Two rules the home card exists to enforce. The next lesson is *derived* —
+the first one unwatched, or watched with its quiz unpassed — never
+`lessons[0]`; the card it replaced was hard-coded that way and told everyone
+to start at Be Remarkable forever. And progress counts what the member has
+**done**, never what their tier **unlocks**; the old bar measured
+entitlement, so it never moved. Lessons with no `video` and no `materials`
+(07A2, and 07A3–07A6) are never counted and never offered as next.
+
+**Nothing may read the clock while rendering.** The greeting called
+`new Date().getHours()` during render, and these client components are
+server-rendered too — in UTC — so for several hours of every day the
+server's "Good evening" and the browser's "Good afternoon" disagreed and
+hydration failed over a decoration. Same family as the `react-hooks/purity`
+rule below. If a screen genuinely needs the local time, read it after mount.
+
 **Events come from the `events` table, edited in the admin console.** They
 used to be three hard-coded entries in `lib/site.ts` with July and August
 dates, still "upcoming" in September. Empty is now an honest state on both

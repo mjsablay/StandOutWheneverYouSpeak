@@ -12,8 +12,14 @@
  * Then four equal cards gave Events and the Leaderboard the same weight as
  * the thing they came for.
  *
- * Now: where you actually are, then the whole syllabus with your real state
- * on every row, and everything else in one line at the bottom.
+ * Now: where you actually are, the lessons immediately ahead of you, and
+ * everything else in one line at the bottom.
+ *
+ * It deliberately stops short of the full syllabus. /courses is the course
+ * itself (app/courses/CourseScreen.tsx) and lists all fifteen lessons with
+ * the same per-row state; repeating that here made "Course page →" lead to
+ * a screen the member had just read. Home answers "where am I and what is
+ * next"; the course page answers "what is the whole thing".
  */
 
 import Link from "next/link";
@@ -214,6 +220,10 @@ export default function MemberHome({
     return "open";
   };
 
+  // The current lesson and the three after it. The rest of the syllabus is
+  // one link away on /courses, which exists to show all of it.
+  const ahead = open.filter((l) => !finished(l)).slice(0, 4);
+
   const nextHref = next
     ? `/courses/${LEADERSHIP.slug}/lessons/${next.slug}${quizDue ? "/quiz" : ""}`
     : `/courses/${LEADERSHIP.slug}`;
@@ -321,25 +331,31 @@ export default function MemberHome({
           </div>
         )}
 
-        {/* ---------- The course ---------- */}
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="display text-[clamp(24px,3vw,34px)]">{LEADERSHIP.name}</h2>
-            <p className="mt-1.5 text-[15px] text-ink-soft">{LEADERSHIP.blurb}</p>
-          </div>
-          <Link
-            href={`/courses/${LEADERSHIP.slug}`}
-            className="text-[14px] font-semibold text-brand hover:underline"
-          >
-            Course page →
-          </Link>
-        </div>
+        {/* ---------- The lessons immediately ahead ---------- */}
+        {ahead.length > 0 && (
+          <>
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="display text-[clamp(24px,3vw,34px)]">
+                  Up next in {LEADERSHIP.name}
+                </h2>
+                <p className="mt-1.5 text-[15px] text-ink-soft">{LEADERSHIP.blurb}</p>
+              </div>
+              <Link
+                href="/courses"
+                className="text-[14px] font-semibold text-brand hover:underline"
+              >
+                All {LEADERSHIP.lessons.length} lessons →
+              </Link>
+            </div>
 
-        <div className="mb-10 overflow-hidden rounded-3xl border border-line bg-white shadow-card">
-          {LEADERSHIP.lessons.map((l) => (
-            <LessonRow key={l.slug} course={LEADERSHIP} lesson={l} state={stateOf(l)} />
-          ))}
-        </div>
+            <div className="mb-10 overflow-hidden rounded-3xl border border-line bg-white shadow-card">
+              {ahead.map((l) => (
+                <LessonRow key={l.slug} course={LEADERSHIP} lesson={l} state={stateOf(l)} />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* ---------- Upgrade, once they've seen what's locked ---------- */}
         {!paid && !admin && (
@@ -416,14 +432,6 @@ export default function MemberHome({
 
         {/* ---------- Everything else ---------- */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {!paid && (
-            <Tile
-              href="/courses"
-              icon={Play}
-              label="Both courses"
-              note="Leadership and Campus Voice"
-            />
-          )}
           <Tile
             href="/events"
             icon={CalendarDays}
