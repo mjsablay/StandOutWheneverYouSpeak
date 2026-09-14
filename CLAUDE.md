@@ -170,6 +170,26 @@ ledger row; the "+50 points" label was decoration. `POINTS_RULES` in
 pay today. When a new way to earn points exists, award it server-side and
 flip its `live` flag — don't insert from the client.
 
+**The member home page is the course.** `app/MemberHome.tsx` (routed by
+audience from `app/HomeScreens.tsx`, which keeps the visitor and waitlist
+screens) opens with the lesson the member is actually up to, then lists the
+whole Leadership Voice syllabus with per-row state. Two rules it exists to
+enforce. The next lesson is *derived* from `member_progress` — the first one
+unwatched, or watched with its quiz unpassed — never `lessons[0]`; the card
+it replaced was hard-coded that way and told everyone to start at Be
+Remarkable forever. And progress counts what the member has **done**, never
+what their tier **unlocks**; the old bar measured entitlement, so it never
+moved. Lessons with no `video` and no `materials` (07A2, and 07A3–07A6) are
+listed as "Coming soon", never counted in a total, and never offered as the
+next lesson.
+
+**Nothing may read the clock while rendering.** The greeting called
+`new Date().getHours()` during render, and these client components are
+server-rendered too — in UTC — so for several hours of every day the
+server's "Good evening" and the browser's "Good afternoon" disagreed and
+hydration failed over a decoration. Same family as the `react-hooks/purity`
+rule below. If a screen genuinely needs the local time, read it after mount.
+
 **Events come from the `events` table, edited in the admin console.** They
 used to be three hard-coded entries in `lib/site.ts` with July and August
 dates, still "upcoming" in September. Empty is now an honest state on both
