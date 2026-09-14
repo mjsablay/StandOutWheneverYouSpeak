@@ -20,7 +20,7 @@ import { useAccess } from "@/lib/access";
 
 const INCLUDED = [
   "Every lesson in both courses",
-  "Unlimited AI practice sessions",
+  "Coaching sessions with Katya",
   "Full member community access",
   "All live events, workshops and cohort classes",
 ];

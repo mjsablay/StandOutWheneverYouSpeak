@@ -75,7 +75,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
             </h1>
             <p className="mb-6 text-[15px] text-ink-soft">
               Lessons 1–6 are free. Unlock all {course.lessons.length} lessons,
-              unlimited AI practice, and the member community for $10 CAD/month.
+              coaching with Katya, and the member community for $10 CAD/month.
             </p>
             <Link
               href={`/checkout?next=${encodeURIComponent(base)}`}

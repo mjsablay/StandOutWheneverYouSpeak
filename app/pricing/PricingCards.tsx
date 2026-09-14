@@ -12,7 +12,7 @@ const FRONT_ROW = [
 
 const CIRCLE = [
   "Every lesson in both courses",
-  "Unlimited AI practice sessions",
+  "Coaching sessions with Katya",
   "Full Member community access",
   "All live events, workshops & cohort classes",
 ];

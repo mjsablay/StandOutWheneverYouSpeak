@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Lock, Shuffle } from "lucide-react";
-import { SectionHead, Btn, Check } from "@/components/ui";
+import { ArrowRight, ChevronDown, Shuffle } from "lucide-react";
+import { SectionHead } from "@/components/ui";
+import CircleLocked from "@/components/CircleLocked";
 import { useAccess } from "@/lib/access";
 import { COACH_NAME } from "@/lib/site";
 import {
   PRACTICE_STEPS,
+  SELF_INTRODUCTION,
   TOPIC_COUNT,
   TOPIC_SECTIONS,
   type Topic,
@@ -19,45 +21,9 @@ import {
  * his; the page's job is to make picking one and starting feel like a
  * two-minute decision rather than a homework assignment.
  *
- * Coaching by Katya is the last step and is not live yet — the page says so
- * rather than pretending, and points at the preview of what it will be.
+ * Every topic opens a workspace (/topics/[id]) where the member saves their
+ * Frame and Masterful Notes and runs a session with Katya from them.
  */
-
-function Locked({ signedIn }: { signedIn: boolean }) {
-  return (
-    <div className="rounded-3xl bg-brand px-6 py-14 text-white sm:px-12">
-      <div className="mx-auto max-w-[620px]">
-        <span className="mb-5 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-accent">
-          <Lock className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Speakers&apos; Circle
-        </span>
-        <h1 className="mb-4 text-[clamp(28px,4vw,40px)] font-extrabold leading-tight tracking-tight">
-          {TOPIC_COUNT} topics to embrace, practise, master.
-        </h1>
-        <p className="mb-7 text-[17px] text-white/85">
-          Knowing the techniques is the first step. Mastering them comes from
-          putting them into practice — a focused two-to-three-minute
-          presentation, framed with the Presentation Pyramid, delivered from
-          Masterful Notes, and brought to {COACH_NAME} for coaching.
-        </p>
-        <ul className="mb-8 space-y-2 text-[15px] text-white/90">
-          {[
-            "Eighty topics across eight themes, each with four prompts to think with",
-            "The Presentation Pyramid and Masterful Notes prompts, included",
-            `Coaching and a rubric score from ${COACH_NAME} on every delivery`,
-          ].map((f) => (
-            <li key={f} className="flex gap-2.5">
-              <Check /> {f}
-            </li>
-          ))}
-        </ul>
-        <Btn href={signedIn ? "/pricing" : "/request"} variant="accent">
-          {signedIn ? "See Speakers' Circle" : "Request a place"}
-        </Btn>
-      </div>
-    </div>
-  );
-}
 
 function TopicCard({ topic, open, onToggle }: { topic: Topic; open: boolean; onToggle: () => void }) {
   return (
@@ -96,13 +62,14 @@ function TopicCard({ topic, open, onToggle }: { topic: Topic; open: boolean; onT
               </li>
             ))}
           </ol>
-          <div className="flex flex-wrap items-center gap-3 text-[13.5px] text-ink-soft">
-            <span>Aim for two to three minutes. Headline first.</span>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="text-[13.5px] text-ink-soft">Aim for two to three minutes. Headline first.</span>
             <Link
-              href="/courses/leadership-voice/lessons/masterful-notes-delivered/practice"
-              className="font-semibold text-brand hover:underline"
+              href={`/topics/${topic.id}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-[13.5px] font-semibold text-white hover:bg-brand-dark"
             >
-              Preview coaching with {COACH_NAME} →
+              Open the workspace
+              <ArrowRight className="h-4 w-4" strokeWidth={2.25} />
             </Link>
           </div>
         </div>
@@ -129,14 +96,27 @@ export default function TopicsBrowser() {
   };
 
   if (access.loading) return null;
-  if (!access.fullAccess) return <Locked signedIn={access.signedIn} />;
+  if (!access.fullAccess) {
+    return (
+      <CircleLocked
+        signedIn={access.signedIn}
+        title={`${TOPIC_COUNT} topics to embrace, practise, master.`}
+        body={`Knowing the techniques is the first step. Mastering them comes from putting them into practice — a focused two-to-three-minute presentation, framed with the Presentation Pyramid, delivered from Masterful Notes, and brought to ${COACH_NAME} for coaching.`}
+        bullets={[
+          "Eighty topics across eight themes, each with four prompts to think with",
+          "A workspace for your Frame and Masterful Notes on every topic",
+          `Coaching from ${COACH_NAME} on your Frame, your Notes and your Delivery`,
+        ]}
+      />
+    );
+  }
 
   return (
     <>
       <SectionHead
         eyebrow="Speakers' Circle"
         title={`${TOPIC_COUNT} topics. Embrace, practise, master.`}
-        sub="Choose a topic that interests you, connects with your experience, or simply makes you curious. Then frame it, make your notes, practise, and bring it to Katya."
+        sub={`Choose a topic that interests you, connects with your experience, or simply makes you curious. Then frame it, make your notes, practise, and bring it to ${COACH_NAME}.`}
       />
 
       {/* The process — six steps, in Barry's words */}
@@ -153,6 +133,24 @@ export default function TopicsBrowser() {
           </div>
         ))}
       </div>
+
+      {/* The self-introduction: where members first meet Katya */}
+      <Link
+        href={`/topics/${SELF_INTRODUCTION.id}`}
+        className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand bg-brand-soft px-5 py-4 transition hover:bg-brand-glow/60"
+      >
+        <div>
+          <div className="text-[12px] font-bold uppercase tracking-wider text-brand">
+            Start here
+          </div>
+          <div className="text-[15.5px] font-semibold">{SELF_INTRODUCTION.title}</div>
+          <div className="text-[13.5px] text-ink-soft">{SELF_INTRODUCTION.brief}</div>
+        </div>
+        <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-brand">
+          Open the workspace
+          <ArrowRight className="h-4 w-4" strokeWidth={2.25} />
+        </span>
+      </Link>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
@@ -194,9 +192,10 @@ export default function TopicsBrowser() {
       </div>
 
       <p className="mt-8 text-[13.5px] text-ink-soft">
-        Coaching by {COACH_NAME} on these topics arrives with the voice coach.
-        Until then, steps one to five are the work — record yourself, review
-        against the rubric, and bring your best take to a practice night.
+        Every workspace holds your Frame and Masterful Notes and runs a text
+        session with {COACH_NAME} from them: Coach My Frame and Review My Masterful
+        Notes today. Coach My Delivery, which needs to hear you, arrives with the
+        voice coach.
       </p>
     </>
   );

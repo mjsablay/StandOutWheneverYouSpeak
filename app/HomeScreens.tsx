@@ -287,7 +287,7 @@ function VisitorHome() {
           <div className="grid gap-5 md:grid-cols-3">
             {[
               [BookOpen, "Learn", "Short, focused lessons on structure, delivery and staying on message — built from 17 years of coaching 3,500+ leaders."],
-              [Mic, "Practise", `Bring a two-minute piece to ${COACH_NAME}. She listens, pushes back like a real audience, and scores you against Barry's rubric.`],
+              [Mic, "Practise", `Bring a two-to-three-minute piece to ${COACH_NAME}. She names one strength, one thing to change, and has you try it again.`],
               [Trophy, "Perform", "Walk into the boardroom, the classroom or the interview having already been there — and earn points every step of the way."],
             ].map(([Icon, title, body]) => {
               const I = Icon as LucideIcon;
@@ -312,19 +312,19 @@ function VisitorHome() {
             <div>
               <Eyebrow>{COACH_NAME}, your AI coach</Eyebrow>
               <h2 className="display mb-5 text-[clamp(32px,4.6vw,52px)]">
-                A coach who listens, pushes back, and scores you honestly.
+                A coach who listens, asks one question, and has you go again.
               </h2>
               <p className="mb-6 text-[17px] leading-relaxed text-ink-soft">
                 You meet {COACH_NAME}{" "}
                 at the end of Lesson 5B with your 60-second self-introduction. In Speakers&apos; Circle you bring
                 her a presentation on any of eighty topics, and she coaches you
-                the way Barry would — one strength, then the two things to fix.
+                the way Barry would — one strength, one priority improvement, then another attempt.
               </p>
               <ul className="mb-8 space-y-3 text-[15.5px]">
                 {[
-                  "Interrupts and questions like a real audience",
-                  "Scores structure, delivery and staying on message out of 15",
-                  "Remembers nothing you'd rather she didn't — every rep is a fresh start",
+                  "Start where you need help: your Frame, your Masterful Notes, or your Delivery",
+                  "One coaching idea per turn, so it lands before the next",
+                  "Scores against Barry's rubric only when you ask, and never for what she can't reliably assess",
                 ].map((f) => (
                   <li key={f} className="flex gap-3">
                     <Check /> {f}

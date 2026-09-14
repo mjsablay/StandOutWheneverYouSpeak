@@ -177,7 +177,7 @@ export const FAQS = [
   ],
   [
     "How does the AI practice work?",
-    "Katya is your AI practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. She listens, gives feedback on structure and delivery, and scores you against Barry's rubric so you can see yourself improve.",
+    "Katya is your Speak with Impact practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. Choose where you want help — your Frame, your Masterful Notes or your Delivery — and she coaches one thing at a time: a strength, one priority improvement, then you try again. She scores against Barry's rubric when you ask.",
   ],
   [
     "Can I practice with real people?",

@@ -100,8 +100,8 @@ export default function CourseDetailPage() {
                 You&apos;re previewing the first {FREE_PREVIEW_COUNT} lessons
               </h2>
               <p className="text-[14.5px] text-ink-soft">
-                Unlock all {course.lessons.length} lessons, unlimited AI
-                practice, and the member community for $10 CAD/month.
+                Unlock all {course.lessons.length} lessons, coaching with
+                Katya, and the member community for $10 CAD/month.
               </p>
             </div>
             <Link
