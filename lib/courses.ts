@@ -499,9 +499,10 @@ export const scoreBand = (total: number, max: number = RUBRIC_MAX) =>
   SCORE_BANDS.find((b) => total / max >= b.atLeast)?.label ?? "Poor";
 
 /**
- * The coaching rule from Barry's rubric, used as the system instruction
- * for the AI coach: one strength first, then one priority improvement in
- * structure/focus and one in delivery.
+ * Barry's coaching sequence, from the Katya context prompt of 1 September
+ * 2026: STRENGTH → PRIORITY IMPROVEMENT → RETRY → REASSESS. One thing at a
+ * time. The earlier rule here asked for two improvements per turn, which his
+ * document rules out. The full instruction is lib/katya-context.ts.
  */
 export const COACHING_RULE =
-  "Start with one strength, then identify one priority improvement in structure or focus and one priority improvement in delivery.";
+  "Start with one specific strength. Identify the one improvement that would help most. Ask the learner to try again, then say specifically what improved.";

@@ -94,11 +94,40 @@ member was bounced straight back to the home page. `access.approved` is the
 one rule for it in the UI (Nav, UserMenu, Footer); `role`/`status` on the
 profile is the rule in the proxy. Flip the switch to open to everyone.
 
+**Katya is specified by Barry's context prompt, not by us.** His document
+(version 1 September 2026) is `lib/katya-context.ts`, verbatim and
+server-only; when he sends a new one, replace the whole string and bump
+`KATYA_CONTEXT_VERSION` in `lib/katya.ts` — nobody edits his lines.
+`lib/katya.ts` is the part the interface needs (three modes with his time
+caps and two-minute lines, the 0–5 scale, the two prep prompts);
+`lib/katya-session.ts` assembles the "platform session materials" block and
+calls the model. The rules that must survive any rewrite: she is a coach,
+not an audience — no interrupting, no pushing back; one coaching idea per
+turn; strength → one priority improvement → retry; **scores only when the
+learner asks**, 0–5, "Not assessed" for anything the channel can't carry
+(eye contact always, until a camera version exists); and she never claims
+to see a Frame, Notes, formatting or timing the platform did not supply —
+every missing item is marked "Not supplied" in the block. The scripted demo
+that invented a 3/5 for eye contact and promised interruptions is gone;
+don't bring either back.
+
+**Sessions run in text today, at `/topics/[id]`.** Coach My Frame and
+Review My Masterful Notes work on an ordinary chat model
+(`OPENAI_TEXT_MODEL`, default `gpt-5-mini`) once `OPENAI_API_KEY` is set;
+without the key the session says so. Coach My Delivery is voice-only and
+is shown as such. The member's audience notes, Frame and Masterful Notes
+live in `practice_prep` (one row per member per topic, RLS) and are what
+the server hands Katya. `practice_sessions` rows are written by the end
+route with the service role — the browser's insert policy was dropped in
+migration 0009 because a client that can insert its own rows can insert its
+own scores. Voice will use Push to Talk with manual turn control, not
+voice-activity detection; the plan is in
+`Advoc(Motiv)8/Voice-Coach-Realtime-Plan.md`.
+
 **The scorecard is out of 15, not 20.** Barry's rubric has four categories,
 but a voice coach cannot see eye contact, so `RUBRIC` marks it `scored:
-false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive every total. It stays in the
-rubric members read, labelled "not scored by voice". Don't invent a number
-for it; that was the demo's mistake.
+false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive any total. It stays in the
+rubric members read, labelled "Not assessed".
 
 **Points are awarded by a database trigger, never by the browser.**
 `award_progress_points` on `member_progress` (migration 0008) writes
@@ -122,10 +151,13 @@ the next lesson. Quizzes live in `lib/quizzes.ts` only. Don't add
 `kind: "quiz"` materials back.
 
 **The AI coach is called Katya** (`COACH_NAME` in `lib/site.ts`) — Barry's
-name for her in the programme blueprint. Front Row meets her at the end of
-Lesson 5B with the self-introduction; Speakers' Circle brings her a
-two-to-three-minute presentation on one of eighty topics. Member-facing copy
-uses the name; model prompts in `lib/courses.ts` still say "the learner".
+name for her in the programme blueprint. Members meet her at the end of
+Lesson 5B with the self-introduction, which has its own workspace at
+`/topics/self-introduction` (`SELF_INTRODUCTION` in `lib/topics.ts`; its
+four prompts are ours, not Barry's); Speakers' Circle brings her a
+two-to-three-minute presentation on one of eighty topics. The per-lesson
+`practice.prompt` strings in `lib/courses.ts` predate his context prompt
+and are not sent to the model.
 
 **Lesson numbering follows Barry's blueprint of 22 August 2026,** not a
 simple sequence: 01–06 (5A/5B) are Front Row; then 7A, 7A1, 7A2 (no content
@@ -183,7 +215,14 @@ that shows or hides content.
   console, and public by definition — never put private data in it
 - `lib/topics.ts` / `app/topics/` — the 80 Speakers' Circle practice topics
   and their prompts, generated from Barry's document. Regenerate from the
-  document rather than hand-editing
+  document rather than hand-editing. `app/topics/[id]/` is the workspace:
+  prep on the left, Katya on the right, sessions below
+- `lib/katya.ts` / `lib/katya-context.ts` / `lib/katya-session.ts` — the
+  coach: spec for the interface, Barry's prompt verbatim (server-only), and
+  the server side of a session. `app/api/katya/turn` is one reply,
+  `app/api/katya/end` saves the session. `components/KatyaSession.tsx` is
+  the transcript, timer and composer; `lib/prep.ts` reads and writes the
+  member's Frame and Notes
 - `lib/directory.ts` — the `member_directory` view (real members only)
 - `lib/events.ts` / `lib/use-events.ts` / `app/admin/Events.tsx` — live
   events: shared helpers, the home-page hook, and where admins schedule them
@@ -234,6 +273,18 @@ and check for stray copies before every commit.
 
 `react-hooks/set-state-in-effect` is the lint rule that bites most often here.
 Prefer deriving state or `useSyncExternalStore` over syncing in an effect.
+`react-hooks/purity` is the other: no `Date.now()` in a `useRef` initialiser;
+set the clock in the mount effect instead.
+
+**Previewing in the desktop app.** Its browser pane reads
+`.claude/launch.json` from the session's original folder,
+`~/Documents/standout-platform`, which now holds only that one stub file: it
+`cd`s into `~/Developer/standout-platform` and runs `npm run dev`. The pane
+is not signed in and credentials can't be typed for it, so signed-in screens
+are checked with a temporary dev-only switch (`?as=circle` sets a cookie;
+proxy, `useAccess`, `WaitlistGate` and `requireCircleMember` honour it in
+development) that is stripped before every commit — grep for
+`DEV-PREVIEW-TEMP` and make sure nothing is left.
 
 ## How someone gets in
 
@@ -290,10 +341,12 @@ Planned in detail in `Advoc(Motiv)8/Audit-Stripe-and-Voice-Agent-Plan.md`
    chosen, and refuses to start a run that would hit the free-tier ceiling
 2. Stripe Checkout + webhook — `profiles.tier` is what every gate reads, and a
    webhook is the only thing that should ever change it
-3. Text AI coach, validated against Barry's rubric before building voice
-4. OpenAI Realtime voice coach over WebRTC with ephemeral tokens. Costs
-   $0.10–0.30/min against $10 CAD/month revenue — cap minutes before
-   advertising it
+3. ~~Text AI coach~~ — shipped as the topic workspace; needs
+   `OPENAI_API_KEY` in Vercel and Barry's five test sessions
+4. OpenAI Realtime voice coach over WebRTC with ephemeral tokens and Push
+   to Talk (manual turn control). Costs $0.10–0.30/min against $10
+   CAD/month revenue — cap minutes before advertising it. Unlocks Coach My
+   Delivery
 5. Move course content from code into the database
 
 Not done deliberately: the admin member list still reads emails through the

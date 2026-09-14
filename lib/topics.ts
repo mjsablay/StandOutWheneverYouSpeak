@@ -50,7 +50,7 @@ export const PRACTICE_STEPS = [
   },
   {
     title: "Get coached by Katya",
-    body: "Deliver it to Katya, your Speak with Impact Practice Coach, for feedback on what is working, what could be stronger, and what to do differently next time — scored against Barry's rubric.",
+    body: "Bring it to Katya, your Speak with Impact Practice Coach. Choose Coach My Frame, Review My Masterful Notes or Coach My Delivery; she names one strength, one priority improvement, and has you try it again.",
   },
 ] as const;
 
@@ -987,5 +987,31 @@ export const TOPIC_SECTIONS: readonly TopicSection[] = [
 
 export const TOPIC_COUNT = TOPIC_SECTIONS.reduce((n, s) => n + s.topics.length, 0);
 
-export const findTopic = (id: string) =>
-  TOPIC_SECTIONS.flatMap((s) => s.topics).find((t) => t.id === id) ?? null;
+/**
+ * Not one of Barry's eighty. The self-introduction is the piece a member
+ * builds in Lesson 1 and delivers from Masterful Notes in Lesson 5B, where
+ * they first meet Katya; giving it a workspace is what keeps that promise.
+ * The prompts are the platform's, shaped on the Presentation Pyramid, not
+ * Barry's — replace them if he supplies his own.
+ */
+export const SELF_INTRODUCTION: Topic = {
+  id: "self-introduction",
+  title: "Your 60-second self-introduction",
+  brief:
+    "Who you are and what you do, in a way people remember afterwards. Built in Lesson 1, delivered from Masterful Notes in Lesson 5B.",
+  prompts: [
+    "What is the one thing you want people to remember about you?",
+    "What do you do, in a sentence an intelligent person outside your field would understand?",
+    "Why does it matter to the people you do it for?",
+    "What would you like the listener to think, or do, next?",
+  ],
+};
+
+export const findTopic = (id: string): Topic | null =>
+  id === SELF_INTRODUCTION.id
+    ? SELF_INTRODUCTION
+    : (TOPIC_SECTIONS.flatMap((s) => s.topics).find((t) => t.id === id) ?? null);
+
+/** The theme a topic belongs to; null for the self-introduction. */
+export const sectionOf = (id: string): TopicSection | null =>
+  TOPIC_SECTIONS.find((s) => s.topics.some((t) => t.id === id)) ?? null;
