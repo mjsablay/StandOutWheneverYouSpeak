@@ -47,8 +47,20 @@ function FounderTile({ person, flip }: { person: Founder; flip: boolean }) {
     </div>
   );
 
+  // The alternating tile flips the photo to the right — and `order` alone
+  // does not do that. Grid places items into tracks in order, so ordering the
+  // photo second dropped it into the *wide* track and squeezed the bio into
+  // the narrow one: Barry's portrait rendered 328px across, Michael's 582px.
+  // Swapping the track sizes with the order keeps the photo column the same
+  // size in both tiles.
   return (
-    <div className="grid overflow-hidden rounded-[28px] border border-line bg-white shadow-card md:grid-cols-[minmax(280px,0.85fr)_1.45fr] md:items-center">
+    <div
+      className={`grid overflow-hidden rounded-[28px] border border-line bg-white shadow-card md:items-center ${
+        flip
+          ? "md:grid-cols-[1.45fr_minmax(280px,0.85fr)]"
+          : "md:grid-cols-[minmax(280px,0.85fr)_1.45fr]"
+      }`}
+    >
       <div className={`p-3 md:p-4 ${flip ? "md:order-2" : ""}`}>
         <div className="aspect-[4/5] overflow-hidden rounded-[20px] bg-paper-soft">
           {photo}
