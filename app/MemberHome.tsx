@@ -39,7 +39,13 @@ import {
 } from "lucide-react";
 import { Wrap, Section, Eyebrow, Btn } from "@/components/ui";
 import { hasQuiz } from "@/components/Quiz";
-import { COURSES, FREE_PREVIEW_COUNT, type Course, type Lesson } from "@/lib/courses";
+import {
+  COURSES,
+  FREE_PREVIEW_COUNT,
+  hasContent,
+  type Course,
+  type Lesson,
+} from "@/lib/courses";
 import { COACH_NAME } from "@/lib/site";
 import { useProgress } from "@/lib/progress";
 import { useUpcomingEvents } from "@/lib/use-events";
@@ -47,9 +53,6 @@ import { dateParts } from "@/lib/events";
 
 const LEADERSHIP = COURSES[0];
 const CAMPUS = COURSES[1];
-
-/** A lesson is real when Barry has supplied something to open. */
-const hasContent = (l: Lesson) => Boolean(l.video) || Boolean(l.materials?.length);
 
 type State = "done" | "quiz-due" | "next" | "open" | "locked" | "soon";
 

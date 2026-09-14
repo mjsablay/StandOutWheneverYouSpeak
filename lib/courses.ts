@@ -43,6 +43,16 @@ export type Course = {
   lessons: Lesson[];
 };
 
+/**
+ * A lesson is real when Barry has supplied something to open: a recording or
+ * a download. The rest are titles and summaries from his blueprint — 07A2
+ * through 07A6 today — and every count a member sees must exclude them, or
+ * the site promises fifteen lessons and delivers ten. Both the member home
+ * and the course page measure with this.
+ */
+export const hasContent = (l: Lesson) =>
+  Boolean(l.video) || Boolean(l.materials?.length);
+
 /** Resolve a lesson video filename to a playable URL. */
 export function videoUrl(file?: string): string | null {
   if (!file) return null;

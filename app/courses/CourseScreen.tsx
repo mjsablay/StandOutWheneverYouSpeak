@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Check, FileText, Lock, Mic, Play } from "lucide-react";
 import { Wrap, Section, Eyebrow, Btn, PageSkeleton } from "@/components/ui";
-import { COURSES, FREE_PREVIEW_COUNT, type Lesson } from "@/lib/courses";
+import { COURSES, FREE_PREVIEW_COUNT, hasContent, type Lesson } from "@/lib/courses";
 import { useAccess } from "@/lib/access";
 import { useProgress } from "@/lib/progress";
 import { hasQuiz } from "@/components/Quiz";
@@ -32,8 +32,12 @@ export default function CourseScreen() {
   if (access.loading) return <PageSkeleton />;
 
   const { signedIn, fullAccess } = access;
-  const openCount = fullAccess ? course.lessons.length : FREE_PREVIEW_COUNT;
-  const open = course.lessons.slice(0, openCount);
+  // Only lessons with something to open are counted or offered. The rest are
+  // titles from Barry's blueprint; a Start button over one is a dead end.
+  const real = course.lessons.filter(hasContent);
+  const open = fullAccess ? real : real.slice(0, FREE_PREVIEW_COUNT);
+  const openCount = open.length;
+  const behindTheWall = real.length - FREE_PREVIEW_COUNT;
 
   const watched = signedIn ? open.filter((l) => hasWatched(l.slug)) : [];
   const next = signedIn ? open.find((l) => !hasWatched(l.slug)) : open[0];
@@ -61,10 +65,16 @@ export default function CourseScreen() {
             </p>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[14px] text-ink-soft">
               <span>
-                <strong className="text-ink">{course.lessons.length}</strong> lessons
+                <strong className="text-ink">{real.length}</strong> lessons ready
               </span>
               <span>
                 <strong className="text-ink">{videoCount}</strong> with video
+              </span>
+              <span>
+                <strong className="text-ink">
+                  {course.lessons.length - real.length}
+                </strong>{" "}
+                outlined
               </span>
               <span>
                 <strong className="text-ink">{course.level}</strong>
@@ -122,7 +132,7 @@ export default function CourseScreen() {
                   <p className="mt-2 max-w-[560px] text-[15px] leading-relaxed text-ink-soft">
                     {fullAccess
                       ? `Bring a two-to-three-minute presentation to ${COACH_NAME} and put a rep in.`
-                      : `Speakers' Circle opens the remaining ${course.lessons.length - FREE_PREVIEW_COUNT} lessons and coaching with ${COACH_NAME}.`}
+                      : `Speakers' Circle opens the remaining ${behindTheWall} and coaching with ${COACH_NAME}.`}
                   </p>
                   <Progress done={watched.length} total={openCount} />
                 </div>
@@ -149,7 +159,7 @@ export default function CourseScreen() {
                 You have the first {FREE_PREVIEW_COUNT} lessons
               </h2>
               <p className="text-[14.5px] text-ink-soft">
-                Speakers&apos; Circle opens all {course.lessons.length}, coaching
+                Speakers&apos; Circle opens the other {behindTheWall}, coaching
                 with {COACH_NAME} on eighty practice topics, and the member
                 community, for $10 CAD a month.
               </p>
@@ -166,7 +176,8 @@ export default function CourseScreen() {
         {/* ---------- The lessons ---------- */}
         <div className="overflow-hidden rounded-3xl border border-line bg-white">
           {course.lessons.map((lesson, i) => {
-            const locked = signedIn && !fullAccess && i >= FREE_PREVIEW_COUNT;
+            const outlined = !hasContent(lesson);
+            const locked = signedIn && !fullAccess && !outlined && i >= FREE_PREVIEW_COUNT;
             const done = signedIn && hasWatched(lesson.slug);
             const quiz = hasQuiz(lesson.slug);
 
@@ -197,7 +208,7 @@ export default function CourseScreen() {
                       ) : (
                         <>
                           <FileText className="h-3 w-3" strokeWidth={2.5} />
-                          Notes only
+                          {outlined ? "Not recorded yet" : "Downloads only"}
                         </>
                       )}
                     </span>
@@ -225,6 +236,20 @@ export default function CourseScreen() {
                 </span>
               </>
             );
+
+            if (outlined) {
+              return (
+                <div
+                  key={lesson.slug}
+                  className="flex items-center gap-4 border-b border-line px-5 py-4 opacity-60 last:border-0 sm:px-6"
+                >
+                  {row}
+                  <span className="flex-shrink-0 text-[13px] text-ink-soft">
+                    Coming soon
+                  </span>
+                </div>
+              );
+            }
 
             if (locked) {
               return (
