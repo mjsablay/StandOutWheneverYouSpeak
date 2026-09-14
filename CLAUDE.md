@@ -22,6 +22,18 @@ her for specifics.
 commands for her to run. Branch, commit, push, and open the PR yourself. Write
 the PR description too — she shouldn't have to compose any of it.
 
+**Merge them yourself too — don't ask.** For the first twenty-one PRs she
+typed "merge PR #N" each time; on 14 September 2026 she said to stop asking
+and just do it. So: open the PR, wait for the checks, merge it, delete the
+branch, and tell her it's merged. Never end a turn asking permission to
+merge. The standing authorisation covers merging your own work to `main`,
+which deploys to production — so it comes with the obligation to have
+actually verified the change first (`tsc`, `eslint`, `npm run build`, and a
+look at the thing in a browser when it's visible). If a check fails, fix it
+and then merge; don't merge red and don't hand the failure back to her. It
+does not cover deleting data, rotating keys, or anything else destructive
+and outside the change she asked for — raise those.
+
 ## Stack
 
 Next.js 16.2.11 (App Router, Turbopack) · React 19.2.4 · TypeScript ·
