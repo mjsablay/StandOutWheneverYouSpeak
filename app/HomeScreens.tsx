@@ -19,12 +19,11 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import MemberHome from "@/app/MemberHome";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
-import { COURSES, FREE_PREVIEW_COUNT, RUBRIC_MAX, SCORED_RUBRIC, videoUrl } from "@/lib/courses";
+import { COURSES, RUBRIC_MAX, SCORED_RUBRIC, videoUrl } from "@/lib/courses";
 import { FAQS, PRELAUNCH, COACH_NAME } from "@/lib/site";
-import { useUpcomingEvents } from "@/lib/use-events";
-import { dateParts, timeLabel } from "@/lib/events";
 
 /** Barry's headshot, in the public avatars bucket. Shown in the hero and the founder band. */
 const FOUNDER_PHOTO =
@@ -80,13 +79,11 @@ function Greeting({
   sub: string;
   tag?: string;
 }) {
-  const hour = new Date().getHours();
-  const part = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   return (
     <div className="mb-10">
       {tag && <Eyebrow>{tag}</Eyebrow>}
       <h1 className="display text-[clamp(32px,4.6vw,52px)]">
-        {part}, {name.split(" ")[0]}.
+        Hello, {name.split(" ")[0]}.
       </h1>
       <p className="mt-3 text-[18px] text-ink-soft">{sub}</p>
     </div>
@@ -531,169 +528,6 @@ function PendingHome({ name }: { name: string }) {
   );
 }
 
-/* ============================ member ============================ */
-
-function MemberHome({
-  name,
-  paid,
-  admin,
-}: {
-  name: string;
-  paid: boolean;
-  admin: boolean;
-}) {
-  const course = COURSES[0];
-  const nextLesson = course.lessons[0];
-  const openLessons = paid ? course.lessons.length : FREE_PREVIEW_COUNT;
-  const { events: upcoming, loading: eventsLoading } = useUpcomingEvents(2);
-
-  return (
-    <Section className="pt-14 sm:pt-20">
-      <Wrap>
-        <Greeting
-          name={name}
-          tag={admin ? "Administrator" : paid ? "Speakers' Circle" : "Front Row"}
-          sub={
-            paid
-              ? `Pick up where you left off, or put in a rep with ${COACH_NAME}.`
-              : "You have the first six lessons of Leadership Voice — let's use them."
-          }
-        />
-
-        {/* Continue learning */}
-        <div className="mb-5 grid gap-6 rounded-3xl border border-line bg-white p-7 shadow-card sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
-          <div>
-            <div className="mb-2 text-[12.5px] font-bold uppercase tracking-[0.1em] text-ink-soft">
-              Continue learning · {course.name}
-            </div>
-            <h2 className="display text-[clamp(24px,3vw,34px)]">
-              Lesson {nextLesson.number}: {nextLesson.title}
-            </h2>
-            <p className="mt-2 max-w-[560px] text-[15px] leading-relaxed text-ink-soft">
-              {nextLesson.summary}
-            </p>
-            <div className="mt-5 flex items-center gap-3 text-[13px] text-ink-soft">
-              <span className="h-1.5 w-40 overflow-hidden rounded-full bg-paper-warm">
-                <span
-                  className="block h-full rounded-full bg-accent"
-                  style={{ width: `${(openLessons / course.lessons.length) * 100}%` }}
-                />
-              </span>
-              {openLessons} of {course.lessons.length} lessons unlocked
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Btn href={`/courses/${course.slug}/lessons/${nextLesson.slug}`} variant="brand">
-              <Play className="h-4 w-4" strokeWidth={2.5} fill="currentColor" />
-              Start lesson
-            </Btn>
-            <Btn href={`/courses/${course.slug}`} variant="white">
-              All lessons
-            </Btn>
-          </div>
-        </div>
-
-        {/* Quick actions */}
-        <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card
-            href={paid ? "/topics" : `/courses/${course.slug}/lessons/${nextLesson.slug}/practice`}
-            icon={Mic}
-            title="Practise"
-            body={paid ? `Eighty topics. Frame one, make your notes, bring it to ${COACH_NAME}.` : `Run a coaching session with ${COACH_NAME} against Barry's rubric.`}
-            cta={paid ? "Choose a topic" : "Start a rep"}
-            accent
-          />
-          <Card
-            href={paid ? "/community" : "/pricing"}
-            icon={Users}
-            title="Community"
-            body={paid ? "Find a practice partner this week." : "Unlock peer practice with Speakers' Circle."}
-            cta={paid ? "Meet members" : "See pricing"}
-          />
-          <Card href="/events" icon={CalendarDays} title="Events" body="Live workshops and practice nights." cta="What's on" />
-          <Card href="/leaderboard" icon={Trophy} title="Leaderboard" body="See where you stand this month." cta="View ranks" />
-        </div>
-
-        {/* Admin shortcut */}
-        {admin && (
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-ink p-6 text-white sm:p-7">
-            <div>
-              <div className="mb-1 text-[12.5px] font-bold uppercase tracking-[0.1em] text-white/60">
-                Administrator
-              </div>
-              <p className="text-[15.5px]">
-                Requests to join, accounts, events, and the About page.
-              </p>
-            </div>
-            <Btn href="/admin" variant="white">
-              Open admin console
-            </Btn>
-          </div>
-        )}
-
-        {/* Upgrade nudge for free members */}
-        {!paid && !admin && (
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-5 rounded-3xl bg-brand p-7 text-white sm:p-8">
-            <div className="max-w-[560px]">
-              <h3 className="display mb-2 text-[24px]">Unlock the rest of the course</h3>
-              <p className="text-[15px] text-white/80">
-                Speakers&apos; Circle opens every lesson, practice with {COACH_NAME},
-                the member community, and all live workshops — $10 CAD/month.
-              </p>
-            </div>
-            <Btn href="/pricing" variant="accent">
-              See what&apos;s included
-            </Btn>
-          </div>
-        )}
-
-        {/* Next event */}
-        <div className="rounded-3xl border border-line bg-white p-7 shadow-card">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-[12.5px] font-bold uppercase tracking-[0.1em] text-ink-soft">
-              Coming up
-            </div>
-            <Link href="/events" className="text-[13.5px] font-semibold text-brand hover:underline">
-              All events
-            </Link>
-          </div>
-          {upcoming.length === 0 ? (
-            <p className="py-2 text-[14.5px] text-ink-soft">
-              {eventsLoading
-                ? "Checking the calendar…"
-                : "Nothing scheduled yet — the first open house will be announced by email."}
-            </p>
-          ) : (
-            upcoming.map((e) => {
-              const { month, day } = dateParts(e.starts_at);
-              return (
-                <div
-                  key={e.id}
-                  className="flex flex-wrap items-center gap-5 border-b border-line py-3.5 last:border-0"
-                >
-                  <div className="min-w-[58px] rounded-xl bg-brand-soft px-2 py-2 text-center text-brand">
-                    <span className="block text-[11px] font-bold uppercase">{month}</span>
-                    <span className="block text-xl font-extrabold leading-tight">{day}</span>
-                  </div>
-                  <div className="min-w-[200px] flex-1">
-                    <div className="text-[15.5px] font-semibold">{e.title}</div>
-                    <div className="text-[13.5px] text-ink-soft">
-                      {[timeLabel(e.starts_at), e.details].filter(Boolean).join(" · ")}
-                    </div>
-                  </div>
-                  <Link href="/events" className="text-[14px] font-semibold text-brand hover:underline">
-                    Details
-                  </Link>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </Wrap>
-    </Section>
-  );
-}
-
 /* ============================ router ============================ */
 
 export default function HomeScreens() {
@@ -703,6 +537,7 @@ export default function HomeScreens() {
   if (loading) return <div className="min-h-[70vh]" />;
 
   const name = user?.name || "there";
+
 
   switch (audience) {
     case "visitor":
