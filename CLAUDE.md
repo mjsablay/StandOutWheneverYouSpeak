@@ -86,6 +86,25 @@ policy expressions run as the *calling* role — so `authenticated` must keep
 EXECUTE on them. Revoking that to silence a security advisor broke sign-in
 completely with a redirect loop. Don't repeat it.
 
+**`role`, `tier` and `status` are protected by a trigger, not by RLS.**
+Row level security cannot restrict *columns*, and `authenticated` holds
+UPDATE on every column of `profiles`. With the "users update own profile"
+policy that meant any signed-in member could rewrite their own row — one
+statement from the browser turned a declined free account into an approved
+administrator on the paid tier (found and closed 14 September 2026,
+migration 0010). `guard_profile_privileges()` is a BEFORE UPDATE trigger
+that rejects changes to role, tier, status, approved_at, approved_by,
+waitlist_note, stripe_customer_id, id, email and created_at unless the
+caller is an admin or the service role. Resending an unchanged value is
+fine, so ordinary profile edits are unaffected.
+
+Do not "simplify" this into column GRANTs. Admins are `authenticated` too,
+and the admin console writes tier/role/status straight from the browser —
+revoking the column takes the power from the people who are supposed to
+have it, which is the same trap as revoking EXECUTE on `is_admin()`. When
+you add a column that grants something (a new entitlement, a credit
+balance, a Stripe field), add it to the trigger's list in the same commit.
+
 **Anonymous visitors have no access to `profiles` at all.** Public About-page
 content (founder bios, photos, LinkedIn) lives in the `site_content` table
 instead. Column-level grants through a `security_invoker` view were not
@@ -184,8 +203,10 @@ into 5A and 5B.
 
 **Lesson videos are git-ignored** (10 MP4s, 1.13 GB — over GitHub's file
 limit). They play from `public/videos` locally and resolve against
-`NEXT_PUBLIC_VIDEO_BASE_URL` in production, which is **not set**, so in
-production every lesson video 404s.
+`NEXT_PUBLIC_VIDEO_BASE_URL` in production. That variable **is** set now and
+the files are in the `lesson-videos` bucket — verified 14 September 2026 by
+fetching one from storage and finding the base URL compiled into the
+production bundle. If a video 404s, check the bucket before the variable.
 
 **They need the Supabase Pro plan, which Tori chose deliberately.** Free
 allows 1 GB total, 5 GB of egress a month, and — the one that really bites —
@@ -347,12 +368,18 @@ straight to the route.
 Planned in detail in `Advoc(Motiv)8/Audit-Stripe-and-Voice-Agent-Plan.md`
 (outside this repo), in recommended order:
 
-1. Host the lesson videos — still the highest-impact task, but it is a
-   hosting *decision* before it is an hour's work; see the video note above.
-   `scripts/upload-lesson-videos.mjs` does the upload once somewhere has been
-   chosen, and refuses to start a run that would hit the free-tier ceiling
-2. Stripe Checkout + webhook — `profiles.tier` is what every gate reads, and a
-   webhook is the only thing that should ever change it
+1. ~~Host the lesson videos~~ — done, on Supabase Storage.
+   `scripts/upload-lesson-videos.mjs` is how they got there and how to
+   re-upload
+2. Stripe Checkout + webhook — the next highest-leverage build, and now the
+   only thing between the product and revenue. `profiles.tier` is what every
+   gate reads, and a webhook is the only thing that should ever change it.
+   The trigger from migration 0010 already lets the service role write
+   `tier`, so the webhook has the access it needs and nobody else does.
+   Pricing is still undecided (see `Advoc(Motiv)8/Thursday-Follow-Up.md`
+   decision 1 — $10/month vs a three-month minimum, which the FAQ's "cancel
+   anytime" contradicts); build it price-agnostic with the Price ID in an
+   environment variable so the decision stays a Stripe dashboard setting
 3. ~~Text AI coach~~ — shipped as the topic workspace; needs
    `OPENAI_API_KEY` in Vercel and Barry's five test sessions
 4. OpenAI Realtime voice coach over WebRTC with ephemeral tokens and Push
