@@ -190,6 +190,18 @@ two-to-three-minute presentation on one of eighty topics. The per-lesson
 `practice.prompt` strings in `lib/courses.ts` predate his context prompt
 and are not sent to the model.
 
+**`/courses` is the course, not an index.** There were two pages: an index
+listing the courses, and a detail page per course. With one real course the
+index was a doorway to a single room — two cards, one of them a dead
+`href="#"` for Campus Voice, and a five-lesson preview of the list on the
+page behind it. `app/courses/page.tsx` + `CourseScreen.tsx` is now the
+Leadership Voice lesson list itself, and `app/courses/[slug]/page.tsx` is a
+redirect to it so links already sent to members keep working. Lessons still
+live under `/courses/<course>/lessons/<lesson>` — `member_progress` keys on
+both slugs, so that shape can't collapse. Campus Voice is a paragraph at the
+bottom of the page (anchor `#campus-voice`) until it has recordings; don't
+give it Start buttons over ten empty lessons.
+
 **Lesson numbering follows Barry's blueprint of 22 August 2026,** not a
 simple sequence: 01–06 (5A/5B) are Front Row; then 7A, 7A1, 7A2 (no content
 yet) and 8 are available now; 7A3–7A6 are planned. Slugs were kept when
@@ -256,6 +268,10 @@ that shows or hides content.
   `app/api/katya/end` saves the session. `components/KatyaSession.tsx` is
   the transcript, timer and composer; `lib/prep.ts` reads and writes the
   member's Frame and Notes
+- `app/courses/` — `page.tsx` + `CourseScreen.tsx` are the course (lesson
+  list, "where you left off" from `member_progress`, the Front Row upgrade);
+  `[slug]/page.tsx` redirects; `[slug]/lessons/[lesson]/` is the lesson
+  itself, framed by `LessonShell`
 - `lib/directory.ts` — the `member_directory` view (real members only)
 - `lib/events.ts` / `lib/use-events.ts` / `app/admin/Events.tsx` — live
   events: shared helpers, the home-page hook, and where admins schedule them
