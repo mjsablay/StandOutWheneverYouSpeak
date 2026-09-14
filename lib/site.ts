@@ -45,11 +45,6 @@ export const PRELAUNCH_NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export const COURSE_LINKS = [
-  { href: "/courses#leadership-voice", label: "Leadership Voice", soon: false },
-  { href: "/courses#campus-voice", label: "Campus Voice", soon: true },
-] as const;
-
 export const COMPANIES: [string, string][] = [
   ["RBC", "rbc"],
   ["BMO", "bmo"],

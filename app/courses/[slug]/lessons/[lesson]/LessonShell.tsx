@@ -42,7 +42,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
         <Wrap className="max-w-[520px] text-center">
           <h1 className="mb-3 text-2xl font-extrabold">Lesson not found</h1>
           <Link
-            href={`/courses/${slug}`}
+            href="/courses"
             className="font-semibold text-brand hover:underline"
           >
             ← Back to the course
@@ -64,7 +64,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
       <Section>
         <Wrap className="max-w-[640px]">
           <Link
-            href={`/courses/${slug}`}
+            href="/courses"
             className="mb-6 inline-block text-[14px] font-semibold text-brand hover:underline"
           >
             ← {course.name}
@@ -116,7 +116,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
     <Section>
       <Wrap className="max-w-[920px]">
         <Link
-          href={`/courses/${slug}`}
+          href="/courses"
           className="mb-5 inline-block text-[14px] font-semibold text-brand hover:underline"
         >
           ← {course.name}

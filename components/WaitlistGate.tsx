@@ -60,19 +60,15 @@ export default function WaitlistGate({ children }: { children: ReactNode }) {
               While you wait
             </div>
             <ul className="space-y-1.5 text-[14.5px] text-ink-soft">
+              {/* Only pages the pre-launch gate actually lets a pending
+                  account open. This list used to offer the courses and the
+                  events, both of which proxy.ts bounces straight back to
+                  the home page — an invitation to a locked door. */}
               <li>
-                · Browse the{" "}
-                <Link href="/courses" className="font-semibold text-brand hover:underline">
-                  course outlines
-                </Link>{" "}
-                to see what&apos;s covered
-              </li>
-              <li>
-                · Check{" "}
-                <Link href="/events" className="font-semibold text-brand hover:underline">
-                  upcoming events
-                </Link>{" "}
-                — open houses are free to attend
+                · Read how Barry teaches it on{" "}
+                <Link href="/about" className="font-semibold text-brand hover:underline">
+                  About Us
+                </Link>
               </li>
               <li>
                 · Have a question?{" "}

@@ -3,13 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
-import {
-  NAV_LINKS,
-  PRELAUNCH_NAV_LINKS,
-  COURSE_LINKS,
-  PRELAUNCH,
-} from "@/lib/site";
+import { Menu, X } from "lucide-react";
+import { NAV_LINKS, PRELAUNCH_NAV_LINKS, PRELAUNCH } from "@/lib/site";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
 import UserMenu from "./UserMenu";
@@ -28,7 +23,6 @@ export default function Nav() {
   // When an admin previews as a signed-out visitor, hide the account menu.
   const showAsSignedIn = access.signedIn;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [coursesOpen, setCoursesOpen] = useState(false);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href.split("#")[0]);
@@ -51,52 +45,17 @@ export default function Nav() {
             Home
           </Link>
 
-          {/* Courses dropdown — full site only */}
-          {fullSite && (
-            <div
-              className="relative"
-              onMouseEnter={() => setCoursesOpen(true)}
-              onMouseLeave={() => setCoursesOpen(false)}
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={
+                isActive(l.href) ? "font-bold text-brand" : "hover:text-ink"
+              }
             >
-              <Link
-                href="/courses"
-                className={`inline-flex items-center gap-1.5 ${
-                  isActive("/courses")
-                    ? "font-bold text-brand"
-                    : "hover:text-ink"
-                }`}
-              >
-                Courses <ChevronDown className="h-3.5 w-3.5" strokeWidth={2.5} />
-              </Link>
-              {coursesOpen && (
-                <div className="absolute -left-2 top-full flex w-max min-w-[176px] flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
-                  {COURSE_LINKS.map((c) => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      className="whitespace-nowrap rounded-lg px-3 py-2 text-[14.5px] font-medium text-ink hover:bg-paper-warm"
-                    >
-                      {c.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {links
-            .filter((l) => l.href !== "/courses")
-            .map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={
-                  isActive(l.href) ? "font-bold text-brand" : "hover:text-ink"
-                }
-              >
-                {l.label}
-              </Link>
-            ))}
+              {l.label}
+            </Link>
+          ))}
         </div>
 
         {/* Fixed-height, right-aligned slot so swapping between the
