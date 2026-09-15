@@ -3,14 +3,17 @@
  * Editing copy here updates it everywhere it appears.
  */
 
+import { PLAN, commitmentLine, priceLabel, priceWithInterval } from "@/lib/pricing";
+
 /** The AI practice coach, as Barry named her in the programme blueprint. */
 export const COACH_NAME = "Katya";
 
 export const SITE = {
   name: "Stand Out Whenever You Speak",
   tagline: "Speak with impact and influence",
-  price: "$10",
-  currency: "CAD",
+  /** Kept in lib/pricing.ts so nothing on the site can quote a stale price. */
+  price: `$${PLAN.amount}`,
+  currency: PLAN.currency,
 } as const;
 
 /**
@@ -156,11 +159,11 @@ export const FAQS = [
   ],
   [
     "What's the difference between the Front Row and Speakers' Circle?",
-    "Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle ($10 CAD/month) unlocks every lesson, practice with Katya — your Speak with Impact coach — the full member community, and all live workshops and cohort classes.",
+    `Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle (${priceWithInterval}) unlocks every lesson, practice with Katya — your Speak with Impact coach — the full member community, and all live workshops and cohort classes.`,
   ],
   [
     "How much does it cost?",
-    "Speakers' Circle is $10 CAD per month. There's no long-term commitment — cancel anytime, and the Front Row plan is free forever.",
+    `Speakers' Circle is ${priceLabel} per ${PLAN.interval}. ${commitmentLine} The Front Row plan is free forever.`,
   ],
   [
     "What's the difference between Leadership Voice and Campus Voice?",

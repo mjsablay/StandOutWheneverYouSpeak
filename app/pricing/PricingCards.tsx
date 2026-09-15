@@ -3,19 +3,13 @@
 import Link from "next/link";
 import { Check } from "@/components/ui";
 import { useAuth } from "@/lib/mock-auth";
-
-const FRONT_ROW = [
-  "Selected lessons from both courses",
-  "Free live events & open houses",
-  "Earn points & appear on the leaderboard",
-];
-
-const CIRCLE = [
-  "Every lesson in both courses",
-  "Coaching sessions with Katya",
-  "Full Member community access",
-  "All live events, workshops & cohort classes",
-];
+import {
+  CIRCLE_INCLUDES as CIRCLE,
+  FRONT_ROW_INCLUDES as FRONT_ROW,
+  PLAN,
+  commitmentLine,
+  priceLabel,
+} from "@/lib/pricing";
 
 export default function PricingCards() {
   const { user, loading } = useAuth();
@@ -72,9 +66,9 @@ export default function PricingCards() {
           The full curriculum, the AI coach, and the community.
         </p>
         <div className="mb-0.5 text-[44px] font-extrabold tracking-tight">
-          $10{" "}
+          {priceLabel}{" "}
           <small className="text-[15px] font-medium text-ink-soft">
-            CAD / month
+            / {PLAN.interval}
           </small>
         </div>
         <ul className="my-6 space-y-2">
@@ -95,13 +89,8 @@ export default function PricingCards() {
               ? "Continue to payment"
               : "Create account & subscribe"}
         </Link>
-        {/* Height reserved even when hidden, so the card never resizes */}
-        <p
-          className={`mt-3 text-center text-[13px] text-ink-soft ${
-            user ? "invisible" : ""
-          }`}
-        >
-          You&apos;ll create your account first, then pay.
+        <p className="mt-3 text-center text-[13px] text-ink-soft">
+          {user ? commitmentLine : "Request a place first, then pay."}
         </p>
       </div>
     </div>
