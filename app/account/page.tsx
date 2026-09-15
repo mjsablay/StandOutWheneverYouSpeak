@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Wrap, Section, Avatar, PageSkeleton } from "@/components/ui";
 import { GraduationCap, Briefcase } from "lucide-react";
 import PhotoCropper from "@/components/PhotoCropper";
+import BillingPanel from "@/components/BillingPanel";
 import { useAuth, initialsOf, type Profile } from "@/lib/mock-auth";
 import { LIMITS, deriveHeadline } from "@/lib/profile-options";
 
@@ -528,20 +528,9 @@ export default function AccountPage() {
           </div>
         </div>
 
-        {!isMember && (
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-paper-warm p-6">
-            <p className="max-w-[520px] text-[14.5px] text-ink-soft">
-              Speakers&apos; Circle members appear in the community directory,
-              where others can find them and request practice sessions.
-            </p>
-            <Link
-              href="/checkout?next=/account"
-              className="rounded-lg bg-brand px-5 py-2.5 font-semibold text-white hover:bg-brand-dark"
-            >
-              Upgrade
-            </Link>
-          </div>
-        )}
+        <div className="mt-6">
+          <BillingPanel />
+        </div>
       </Wrap>
     </Section>
   );

@@ -160,6 +160,33 @@ but a voice coach cannot see eye contact, so `RUBRIC` marks it `scored:
 false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive any total. It stays in the
 rubric members read, labelled "Not assessed".
 
+**Paying is a one-way street through Stripe.** `profiles.tier` is the
+entitlement every gate reads, and exactly one thing may write it: the
+webhook at `app/api/stripe/webhook/`, using the service role. The browser
+cannot (migration 0010's trigger), and the checkout success page
+deliberately grants nothing — anyone can type `?status=success`, so it
+waits for the webhook and says so rather than claiming access it cannot
+confirm. Handlers never trust the event body's snapshot either; each
+re-fetches the subscription and writes what is true now, so out-of-order
+and replayed deliveries converge instead of resurrecting stale state.
+
+Two traps worth knowing. `/api/stripe` is listed in `PRELAUNCH_ALLOWED` and
+the webhook path returns even earlier in `proxy.ts`: an API route that gets
+redirected to the home page answers HTML, which the browser can only report
+as "you've been signed out", and Stripe reads the 307 as a failed delivery
+and retries forever. And `current_period_end` is a property of the
+subscription **item** in this API version, not of the subscription —
+`subscription.current_period_end` is `undefined` and silently stores null.
+`periodEnd()` in `lib/stripe.ts` is the only place that should read it.
+
+**Every price on the site comes from `lib/pricing.ts`.** The number used to
+be typed into the pricing card, the checkout page, the FAQ and a page
+description, and the FAQ promised "cancel anytime" while Barry's blueprint
+proposes a three-month minimum. `minimumMonths` is 0, which is what the
+site has always promised; changing it rewrites every sentence about the
+commitment but **not** what Stripe charges — the real terms live on the
+Price in the Stripe dashboard, so a genuine minimum term needs both.
+
 **Points are awarded by a database trigger, never by the browser.**
 `award_progress_points` on `member_progress` (migration 0008) writes
 `points_ledger` rows when `watched` or `quiz_passed` first becomes true — 50
@@ -412,15 +439,14 @@ Planned in detail in `Advoc(Motiv)8/Audit-Stripe-and-Voice-Agent-Plan.md`
 1. ~~Host the lesson videos~~ — done, on Supabase Storage.
    `scripts/upload-lesson-videos.mjs` is how they got there and how to
    re-upload
-2. Stripe Checkout + webhook — the next highest-leverage build, and now the
-   only thing between the product and revenue. `profiles.tier` is what every
-   gate reads, and a webhook is the only thing that should ever change it.
-   The trigger from migration 0010 already lets the service role write
-   `tier`, so the webhook has the access it needs and nobody else does.
-   Pricing is still undecided (see `Advoc(Motiv)8/Thursday-Follow-Up.md`
-   decision 1 — $10/month vs a three-month minimum, which the FAQ's "cancel
-   anytime" contradicts); build it price-agnostic with the Price ID in an
-   environment variable so the decision stays a Stripe dashboard setting
+2. ~~Stripe Checkout + webhook~~ — built. Needs `STRIPE_SECRET_KEY`,
+   `STRIPE_PRICE_ID` and `STRIPE_WEBHOOK_SECRET` in Vercel and the customer
+   portal activated once in the Stripe dashboard; see `.env.example` for the
+   exact steps. Until then the pages say payments aren't switched on and name
+   the missing variable. The pricing decision is still open (see
+   `Advoc(Motiv)8/Thursday-Follow-Up.md` decision 1) but no longer blocks
+   anything: the amount and terms live on the Stripe Price, and what the site
+   says comes from `lib/pricing.ts`
 3. ~~Text AI coach~~ — shipped as the topic workspace; needs
    `OPENAI_API_KEY` in Vercel and Barry's five test sessions
 4. OpenAI Realtime voice coach over WebRTC with ephemeral tokens and Push

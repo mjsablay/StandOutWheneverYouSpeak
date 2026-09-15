@@ -29,12 +29,27 @@ const PRELAUNCH_ALLOWED = [
   "/contact",
   "/request",
   "/api/waitlist",
+  // Billing answers for itself: signed out is 401, not yet approved is 403,
+  // already a member is 409. Redirecting an API route to the home page
+  // instead turns every one of those into HTML, and the browser can only
+  // report it as "you've been signed out" — which is the one thing it isn't.
+  "/api/stripe",
   "/signin",
   "/signup",
   "/auth",
 ];
 
 export async function proxy(request: NextRequest) {
+  // Stripe's webhook posts here with no session and a signature over the raw
+  // body. It must skip both the session refresh and the pre-launch gate: the
+  // gate would answer a 307 to "/", Stripe would read that as a failed
+  // delivery, and it would retry forever while nobody's membership ever
+  // activated. The route verifies the signature itself, so skipping the
+  // session work here costs nothing.
+  if (request.nextUrl.pathname === "/api/stripe/webhook") {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

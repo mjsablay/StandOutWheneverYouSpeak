@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Wrap, Section, SectionHead } from "@/components/ui";
 import PricingCards from "./PricingCards";
+import { commitmentLine, priceWithInterval } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Pricing — Stand Out Whenever You Speak",
-  description:
-    "Start free in the Front Row, or join the Speakers' Circle for $10 CAD/month. Cancel anytime.",
+  description: `Start free in the Front Row, or join the Speakers' Circle for ${priceWithInterval}. ${commitmentLine}`,
 };
 
 export default function PricingPage() {
