@@ -160,6 +160,23 @@ but a voice coach cannot see eye contact, so `RUBRIC` marks it `scored:
 false` and `SCORED_RUBRIC` / `RUBRIC_MAX` drive any total. It stays in the
 rubric members read, labelled "Not assessed".
 
+**Privilege changes are logged, and the log is not reachable over REST.**
+`private.privilege_changes` (migration 0012) records every change to
+`role`, `tier` or `status`: who it was done to, who did it, and the before
+and after. It exists because when the escalation hole was found the
+question "was it used?" had no answer, and because a `tier` that moved
+without Stripe behind it is now a paid membership nobody paid for. Admins
+read it through `admin_privilege_changes()`, gated the way
+`admin_waitlist()` is; it shows at the bottom of the Members tab.
+
+The trap in writing it: the recorder is SECURITY DEFINER, so `current_user`
+inside it is the function owner (`postgres`) regardless of who called —
+which logged every change as an anonymous superuser and made the log
+worthless. The caller's real role comes from the JWT claims, with
+`session_user` as the fallback for direct SQL. If you add another
+privilege-granting column, add it to both this trigger and
+`guard_profile_privileges()`.
+
 **Paying is a one-way street through Stripe.** `profiles.tier` is the
 entitlement every gate reads, and exactly one thing may write it: the
 webhook at `app/api/stripe/webhook/`, using the service role. The browser

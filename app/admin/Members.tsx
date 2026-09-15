@@ -13,6 +13,7 @@ import {
   type Verification,
   type WaitlistRow,
 } from "@/lib/waitlist";
+import PrivilegeLog from "./PrivilegeLog";
 
 /**
  * Every account, one screen. Replaces the old pair — a "members" list and a
@@ -155,6 +156,9 @@ export default function Members({ adminId }: { adminId: string }) {
       {visible.length > 100 && (
         <p className="text-[13px] text-ink-soft">Showing the first 100 of {visible.length} — narrow with the search box.</p>
       )}
+
+      {/* The audit trail for the controls above. */}
+      <PrivilegeLog />
     </div>
   );
 }
