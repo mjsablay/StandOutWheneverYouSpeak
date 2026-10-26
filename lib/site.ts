@@ -175,7 +175,7 @@ export const FAQS = [
   ],
   [
     "How does the AI practice work?",
-    "Katya is your Speak with Impact practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. Choose where you want help — your Frame, your Masterful Notes or your Delivery — and she coaches one thing at a time: a strength, one priority improvement, then you try again. She scores against Barry's rubric when you ask.",
+    "Katya is your Speak with Impact practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. Choose your Frame or Masterful Notes for text coaching: a strength, one priority improvement, then another attempt. Spoken delivery assessment is not automated yet; a human coach records full presentation scores during the scoring pilot.",
   ],
   [
     "Can I practice with real people?",
@@ -183,7 +183,7 @@ export const FAQS = [
   ],
   [
     "How do points and the leaderboard work?",
-    "You earn points for watching lessons and passing their quizzes today, with practice sessions, feedback and live events joining as those features open. Points place you on the leaderboard and reward showing up consistently.",
+    "The activity leaderboard counts completed lessons and quizzes. Speaking performance is separate: a coach assesses Frame, Staying on Message and Delivery. Your best three of the latest five presentations determine your current score, with one eligible award per completed month. See My performance for your baseline, assessments, monthly awards and current recognition level.",
   ],
   [
     "Who teaches the courses?",

@@ -488,3 +488,8 @@ poster is from 4.5 seconds into the new first video.
 See `docs/barry-email-review-2026-10-26.md` for the reviewed requests and
 unresolved points/tier/avatar decisions. Do not infer delivery scores from
 text or count old activity points as the proposed performance points.
+
+
+## Performance scoring pilot (October 2026)
+
+User approved best three of latest five, with one monthly award. See `docs/barry-email-review-2026-10-26.md` for exact semantics. `/performance` is private; Admin → Performance records full human-assessed presentations and finalizes completed Toronto calendar months. Existing activity points remain separate. No delivery inference from text, no eye contact, no new billing tiers. First three baseline; current available after five total; one new post-baseline presentation in award month. Read/write RPCs enforce access and deterministic month snapshots. Tables are read-only via RLS; writes go through guarded RPCs. Records have rubric/rule versions. Run `npm run test:performance` (isolated PGlite/Postgres, no production fixtures). Corrections need a reviewed audited migration; the console deliberately has no edit/delete. Current level is qualification, not permanent historical attainment.

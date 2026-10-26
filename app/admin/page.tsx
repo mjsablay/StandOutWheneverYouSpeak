@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   ShieldAlert,
   Sparkles,
+  Trophy,
   Users,
   Wrench,
   type LucideIcon,
@@ -18,6 +19,7 @@ import {
 import { Wrap, Section, Eyebrow, PageSkeleton } from "@/components/ui";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/mock-auth";
+import Performance from "./Performance";
 import Overview from "./Overview";
 import Requests from "./Requests";
 import Members from "./Members";
@@ -34,7 +36,7 @@ import TestData from "./TestData";
  * so the home page and the Overview's to-do list can link straight to it.
  */
 
-type TabId = "overview" | "requests" | "members" | "meetings" | "events" | "content" | "insights" | "tools";
+type TabId = "overview" | "requests" | "members" | "meetings" | "events" | "content" | "insights" | "performance" | "tools";
 
 const TABS: { id: TabId; label: string; icon: LucideIcon; hint: string }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard, hint: "The platform at a glance" },
@@ -44,6 +46,7 @@ const TABS: { id: TabId; label: string; icon: LucideIcon; hint: string }[] = [
   { id: "events", label: "Events", icon: CalendarDays, hint: "What members see on the calendar" },
   { id: "content", label: "About page", icon: FileText, hint: "Headline, stats and founder bios" },
   { id: "insights", label: "Insights", icon: Sparkles, hint: "An analyst's read of your numbers" },
+  { id: "performance", label: "Performance", icon: Trophy, hint: "Presentation scores and monthly awards" },
   { id: "tools", label: "Tools", icon: Wrench, hint: "Preview as a member; test data" },
 ];
 
@@ -164,6 +167,7 @@ function Console() {
             {tab === "events" && <Events />}
             {tab === "content" && <ContentEditor />}
             {tab === "insights" && <Insights />}
+            {tab === "performance" && <Performance />}
             {tab === "tools" && (
               <div className="space-y-6">
                 <PreviewControl />
