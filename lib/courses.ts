@@ -1,3 +1,5 @@
+import { PREPARATION_MATERIALS } from "@/lib/preparation";
+
 /**
  * Course and lesson structure for Stand Out.
  *
@@ -76,7 +78,7 @@ export const COURSES: Course[] = [
         title: "Be Remarkable",
         summary:
           "What separates speakers people remember from speakers people forget — and why it is a learnable skill, not a personality trait.",
-        video: "be-remarkable.mp4",
+        video: "be-remarkable-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -102,7 +104,7 @@ export const COURSES: Course[] = [
         title: "Impact Defined",
         summary:
           "A working definition of impact: being remembered, and moving people to think or act differently after you have finished speaking.",
-        video: "impact-defined.mp4",
+        video: "impact-defined-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -123,8 +125,9 @@ export const COURSES: Course[] = [
         title: "Impactful Structure",
         summary:
           "The structure behind presentations that land — how to order your thinking so an audience can follow and retain it.",
-        video: "impactful-structure-explained.mp4",
+        video: "impactful-structure-explained-2026-09.mp4",
         materials: [
+          ...PREPARATION_MATERIALS,
           {
             label: "Exercise",
             file: "impactful-structure-explained-exercise.docx",
@@ -144,7 +147,7 @@ export const COURSES: Course[] = [
         title: "Compelling Delivery",
         summary:
           "Voice, pace, pause, and presence. How delivery either carries your message or quietly undermines it.",
-        video: "compelling-delivery.mp4",
+        video: "compelling-delivery-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -165,8 +168,9 @@ export const COURSES: Course[] = [
         title: "Masterful Notes — Designed",
         summary:
           "How to build notes that support you instead of trapping you into reading a script.",
-        video: "masterful-notes-designed.mp4",
+        video: "masterful-notes-designed-2026-09.mp4",
         materials: [
+          ...PREPARATION_MATERIALS,
           {
             label: "Exercise",
             file: "masterful-notes-designed-exercise.docx",
@@ -186,8 +190,9 @@ export const COURSES: Course[] = [
         title: "Masterful Notes — Delivered",
         summary:
           "Using your notes live: staying connected to the room while staying on message.",
-        video: "masterful-notes-delivered.mp4",
+        video: "masterful-notes-delivered-2026-09.mp4",
         materials: [
+          ...PREPARATION_MATERIALS,
           {
             label: "Exercise",
             file: "masterful-notes-delivered-exercise.docx",
@@ -207,7 +212,7 @@ export const COURSES: Course[] = [
         title: "Pesky Nerves Managed",
         summary:
           "Eight out of ten people feel nervous presenting. Practical ways to manage nerves rather than pretend they are not there.",
-        video: "pesky-nerves-managed.mp4",
+        video: "pesky-nerves-managed-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -228,7 +233,7 @@ export const COURSES: Course[] = [
         title: "Key Conversations Influenced",
         summary:
           "Build influence before you explain. Use CALE to create stronger, more productive conversations.",
-        video: "key-conversations-managed.mp4",
+        video: "key-conversations-managed-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -249,7 +254,7 @@ export const COURSES: Course[] = [
         title: "Flexing Your Style with ACTS",
         summary:
           "Read the room and flex your approach to connect with Activators, Creators, Team Players and Specialists.",
-        video: "flexing-your-style-with-acts.mp4",
+        video: "flexing-your-style-with-acts-2026-09.mp4",
         materials: [
           {
             label: "Exercise",
@@ -277,7 +282,7 @@ export const COURSES: Course[] = [
         title: "Difficult Conversations Managed",
         summary:
           "Stay calm, curious and constructive when the stakes rise and conversations become uncomfortable.",
-        video: "managing-difficult-conversations.mp4",
+        video: "managing-difficult-conversations-2026-09.mp4",
         materials: [
           {
             label: "Exercise",

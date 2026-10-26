@@ -474,3 +474,17 @@ Planned in detail in `Advoc(Motiv)8/Audit-Stripe-and-Voice-Agent-Plan.md`
 
 Not done deliberately: the admin member list still reads emails through the
 client. Fine with one admin; the clean fix is a service-role route.
+
+## October 2026 teaching materials
+
+Barry's three original learner PDFs (sent 8 October) live in
+`public/materials/preparation-2026-10/`, unchanged. `/preparation` explains
+how to use them and is linked from Leadership Voice, lessons 3/5A/5B and
+the topic workspace. `lib/preparation.ts` is the shared download manifest.
+These are learner-facing prompts, not quizzes or a new Katya system prompt.
+The ten September replacement videos use `-2026-09.mp4` filenames in the
+same storage bucket; old objects remain available for rollback. The homepage
+poster is from 4.5 seconds into the new first video.
+See `docs/barry-email-review-2026-10-26.md` for the reviewed requests and
+unresolved points/tier/avatar decisions. Do not infer delivery scores from
+text or count old activity points as the proposed performance points.
