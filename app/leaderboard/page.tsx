@@ -127,7 +127,7 @@ export default function LeaderboardPage() {
           <div className="rounded-2xl border border-line bg-white p-7">
             <h3 className="mb-4 text-lg font-semibold">Lesson activity points</h3>
             <ul>
-              {POINTS_RULES.map(({ label, points, live }) => (
+              {POINTS_RULES.filter((rule) => rule.live).map(({ label, points, live }) => (
                 <li
                   key={label}
                   className={`flex items-center justify-between border-b border-line py-2.5 text-[14.5px] last:border-0 ${

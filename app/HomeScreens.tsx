@@ -22,7 +22,7 @@ import {
 import MemberHome from "@/app/MemberHome";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
-import { COURSES, RUBRIC_MAX, SCORED_RUBRIC, videoUrl } from "@/lib/courses";
+import { COURSES, videoUrl } from "@/lib/courses";
 import { FAQS, PRELAUNCH, COACH_NAME } from "@/lib/site";
 
 /** Barry's headshot, in the public avatars bucket. Shown in the hero and the founder band. */
@@ -90,14 +90,8 @@ function Greeting({
   );
 }
 
-/**
- * A still of a coaching session — the product, drawn in HTML rather than
- * screenshotted, so it stays true as the real thing changes. Scores use the
- * real rubric: three audible categories, fifteen points.
- */
+/** Illustrative text-preparation exchange, not a real member session or delivery score. */
 function CoachMock({ compact = false }: { compact?: boolean }) {
-  const scores: Record<string, number> = { structure: 5, delivery: 4, "on-message": 4 };
-  const total = Object.values(scores).reduce((a, b) => a + b, 0);
   return (
     <div
       className={`rounded-3xl border border-line bg-white shadow-card ${compact ? "p-5" : "p-6 sm:p-7"}`}
@@ -112,7 +106,7 @@ function CoachMock({ compact = false }: { compact?: boolean }) {
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-ink">
           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-          Listening
+          Text example
         </span>
       </div>
 
@@ -125,45 +119,10 @@ function CoachMock({ compact = false }: { compact?: boolean }) {
         </p>
       </div>
 
-      <div className="my-4 flex h-8 items-end justify-center gap-1" aria-hidden>
-        {[14, 24, 18, 30, 22, 12, 26, 20, 16, 28, 18, 10].map((h, i) => (
-          <span
-            key={i}
-            className="wave-bar w-1.5 rounded-full bg-brand"
-            style={{ height: h, animationDelay: `${i * 80}ms` }}
-          />
-        ))}
-      </div>
-
-      <div className="rounded-2xl bg-paper-soft p-4">
-        <div className="mb-3 flex items-baseline justify-between">
-          <span className="text-[12px] font-bold uppercase tracking-wider text-ink-soft">
-            Last session
-          </span>
-          <span className="text-[13px] font-bold">
-            {total}
-            <span className="text-ink-soft">/{RUBRIC_MAX}</span>
-            <span className="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-bold text-accent-ink">
-              Very Good
-            </span>
-          </span>
-        </div>
-        <div className="space-y-2">
-          {SCORED_RUBRIC.map((c) => (
-            <div key={c.id} className="flex items-center gap-3 text-[12.5px]">
-              <span className="w-[150px] shrink-0 truncate font-medium">{c.name}</span>
-              <span className="flex flex-1 gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span
-                    key={n}
-                    className={`h-1.5 flex-1 rounded-full ${n <= (scores[c.id] ?? 0) ? "bg-brand" : "bg-line"}`}
-                  />
-                ))}
-              </span>
-              <span className="w-4 text-right font-bold text-ink-soft">{scores[c.id]}</span>
-            </div>
-          ))}
-        </div>
+      <div className="mt-5 rounded-2xl bg-paper-soft p-4">
+        <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-soft">One useful next step</p>
+        <p className="text-sm leading-relaxed">You have a clear opening. Now give the room one reason the lower number is good news.</p>
+        <p className="mt-3 text-xs text-ink-soft">Preparation feedback example. Spoken delivery is assessed separately by a coach.</p>
       </div>
     </div>
   );
@@ -285,7 +244,7 @@ function VisitorHome() {
             {[
               [BookOpen, "Learn", "Short, focused lessons on structure, delivery and staying on message — built from 17 years of coaching 3,500+ leaders."],
               [Mic, "Practise", `Bring a two-to-three-minute piece to ${COACH_NAME}. She names one strength, one thing to change, and has you try it again.`],
-              [Trophy, "Perform", "Walk into the boardroom, the classroom or the interview having already been there — and earn points every step of the way."],
+              [Trophy, "Perform", "Put the method into practice in your next meeting or presentation, then use assessed feedback to see your progress."],
             ].map(([Icon, title, body]) => {
               const I = Icon as LucideIcon;
               return (
@@ -319,9 +278,9 @@ function VisitorHome() {
               </p>
               <ul className="mb-8 space-y-3 text-[15.5px]">
                 {[
-                  "Start where you need help: your Frame, your Masterful Notes, or your Delivery",
+                  "Prepare your Frame or Masterful Notes through focused text coaching",
                   "One coaching idea per turn, so it lands before the next",
-                  "Scores against Barry's rubric only when you ask, and never for what she can't reliably assess",
+                  "Full presentation scores come from a coach’s assessment; automated delivery scoring is not available yet",
                 ].map((f) => (
                   <li key={f} className="flex gap-3">
                     <Check /> {f}
