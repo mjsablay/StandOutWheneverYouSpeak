@@ -136,7 +136,7 @@ export const PREP_PROMPTS = [
   {
     number: 1,
     name: "Frame your presentation",
-    does: "Use the Presentation Pyramid to organise the message: Headline, then What, Why and How, the Evidence each needs, and a Close.",
+    does: "Use the Presentation Pyramid to organise the message: Conclusion (Headline), two to four Main Points, Evidence supporting each point, and a Close.",
     produces: "frame" as const,
   },
   {

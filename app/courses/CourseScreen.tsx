@@ -55,6 +55,7 @@ export default function CourseScreen() {
   return (
     <Section>
       <Wrap>
+        <Link href="/preparation" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:underline"><FileText className="h-4 w-4" />Presentation prompts &amp; preparation guide</Link>
         {/* ---------- Header ---------- */}
         <div className="mb-10 flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-[680px]">

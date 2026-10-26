@@ -210,7 +210,7 @@ function LessonPreview({ lesson }: { lesson: (typeof COURSES)[0]["lessons"][0] }
                 <span className="block text-[20px] font-bold">{lesson.title}</span>
               </span>
               <span className="rounded-full bg-white/15 px-3 py-1 text-[12.5px] font-semibold backdrop-blur">
-                Free · 1:55
+                Free · 1:50
               </span>
             </span>
           </button>

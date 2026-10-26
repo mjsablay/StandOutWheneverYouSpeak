@@ -165,9 +165,8 @@ export default function TopicWorkspace({
               <span className="text-[12.5px] text-ink-soft">{savedLabel}</span>
             </div>
             <p className="mb-6 text-[14px] leading-relaxed text-ink-soft">
-              Build these offline with Barry&apos;s two prompts, then paste them here.
-              {" "}{COACH_NAME} reads what you save, so she never asks you to repeat it and
-              never guesses at what you meant.
+              <Link href="/preparation" className="font-semibold text-brand underline underline-offset-4">Open Barry&apos;s preparation toolkit</Link>, use the two prompts, then paste your work here.
+              {" "}{COACH_NAME} receives your saved work as context for the session.
             </p>
 
             {loading ? (
@@ -176,11 +175,11 @@ export default function TopicWorkspace({
               <div className="space-y-6">
                 <Field
                   label={PREP_LABELS.audience}
-                  hint="Who is listening, what the situation is, and what you want them to know, believe or do. One or two lines."
+                  hint="Summarize your audience, situation, tone, focus, desired outcome and target length. Keep the full context with your working document."
                   value={current.audience}
                   onChange={(v) => update("audience", v)}
                   onBlur={commit}
-                  rows={2}
+                  rows={4}
                   placeholder="The leadership team, at the end of a quarterly review. I want them to approve a three-month pilot."
                   maxLength={400}
                 />
@@ -192,7 +191,7 @@ export default function TopicWorkspace({
                   onBlur={commit}
                   rows={9}
                   placeholder={
-                    "Headline: …\n\nWhat: …\nWhy: …\nHow: …\n\nEvidence: …\n\nClose: …"
+                    "Conclusion (Headline): …\n\nMain Points:\n• …\n• …\n\nEvidence:\nFor point 1: …\nFor point 2: …\n\nClose: …"
                   }
                   maxLength={8000}
                 />

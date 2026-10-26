@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getLesson } from "@/lib/courses";
 
@@ -53,6 +54,14 @@ export default function LessonWorkbookScreen() {
           where the learning actually sticks.
         </p>
       </div>
+
+      {materials.some((m) => m.file.startsWith("preparation-2026-10/")) && (
+        <div className="mb-6 rounded-2xl border border-line bg-paper-soft p-5">
+          <h3 className="font-bold">Using the prompts for the first time?</h3>
+          <p className="mt-1 text-sm text-ink-soft">Start with your context, build the Presentation Pyramid, then create your Masterful Notes.</p>
+          <Link href="/preparation" className="mt-3 inline-block text-sm font-semibold text-brand hover:underline">Open the preparation guide →</Link>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         {materials.map((m) => {
