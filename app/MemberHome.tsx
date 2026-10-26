@@ -454,10 +454,10 @@ export default function MemberHome({
             note={paid ? "Find a practice partner" : "Opens with Speakers' Circle"}
           />
           <Tile
-            href="/leaderboard"
+            href="/performance"
             icon={Trophy}
-            label="Leaderboard"
-            note="Where you stand this month"
+            label="My performance"
+            note="Presentation scores and monthly awards"
           />
           {admin && (
             <Tile

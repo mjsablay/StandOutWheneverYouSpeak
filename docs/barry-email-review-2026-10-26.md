@@ -23,7 +23,7 @@ Official documentation checked 26 October 2026:
 
 Pilot acceptance: Barry's prompt and saved preparation are supplied; the learner can pause without interruption; exactly one useful coaching priority and retry; no fabricated delivery/eye-contact scores; session stops and disconnects reliably; usable desktop/mobile playback; recorded latency and total cost per session. Eye contact remains unassessed, per the user's instruction. Do not advertise voice or avatar features before this passes. Needs provider selection, account access/credentials and a test budget; no subscription was purchased.
 
-## Points and recognition: decisions before implementation
+## Points and recognition: approved rule and first implementation
 
 **23 September, “An Update & Next Steps”**, with two Word documents and a journey diagram. The calculation is feasible, but the attachments disagree:
 
@@ -35,9 +35,17 @@ Pilot acceptance: Barry's prompt and saved preparation are supplied; the learner
 
 Both use equal Frame/Staying on Message/Delivery weights, scores 1–5, points = current performance / 5 × 100, and advancement requiring BOTH cumulative points and current performance: Intermediate 100/2.8, Expert 225/3.5, Distinguished 350/4.0, Rock Star 500/4.4. Neither authorizes replacing missing delivery evidence with zero or guessing from text.
 
-Recommended decision: best 3 of latest 5, as in the newer sales document, with one finalized award per eligible calendar month, preserving the guide's monthly rule. Confirm how fewer than five post-baseline presentations behave, month timezone, rounding, corrections and whether earned levels persist after performance falls. Do not silently choose these semantics.
+User approval on 26 October: **“Approve best 3 of 5, monthly awards.”** Implemented a human-assessed Speakers’ Circle pilot, separate from the existing lesson activity ledger. Katya cannot assess delivery yet, so it cannot create these records.
 
-Implementation after confirmation: separate performance presentations from coaching chats; server-validated evidence and rubric version; immutable 3-presentation baseline; deterministic rolling calculation; unique member/month award ledger; replay-safe month close; admin corrections with audit trail; learner baseline/current performance/points/level display. Existing activity points for watching/quizzes must be distinguished from performance points and must not automatically become Stand Out performance credit. Preserve existing ledger history.
+- First three full presentations establish a baseline and cannot by themselves earn points. The current score becomes available after five total presentations; the latest-five window includes baseline presentations until newer ones replace them. This follows the newer document's “five most recent scored presentations,” without requiring eight before starting.
+- Frame, Staying on Message and Delivery each accept 1–5 in 0.1 increments; overall and best-three averages retain precision. Eye contact stays excluded. Every record includes visible evidence, assessor, creation sequence and rubric version.
+- Calendar months use Toronto time. After month-end, an administrator previews and finalizes one award when the month includes at least one post-baseline presentation. Points = current × 20, rounded to two decimals. No scheduled award job or session-count awards.
+- Dates must be entered chronologically. Stable creation sequence breaks same-day ties. Finalization snapshots the five source presentations and locks records through that month. Duplicate submission and duplicate month-close retries return the existing record.
+- The displayed level is current qualification from the approved threshold table, not an irrevocable earned badge. Earlier awards remain in the ledger if current performance drops.
+- The member view is private; only administrators record assessments or finalize awards. The existing Circle plan is the pilot boundary; proposed paid tiers and prices are unchanged. Past records remain readable after a plan change.
+- Records are immutable in the console. Corrections require a separately reviewed, audited database change; no correction/delete UI ships in this pilot. The confirmation warns the assessor before saving. Do not manually alter finalized scores without reconciling affected awards.
+
+Validation: isolated PostgreSQL regression tests cover baseline, best-three/latest-five, historical cutoffs, no-new-month eligibility, duplicate awards/submissions, invalid scores, chronological entry, closed-month locks, admin-only writes and member isolation. No fake production assessments or awards were inserted. The dashboard was visually checked using a temporary local fixture, removed before commit; no signed-in administrator browser submission was performed.
 
 ## Membership and learner journey: proposals needing confirmation
 
