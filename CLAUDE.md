@@ -493,3 +493,13 @@ text or count old activity points as the proposed performance points.
 ## Performance scoring pilot (October 2026)
 
 User approved best three of latest five, with one monthly award. See `docs/barry-email-review-2026-10-26.md` for exact semantics. `/performance` is private; Admin → Performance records full human-assessed presentations and finalizes completed Toronto calendar months. Existing activity points remain separate. No delivery inference from text, no eye contact, no new billing tiers. First three baseline; current available after five total; one new post-baseline presentation in award month. Read/write RPCs enforce access and deterministic month snapshots. Tables are read-only via RLS; writes go through guarded RPCs. Records have rubric/rule versions. Run `npm run test:performance` (isolated PGlite/Postgres, no production fixtures). Corrections need a reviewed audited migration; the console deliberately has no edit/delete. Current level is qualification, not permanent historical attainment.
+
+
+## Admin monthly performance review (November 2026)
+
+Admin → Performance defaults to the last completed Toronto month and uses the
+admin-only `admin_performance_overview` RPC for searchable readiness/status counts.
+Apply `20261105160235_admin_performance_overview.sql` before deploying this UI.
+An unfinished assessment warns before member/month/navigation changes; finalization
+is disabled until it is saved. Drafts are not persisted across confirmed departures.
+See `tests/PERFORMANCE-UI.md` for the isolated test setup and verification limits.

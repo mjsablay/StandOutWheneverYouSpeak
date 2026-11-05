@@ -134,6 +134,7 @@ function Console() {
                 return (
                   <li key={id} className="shrink-0">
                     <button
+                      data-performance-navigation
                       onClick={() => go(id)}
                       aria-current={on ? "page" : undefined}
                       className={`flex w-full items-center gap-2.5 rounded-full px-3.5 py-2 text-[14px] font-semibold transition lg:rounded-xl ${
