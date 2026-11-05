@@ -25,6 +25,9 @@ await db.exec(`
   insert into public.profiles values ('${admin}','admin','circle','approved'),('${member}','member','circle','approved'),('${other}','member','circle','approved'),('${free}','member','free','approved');
 `);
 await db.exec(await readFile(new URL('../supabase/migrations/20261026162922_performance_points.sql', import.meta.url), 'utf8'));
+await db.exec("alter table public.profiles add column email text default 'test@example.invalid', add column display_name text");
+await db.exec(await readFile(new URL('../supabase/migrations/20261105160235_admin_performance_overview.sql', import.meta.url), 'utf8'));
+const overview = async (period = '2020-01-01') => (await db.query('select public.admin_performance_overview($1) r', [period])).rows[0].r;
 const actor = async id => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claim.sub',$1,false)", [id]); await db.exec('set role authenticated'); };
 const report = async (id = member, period = '2020-01-01') => (await db.query('select public.performance_report($1,$2) as r', [id, period])).rows[0].r;
 const record = async (score, date = '2020-01-10', id = randomUUID(), who = member) => {
@@ -35,11 +38,15 @@ const finalize = async (period = '2020-01-01') => (await db.query('select public
 const rejects = async (fn, text) => assert.rejects(fn, new RegExp(text, 'i'));
 await actor(admin);
 assert.equal((await report()).snapshot.baseline, null);
+assert.equal((await overview()).length, 3);
+assert.equal((await overview()).find(r => r.id === member).award_status, 'baseline_needed');
+await rejects(() => overview('2020-01-02'), 'calendar month');
 await record(2.7); await record(2.6);
 assert.equal((await report()).snapshot.baseline, null);
 await record(2.5);
 let r = await report(); assert.equal(r.snapshot.baseline, 2.6); assert.equal(r.snapshot.current, null); assert.equal(r.snapshot.new_presentations,0);
 await rejects(finalize, 'Five scored');
+assert.equal((await overview()).find(r => r.id === member).award_status, 'window_needed');
 await record(3.2); await record(3.3);
 r = await report(); assert.equal(r.snapshot.count, 5); assert.ok(Math.abs(r.snapshot.current - (2.7+3.2+3.3)/3) < 1e-12);
 await record(3.4); await record(3.5); const retryId = await record(3.6);
@@ -52,8 +59,12 @@ await rejects(()=>record(3,'2019-12-31'),'date order');
 await rejects(()=>record(3,'2099-01-01'),'future');
 await rejects(()=>record(3,'2020-01-10',randomUUID(),free),'requires an approved');
 await rejects(()=>finalize('2099-01-01'),'completed calendar');
+assert.equal((await overview()).find(r => r.id === member).award_status, 'ready');
+assert.equal((await overview()).find(r => r.id === member).points, 70);
 const awardId = await finalize(); assert.equal(await finalize(), awardId);
 r = await report(); assert.equal(r.awards.length,1); assert.equal(r.awards[0].points,70); assert.equal(r.awards[0].current_score,3.5);
+assert.equal((await overview()).find(r => r.id === member).award_status, 'finalized');
+assert.equal((await overview('2020-02-01')).find(r => r.id === member).award_status, 'no_new_presentation');
 await rejects(()=>record(4), 'finalized');
 await rejects(()=>finalize('2020-02-01'),'No new');
 await record(1,'2020-03-01'); // newest five drop 3.2; weaker new attempt doesn't immediately reduce best three
@@ -63,7 +74,17 @@ assert.ok(Math.abs((await report(member,'2020-03-01')).snapshot.current - 2.7) <
 assert.equal((await report()).snapshot.current,3.5); // historical snapshot unchanged
 await finalize('2020-03-01');
 assert.equal((await report()).awards.find(a=>a.month==='2020-03-01').points,54);
+// Current months cannot become ready, even when the full window is present.
+const thisMonth = (await db.query("select date_trunc('month', now() at time zone 'America/Toronto')::date::text m")).rows[0].m;
+for (let i = 0; i < 5; i++) await record(3, thisMonth, randomUUID(), other);
+assert.equal((await overview(thisMonth)).find(r => r.id === other).award_status, 'month_open');
+// A changed membership must not make recorded history disappear from review.
+await db.exec('reset role');
+await db.query("update profiles set tier='free', status='declined' where id=$1", [other]);
+await actor(admin);
+assert.ok((await overview(thisMonth)).some(r => r.id === other));
 await actor(member);
+await rejects(overview, 'Administrator');
 assert.equal((await report()).presentations.length,11);
 await rejects(()=>record(5), 'Administrator'); await rejects(finalize,'Administrator');
 await rejects(()=>report(other), 'only view your own');
@@ -72,10 +93,11 @@ await rejects(()=>db.exec("update public.performance_presentations set frame=5")
 await rejects(()=>db.exec("delete from public.performance_awards"),'permission denied');
 await rejects(()=>db.query("select private.performance_snapshot($1,$2)",[member,'2020-01-01']),'permission denied');
 await actor(other);
-assert.equal((await db.query('select count(*)::int n from public.performance_presentations')).rows[0].n,0);
+assert.equal((await db.query('select count(*)::int n from public.performance_presentations')).rows[0].n,5);
 assert.equal((await db.query('select count(*)::int n from public.performance_awards')).rows[0].n,0);
 await db.exec('reset role; set role anon');
 await rejects(()=>report(member), 'permission denied');
+await rejects(overview, 'permission denied');
 await rejects(()=>db.exec('select * from public.performance_presentations'),'permission denied');
 await db.close();
 console.log('PASS: baseline, best-three/latest-five, historical cutoffs, monthly awards, retries, validation, RPC permissions and RLS isolation.');
