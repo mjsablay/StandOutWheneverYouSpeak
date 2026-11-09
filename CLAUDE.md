@@ -493,3 +493,23 @@ text or count old activity points as the proposed performance points.
 ## Performance scoring pilot (October 2026)
 
 User approved best three of latest five, with one monthly award. See `docs/barry-email-review-2026-10-26.md` for exact semantics. `/performance` is private; Admin → Performance records full human-assessed presentations and finalizes completed Toronto calendar months. Existing activity points remain separate. No delivery inference from text, no eye contact, no new billing tiers. First three baseline; current available after five total; one new post-baseline presentation in award month. Read/write RPCs enforce access and deterministic month snapshots. Tables are read-only via RLS; writes go through guarded RPCs. Records have rubric/rule versions. Run `npm run test:performance` (isolated PGlite/Postgres, no production fixtures). Corrections need a reviewed audited migration; the console deliberately has no edit/delete. Current level is qualification, not permanent historical attainment.
+
+
+## Learning and Circle access (November 2026)
+
+Approved members land on the course-focused Learning screen at `/`; `/courses`
+and `/learning` redirect there. Public visitors retain the marketing homepage.
+Community is removed from navigation and `/community` redirects home. FAQ content
+is removed pending formal decisions. Public header CTAs offer Request a place;
+the footer retains Member login for existing accounts.
+
+Workbooks, lesson practice pages, the preparation toolkit and every `/materials/*`
+download require approved Speakers’ Circle membership or administrator access
+in `proxy.ts`. Keep the explicit materials matcher: the general matcher skips PDFs.
+Katya APIs retain their existing `requireCircleMember` server checks. Run
+`node tests/circle-access.mjs` for the actual matcher/guard with mocked identity.
+
+Set `NEXT_PUBLIC_WELCOME_VIDEO_URL` only after Barry supplies the real recording.
+It replaces the public hero lesson preview and appears under Watch Barry’s welcome
+on Learning. Until then the existing hero remains accurately labelled as a lesson
+preview and no fake welcome recording is displayed. No new database migration.

@@ -54,7 +54,8 @@ export default function LessonShell({ children }: { children: ReactNode }) {
 
   const { course, lesson, prev, next, index } = data;
   const base = `/courses/${slug}/lessons/${lessonSlug}`;
-  const locked = !hasFullAccess && index >= FREE_PREVIEW_COUNT;
+  const circleTool = pathname.endsWith("/workbook") || pathname.endsWith("/practice");
+  const locked = !hasFullAccess && (circleTool || index >= FREE_PREVIEW_COUNT);
   const gated = hasQuiz(lesson.slug);
   const nextBlocked = gated && !hasPassed(lesson.slug);
 
@@ -75,7 +76,7 @@ export default function LessonShell({ children }: { children: ReactNode }) {
             </h1>
             <p className="mb-6 text-[15px] text-ink-soft">
               Lessons 1–6 are free. Unlock all {course.lessons.length} lessons,
-              coaching with Katya, and the member community for $10 CAD/month.
+              workbooks and coaching with Katya with Speakers’ Circle.
             </p>
             <Link
               href={`/checkout?next=${encodeURIComponent(base)}`}
@@ -100,13 +101,13 @@ export default function LessonShell({ children }: { children: ReactNode }) {
     },
     {
       href: `${base}/workbook`,
-      label: "Workbook",
+      label: hasFullAccess ? "Workbook" : "Workbook · Circle",
       icon: "",
       show: Boolean(lesson.materials?.length),
     },
     {
       href: `${base}/practice`,
-      label: "Katya",
+      label: hasFullAccess ? "Katya" : "Katya · Circle",
       icon: "",
       show: Boolean(lesson.practice),
     },

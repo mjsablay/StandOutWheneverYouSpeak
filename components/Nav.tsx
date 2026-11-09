@@ -42,7 +42,7 @@ export default function Nav() {
               pathname === "/" ? "font-bold text-brand" : "hover:text-ink"
             }
           >
-            Home
+            {access.approved ? "Learning" : "Home"}
           </Link>
 
           {links.map((l) => (
@@ -71,16 +71,10 @@ export default function Nav() {
           ) : (
             <>
               <Link
-                href="/signin"
-                className="hidden rounded-full px-4 py-2.5 text-[14.5px] font-semibold text-ink transition hover:bg-paper-soft sm:inline-block"
-              >
-                Sign in
-              </Link>
-              <Link
                 href="/request"
                 className="hidden rounded-full bg-brand px-5 py-2.5 text-[14.5px] font-semibold text-white transition hover:bg-brand-dark sm:inline-block"
               >
-                {PRELAUNCH ? "Request a place" : "Join free"}
+                Request a place
               </Link>
             </>
           )}
@@ -109,7 +103,7 @@ export default function Nav() {
               onClick={() => setMobileOpen(false)}
               className="border-b border-line py-3 text-[15px] font-medium"
             >
-              Home
+              {access.approved ? "Learning" : "Home"}
             </Link>
             {links.map((l) => (
               <Link
@@ -132,18 +126,11 @@ export default function Nav() {
             ) : showAsSignedIn ? null : (
               <>
                 <Link
-                  href="/signin"
-                  onClick={() => setMobileOpen(false)}
-                  className="mt-4 rounded-full border border-line px-5 py-3 text-center text-[15px] font-semibold"
-                >
-                  Sign in
-                </Link>
-                <Link
                   href="/request"
                   onClick={() => setMobileOpen(false)}
                   className="mt-2.5 mb-2 rounded-full bg-brand px-5 py-3 text-center text-[15px] font-semibold text-white"
                 >
-                  {PRELAUNCH ? "Request a place" : "Join free"}
+                  Request a place
                 </Link>
               </>
             )}

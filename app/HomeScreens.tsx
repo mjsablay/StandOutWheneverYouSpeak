@@ -19,11 +19,12 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import MemberHome from "@/app/MemberHome";
+import CourseScreen from "@/app/courses/CourseScreen";
+import WelcomeVideo, { WELCOME_VIDEO_URL } from "@/components/WelcomeVideo";
 import { useAuth } from "@/lib/mock-auth";
 import { useAccess } from "@/lib/access";
 import { COURSES, videoUrl } from "@/lib/courses";
-import { FAQS, PRELAUNCH, COACH_NAME } from "@/lib/site";
+import { PRELAUNCH, COACH_NAME } from "@/lib/site";
 
 /** Barry's headshot, in the public avatars bucket. Shown in the hero and the founder band. */
 const FOUNDER_PHOTO =
@@ -190,14 +191,24 @@ function VisitorHome() {
 
   return (
     <>
-      {/* Hero */}
-      <header className="hero-glow relative overflow-hidden pb-10 pt-20 sm:pt-28">
+      {/* The welcome recording leads the public first screen once supplied. */}
+      {WELCOME_VIDEO_URL ? <header className="hero-glow py-12 sm:py-16">
+        <Wrap className="grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <Eyebrow>Welcome to Stand Out</Eyebrow>
+            <h1 className="display mt-4 text-[clamp(38px,4.8vw,64px)]">Stand out whenever you speak.</h1>
+            <p className="my-6 text-lg text-ink-soft">Meet Barry and discover a practical way to become a more confident, memorable speaker.</p>
+            <Btn href="/request" variant="brand">Request a place</Btn>
+          </div>
+          <WelcomeVideo />
+        </Wrap>
+      </header> : <header className="hero-glow relative overflow-hidden pb-10 pt-20 sm:pt-28">
         <Wrap className="text-center">
           <Eyebrow>
             <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
             Now accepting founding members
           </Eyebrow>
-          <h1 className="display mx-auto mb-6 max-w-[860px] text-[clamp(46px,7.4vw,86px)]">
+          <h1 className="display mx-auto mb-6 max-w-[860px] text-[clamp(42px,6vw,72px)]">
             Stand out whenever you speak.
           </h1>
           <p className="mx-auto mb-9 max-w-[560px] text-[19px] leading-relaxed text-ink-soft">
@@ -223,11 +234,11 @@ function VisitorHome() {
           </p>
         </Wrap>
 
-        {/* The product itself: the free first lesson, playable here. */}
+        {/* Welcome recording takes the lead once supplied; otherwise retain the labelled lesson preview. */}
         <Wrap className="mt-14">
           <LessonPreview lesson={leadership.lessons[0]} />
         </Wrap>
-      </header>
+      </header>}
 
       <LogoMarquee />
 
@@ -372,26 +383,6 @@ function VisitorHome() {
         </Wrap>
       </Section>
 
-      {/* FAQ */}
-      <Section>
-        <Wrap>
-          <SectionHead center eyebrow="Questions" title="Good to know before you ask." />
-          <div className="mx-auto max-w-[800px] rounded-3xl border border-line bg-white px-6 shadow-card sm:px-8">
-            {FAQS.map(([q, a]) => (
-              <details key={q} className="group border-b border-line last:border-0">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[16.5px] font-semibold [&::-webkit-details-marker]:hidden">
-                  {q}
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-paper-soft text-brand transition group-open:rotate-45">
-                    <span className="text-lg leading-none">+</span>
-                  </span>
-                </summary>
-                <p className="pb-6 text-[15px] leading-relaxed text-ink-soft">{a}</p>
-              </details>
-            ))}
-          </div>
-        </Wrap>
-      </Section>
-
       {/* CTA */}
       <Section className="pt-0">
         <Wrap>
@@ -401,7 +392,7 @@ function VisitorHome() {
               className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent/30 blur-3xl"
             />
             <h2 className="display relative text-[clamp(32px,4.6vw,52px)]">
-              Ready to be remembered?
+              Ready to be Remarkable?
             </h2>
             <p className="relative mx-auto mb-8 mt-4 max-w-[520px] text-[17px] text-white/80">
               Request your place today. We read every request and approve
@@ -504,10 +495,10 @@ export default function HomeScreens() {
     case "pending":
       return <PendingHome name={name} />;
     case "free":
-      return <MemberHome name={name} paid={false} admin={false} />;
+      return <CourseScreen />;
     case "circle":
-      return <MemberHome name={name} paid admin={false} />;
+      return <CourseScreen />;
     case "admin":
-      return <MemberHome name={name} paid admin />;
+      return <CourseScreen />;
   }
 }

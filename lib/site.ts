@@ -3,7 +3,7 @@
  * Editing copy here updates it everywhere it appears.
  */
 
-import { PLAN, commitmentLine, priceLabel, priceWithInterval } from "@/lib/pricing";
+import { PLAN } from "@/lib/pricing";
 
 /** The AI practice coach, as Barry named her in the programme blueprint. */
 export const COACH_NAME = "Katya";
@@ -33,9 +33,7 @@ export const PRELAUNCH = true;
 /** Paths anyone may visit during pre-launch. */
 
 export const NAV_LINKS = [
-  { href: "/courses", label: "Courses" },
   { href: "/events", label: "Events" },
-  { href: "/community", label: "Community" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/about", label: "About Us" },
   { href: "/pricing", label: "Pricing" },
@@ -151,42 +149,3 @@ export const TEAM = [
     dark: false,
   },
 ];
-
-export const FAQS = [
-  [
-    "How do I get access?",
-    "Request a place with your email, and we'll review it. We're opening Stand Out in stages so each intake gets proper attention, and you'll get an email as soon as your place is ready. There's no charge to request access.",
-  ],
-  [
-    "What's the difference between the Front Row and Speakers' Circle?",
-    `Front Row is free — you get selected lessons, free live events, and a spot on the leaderboard. Speakers' Circle (${priceWithInterval}) unlocks every lesson, practice with Katya — your Speak with Impact coach — the full member community, and all live workshops and cohort classes.`,
-  ],
-  [
-    "How much does it cost?",
-    `Speakers' Circle is ${priceLabel} per ${PLAN.interval}. ${commitmentLine} The Front Row plan is free forever.`,
-  ],
-  [
-    "What's the difference between Leadership Voice and Campus Voice?",
-    "Leadership Voice is built for professionals — influencing colleagues, clients, and management. Campus Voice is built for students — speaking up in class, interviews, and group projects. Campus Voice is coming soon.",
-  ],
-  [
-    "Do I need any public speaking experience?",
-    "Not at all. Eight out of ten people feel nervous presenting — the courses start from the fundamentals and build up, whether you're a nervous beginner or an experienced speaker looking to sharpen.",
-  ],
-  [
-    "How does the AI practice work?",
-    "Katya is your Speak with Impact practice coach. You meet her at the end of Lesson 5B with your self-introduction, and in Speakers' Circle you bring her a two-to-three-minute presentation on any of 80 topics. Choose your Frame or Masterful Notes for text coaching: a strength, one priority improvement, then another attempt. Spoken delivery assessment is not automated yet; a human coach records full presentation scores during the scoring pilot.",
-  ],
-  [
-    "Can I practice with real people?",
-    "Yes. Speakers' Circle members get access to the community, where you can find practice partners, join peer practice nights, and post recordings for feedback.",
-  ],
-  [
-    "How do points and the leaderboard work?",
-    "The activity leaderboard counts completed lessons and quizzes. Speaking performance is separate: a coach assesses Frame, Staying on Message and Delivery. Your best three of the latest five presentations determine your current score, with one eligible award per completed month. See My performance for your baseline, assessments, monthly awards and current recognition level.",
-  ],
-  [
-    "Who teaches the courses?",
-    "The curriculum comes from Barry Kuntz, founder of CLEAR Executive and Corporate Development, who has coached more than 3,500 leaders to speak with impact over 17 years.",
-  ],
-] as const;
