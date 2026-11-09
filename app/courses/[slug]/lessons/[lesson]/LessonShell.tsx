@@ -7,6 +7,7 @@ import { Wrap, Section, PageSkeleton } from "@/components/ui";
 import { getLesson, FREE_PREVIEW_COUNT } from "@/lib/courses";
 import { hasQuiz } from "@/components/Quiz";
 import { useAuth } from "@/lib/mock-auth";
+import { useAccess } from "@/lib/access";
 import { useProgress } from "@/lib/progress";
 
 /**
@@ -21,7 +22,8 @@ export default function LessonShell({ children }: { children: ReactNode }) {
   }>();
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loading, hasFullAccess } = useAuth();
+  const { user, loading } = useAuth();
+  const { fullAccess: hasFullAccess } = useAccess();
   const { hasPassed } = useProgress(slug);
 
   const data = getLesson(slug, lessonSlug);
@@ -101,15 +103,15 @@ export default function LessonShell({ children }: { children: ReactNode }) {
     },
     {
       href: `${base}/workbook`,
-      label: hasFullAccess ? "Workbook" : "Workbook · Circle",
+      label: "Workbook",
       icon: "",
-      show: Boolean(lesson.materials?.length),
+      show: hasFullAccess && Boolean(lesson.materials?.length),
     },
     {
       href: `${base}/practice`,
-      label: hasFullAccess ? "Katya" : "Katya · Circle",
+      label: "Katya",
       icon: "",
-      show: Boolean(lesson.practice),
+      show: hasFullAccess && Boolean(lesson.practice),
     },
   ].filter((t) => t.show);
 
