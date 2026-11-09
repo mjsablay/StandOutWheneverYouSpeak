@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import WelcomeVideo, { WELCOME_VIDEO_URL } from "@/components/WelcomeVideo";
 import { Check, FileText, Lock, Mic, Play } from "lucide-react";
 import { Wrap, Section, Eyebrow, Btn, PageSkeleton } from "@/components/ui";
 import { COURSES, FREE_PREVIEW_COUNT, hasContent, type Lesson } from "@/lib/courses";
@@ -55,11 +56,12 @@ export default function CourseScreen() {
   return (
     <Section>
       <Wrap>
-        <Link href="/preparation" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:underline"><FileText className="h-4 w-4" />Presentation prompts &amp; preparation guide</Link>
+        {WELCOME_VIDEO_URL && <details className="mb-8 rounded-3xl border border-line bg-white p-6"><summary className="cursor-pointer font-semibold text-brand">Watch Barry’s welcome</summary><div className="mt-5"><WelcomeVideo /></div></details>}
+        <Link href="/preparation" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:underline"><FileText className="h-4 w-4" />Presentation prompts &amp; preparation guide{!fullAccess && " · Speakers’ Circle"}</Link>
         {/* ---------- Header ---------- */}
         <div className="mb-10 flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-[680px]">
-            <Eyebrow>{course.audience}</Eyebrow>
+            <Eyebrow>Learning · {course.audience}</Eyebrow>
             <h1 className="display text-[clamp(30px,4.4vw,50px)]">{course.name}</h1>
             <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
               {course.blurb}
@@ -161,8 +163,8 @@ export default function CourseScreen() {
               </h2>
               <p className="text-[14.5px] text-ink-soft">
                 Speakers&apos; Circle opens the other {behindTheWall}, coaching
-                with {COACH_NAME} on eighty practice topics, and the member
-                community, for $10 CAD a month.
+                with {COACH_NAME} on eighty practice topics, and downloadable
+                workbooks.
               </p>
             </div>
             <Link
@@ -230,7 +232,7 @@ export default function CourseScreen() {
                     {lesson.practice && (
                       <span className="inline-flex items-center gap-1.5">
                         <Mic className="h-3 w-3" strokeWidth={2.5} />
-                        {COACH_NAME}
+                        {COACH_NAME}{!fullAccess && " · Circle"}
                       </span>
                     )}
                   </span>

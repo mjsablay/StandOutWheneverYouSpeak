@@ -31,7 +31,7 @@ export default function Footer() {
             <ul className="space-y-2 text-[14.5px]">
               <li>
                 <Link href="/" className="hover:text-brand">
-                  Home
+                  {access.approved ? "Learning" : "Home"}
                 </Link>
               </li>
               {links.map((l) => (
@@ -64,7 +64,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link href="/signin" className="hover:text-brand">
-                      Sign in
+                      Member login
                     </Link>
                   </li>
                 </>

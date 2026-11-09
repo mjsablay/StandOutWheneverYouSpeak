@@ -35,6 +35,8 @@ const PRELAUNCH_ALLOWED = [
   // instead turns every one of those into HTML, and the browser can only
   // report it as "you've been signed out" — which is the one thing it isn't.
   "/api/stripe",
+  // Katya endpoints enforce membership and must return JSON 401/403, not a homepage redirect.
+  "/api/katya",
   "/signin",
   "/signup",
   "/auth",
@@ -80,6 +82,19 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+  const circleResource = path.startsWith("/materials/") || path === "/preparation" ||
+    /^\/courses\/[^/]+\/lessons\/[^/]+\/(workbook|practice)(?:\/|$)/.test(path);
+  if (circleResource) {
+    if (!user) return NextResponse.redirect(new URL("/request", request.url));
+    const { data: profile } = await supabase.from("profiles")
+      .select("role,tier,status").eq("id", user.id).maybeSingle();
+    const allowed = profile?.role === "admin" || (profile?.status === "approved" && profile?.tier === "circle");
+    if (!allowed) {
+      if (path.startsWith("/materials/")) return new NextResponse("Speakers’ Circle membership required.", { status: 403, headers: { "Cache-Control": "private, no-store" } });
+      return NextResponse.redirect(new URL("/pricing", request.url));
+    }
+    response.headers.set("Cache-Control", "private, no-store");
+  }
 
   const needsAuth =
     PROTECTED.some((p) => path.startsWith(p)) ||
@@ -127,6 +142,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/materials/:path*",
     /*
      * Everything except static assets, images, videos and downloads.
      */
