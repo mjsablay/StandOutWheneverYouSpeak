@@ -35,6 +35,8 @@ const PRELAUNCH_ALLOWED = [
   // instead turns every one of those into HTML, and the browser can only
   // report it as "you've been signed out" — which is the one thing it isn't.
   "/api/stripe",
+  // Katya endpoints enforce membership and must return JSON 401/403, not a homepage redirect.
+  "/api/katya",
   "/signin",
   "/signup",
   "/auth",
