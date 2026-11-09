@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAccess } from "@/lib/access";
 import { useParams } from "next/navigation";
 import VideoPlayer from "@/components/VideoPlayer";
 import { getLesson, videoUrl } from "@/lib/courses";
@@ -13,6 +14,7 @@ export default function LessonVideoScreen() {
     lesson: string;
   }>();
   const { hasPassed, hasWatched, markWatched } = useProgress(slug);
+  const { fullAccess } = useAccess();
 
   const data = getLesson(slug, lessonSlug);
   if (!data) return null;
@@ -54,7 +56,7 @@ export default function LessonVideoScreen() {
             </Link>
           )}
 
-          {lesson.practice && (
+          {fullAccess && lesson.practice && (
             <Link
               href={`${base}/practice`}
               className="rounded-lg border border-line px-5 py-2.5 text-[14.5px] font-semibold hover:bg-paper-warm"

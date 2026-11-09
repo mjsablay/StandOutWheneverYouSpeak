@@ -57,7 +57,7 @@ export default function CourseScreen() {
     <Section>
       <Wrap>
         {WELCOME_VIDEO_URL && <details className="mb-8 rounded-3xl border border-line bg-white p-6"><summary className="cursor-pointer font-semibold text-brand">Watch Barry’s welcome</summary><div className="mt-5"><WelcomeVideo /></div></details>}
-        <Link href="/preparation" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:underline"><FileText className="h-4 w-4" />Presentation prompts &amp; preparation guide{!fullAccess && " · Speakers’ Circle"}</Link>
+        {fullAccess && <Link href="/preparation" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:underline"><FileText className="h-4 w-4" />Presentation prompts &amp; preparation guide</Link>}
         {/* ---------- Header ---------- */}
         <div className="mb-10 flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-[680px]">
@@ -229,10 +229,10 @@ export default function CourseScreen() {
                         Quiz
                       </span>
                     )}
-                    {lesson.practice && (
+                    {fullAccess && lesson.practice && (
                       <span className="inline-flex items-center gap-1.5">
                         <Mic className="h-3 w-3" strokeWidth={2.5} />
-                        {COACH_NAME}{!fullAccess && " · Circle"}
+                        {COACH_NAME}
                       </span>
                     )}
                   </span>
