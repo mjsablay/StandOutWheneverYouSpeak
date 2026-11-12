@@ -16,7 +16,7 @@
  * everything else in one line at the bottom.
  *
  * It deliberately stops short of the full syllabus. /courses is the course
- * itself (app/courses/CourseScreen.tsx) and lists all fifteen lessons with
+ * itself (app/courses/CourseScreen.tsx) and lists all available lessons with
  * the same per-row state; repeating that here made "Course page →" lead to
  * a screen the member had just read. Home answers "where am I and what is
  * next"; the course page answers "what is the whole thing".

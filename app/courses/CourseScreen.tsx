@@ -201,12 +201,15 @@ export default function CourseScreen() {
                   <span className="block text-[15.5px] font-semibold">
                     {lesson.title}
                   </span>
+                  <span className="mt-1 block max-w-[680px] text-[14px] leading-relaxed text-ink-soft">
+                    {lesson.summary}
+                  </span>
                   <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-soft">
                     <span className="inline-flex items-center gap-1.5">
                       {lesson.video ? (
                         <>
                           <Play className="h-3 w-3" strokeWidth={2.5} />
-                          Video
+                          Video{lesson.duration ? ` · ${lesson.duration}` : ""}
                         </>
                       ) : (
                         <>

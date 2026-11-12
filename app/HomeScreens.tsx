@@ -157,7 +157,7 @@ function LessonPreview({ lesson }: { lesson: (typeof COURSES)[0]["lessons"][0] }
               alt=""
               className="aspect-video w-full object-cover"
             />
-            <span className="absolute inset-0 flex items-center justify-center">
+            <span className="absolute inset-0 flex items-center justify-end pr-[12%]">
               <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-white text-ink shadow-lift transition group-hover:scale-105">
                 <Play className="ml-1 h-7 w-7" strokeWidth={2.5} fill="currentColor" />
               </span>
@@ -177,7 +177,7 @@ function LessonPreview({ lesson }: { lesson: (typeof COURSES)[0]["lessons"][0] }
         )}
       </div>
       <figcaption className="mt-4 text-center text-[14.5px] text-ink-soft">
-        The first lesson of Leadership Voice, free to watch. Fourteen more,
+        The first lesson of Leadership Voice, free to watch. Nine more,
         eighty practice topics and {COACH_NAME} are behind the door.
       </figcaption>
     </figure>
@@ -253,9 +253,9 @@ function VisitorHome() {
           />
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              [BookOpen, "Learn", "Short, focused lessons on structure, delivery and staying on message — built from 17 years of coaching 3,500+ leaders."],
+              [BookOpen, "Embrace", "Short, focused lessons on structure, delivery and staying on message — built from 17 years of coaching 3,500+ leaders."],
               [Mic, "Practise", `Bring a two-to-three-minute piece to ${COACH_NAME}. She names one strength, one thing to change, and has you try it again.`],
-              [Trophy, "Perform", "Put the method into practice in your next meeting or presentation, then use assessed feedback to see your progress."],
+              [Trophy, "Master", "Put the method into practice in your next meeting or presentation, then use assessed feedback to see your progress."],
             ].map(([Icon, title, body]) => {
               const I = Icon as LucideIcon;
               return (
