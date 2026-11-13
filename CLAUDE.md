@@ -513,3 +513,13 @@ Set `NEXT_PUBLIC_WELCOME_VIDEO_URL` only after Barry supplies the real recording
 It replaces the public hero lesson preview and appears under Watch Barry’s welcome
 on Learning. Until then the existing hero remains accurately labelled as a lesson
 preview and no fake welcome recording is displayed. No new database migration.
+
+## November 2026 course refresh
+
+Barry’s November 9 email removes the five unrecorded Leadership Voice placeholders.
+There are now ten lessons, with stable slugs and progress records; ACTS leads directly
+to Managing Difficult Conversations. November recordings use `-2026-11.mp4`.
+Descriptions and m:ss runtimes come from his November 10 email. The public method
+labels are Embrace / Practise / Master. See `docs/barry-email-review-2026-11-12.md`
+for the email decisions and pending pricing/avatar discussion. Earlier references
+to a fifteen-lesson syllabus are superseded.

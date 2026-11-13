@@ -27,6 +27,7 @@ export default function LessonVideoScreen() {
 
   return (
     <>
+      {lesson.duration && <p className="mb-3 text-sm text-ink-soft">Video length: {lesson.duration}</p>}
       <VideoPlayer src={videoUrl(lesson.video)} title={lesson.title} />
 
       <div className="mt-8">

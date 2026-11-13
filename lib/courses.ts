@@ -27,6 +27,8 @@ export type Lesson = {
   title: string;
   summary: string;
   video?: string;
+  /** Runtime supplied by Barry, formatted m:ss. */
+  duration?: string;
   materials?: Material[];
   /** Scenario Katya, the AI coach, runs for this lesson. */
   practice?: {
@@ -45,13 +47,7 @@ export type Course = {
   lessons: Lesson[];
 };
 
-/**
- * A lesson is real when Barry has supplied something to open: a recording or
- * a download. The rest are titles and summaries from his blueprint — 07A2
- * through 07A6 today — and every count a member sees must exclude them, or
- * the site promises fifteen lessons and delivers ten. Both the member home
- * and the course page measure with this.
- */
+/** Count only lessons with a recording or supplied learning materials. */
 export const hasContent = (l: Lesson) =>
   Boolean(l.video) || Boolean(l.materials?.length);
 
@@ -77,8 +73,9 @@ export const COURSES: Course[] = [
         number: "01",
         title: "Be Remarkable",
         summary:
-          "What separates speakers people remember from speakers people forget — and why it is a learnable skill, not a personality trait.",
-        video: "be-remarkable-2026-09.mp4",
+          "Discover what separates ordinary communicators from remarkable ones.",
+        video: "be-remarkable-2026-11.mp4",
+        duration: "1:50",
         materials: [
           {
             label: "Exercise",
@@ -103,8 +100,9 @@ export const COURSES: Course[] = [
         number: "02",
         title: "Impact Defined",
         summary:
-          "A working definition of impact: being remembered, and moving people to think or act differently after you have finished speaking.",
-        video: "impact-defined-2026-09.mp4",
+          "Learn how to create a lasting impression by focusing on what you want your audience to think, feel and do.",
+        video: "impact-defined-2026-11.mp4",
+        duration: "2:25",
         materials: [
           {
             label: "Exercise",
@@ -122,10 +120,11 @@ export const COURSES: Course[] = [
       {
         slug: "impactful-structure-explained",
         number: "03",
-        title: "Impactful Structure",
+        title: "Impactful Structure Explained",
         summary:
-          "The structure behind presentations that land — how to order your thinking so an audience can follow and retain it.",
-        video: "impactful-structure-explained-2026-09.mp4",
+          "Discover how to organize your ideas into a clear, compelling message that captures attention and inspires action.",
+        video: "impactful-structure-explained-2026-11.mp4",
+        duration: "7:11",
         materials: [
           ...PREPARATION_MATERIALS,
           {
@@ -146,8 +145,9 @@ export const COURSES: Course[] = [
         number: "04",
         title: "Compelling Delivery",
         summary:
-          "Voice, pace, pause, and presence. How delivery either carries your message or quietly undermines it.",
-        video: "compelling-delivery-2026-09.mp4",
+          "Learn how to use your voice and presence to bring your message to life and connect with your audience.",
+        video: "compelling-delivery-2026-11.mp4",
+        duration: "8:12",
         materials: [
           {
             label: "Exercise",
@@ -165,10 +165,11 @@ export const COURSES: Course[] = [
       {
         slug: "masterful-notes-designed",
         number: "05A",
-        title: "Masterful Notes — Designed",
+        title: "Masterful Notes Designed",
         summary:
-          "How to build notes that support you instead of trapping you into reading a script.",
-        video: "masterful-notes-designed-2026-09.mp4",
+          "Learn how to transform your presentation into simple, purposeful notes that enable compelling delivery.",
+        video: "masterful-notes-designed-2026-11.mp4",
+        duration: "4:10",
         materials: [
           ...PREPARATION_MATERIALS,
           {
@@ -187,10 +188,11 @@ export const COURSES: Course[] = [
       {
         slug: "masterful-notes-delivered",
         number: "05B",
-        title: "Masterful Notes — Delivered",
+        title: "Masterful Notes Delivered",
         summary:
-          "Using your notes live: staying connected to the room while staying on message.",
-        video: "masterful-notes-delivered-2026-09.mp4",
+          "Discover how to use Masterful Notes to speak with confidence, maintain eye contact and engage your audience without relying on a script.",
+        video: "masterful-notes-delivered-2026-11.mp4",
+        duration: "3:21",
         materials: [
           ...PREPARATION_MATERIALS,
           {
@@ -211,8 +213,9 @@ export const COURSES: Course[] = [
         number: "06",
         title: "Pesky Nerves Managed",
         summary:
-          "Eight out of ten people feel nervous presenting. Practical ways to manage nerves rather than pretend they are not there.",
-        video: "pesky-nerves-managed-2026-09.mp4",
+          "Learn practical techniques to manage nervous energy, build confidence and perform at your best when the pressure is on.",
+        video: "pesky-nerves-managed-2026-11.mp4",
+        duration: "4:05",
         materials: [
           {
             label: "Exercise",
@@ -232,8 +235,9 @@ export const COURSES: Course[] = [
         number: "07A",
         title: "Key Conversations Influenced",
         summary:
-          "Build influence before you explain. Use CALE to create stronger, more productive conversations.",
-        video: "key-conversations-managed-2026-09.mp4",
+          "Discover how to influence important conversations, build alignment and gain commitment, even when you don't have formal authority.",
+        video: "key-conversations-managed-2026-11.mp4",
+        duration: "8:37",
         materials: [
           {
             label: "Exercise",
@@ -253,8 +257,9 @@ export const COURSES: Course[] = [
         number: "07A1",
         title: "Flexing Your Style with ACTS",
         summary:
-          "Read the room and flex your approach to connect with Activators, Creators, Team Players and Specialists.",
-        video: "flexing-your-style-with-acts-2026-09.mp4",
+          "Learn how to adapt your communication style to different personalities and situations to build stronger connections and increase your influence.",
+        video: "flexing-your-style-with-acts-2026-11.mp4",
+        duration: "9:02",
         materials: [
           {
             label: "Exercise",
@@ -270,19 +275,13 @@ export const COURSES: Course[] = [
         },
       },
       {
-        slug: "influencing-without-authority",
-        number: "07A2",
-        title: "Influencing without Authority",
-        summary:
-          "Win support across teams by building common ground, credibility and momentum without relying on title.",
-      },
-      {
         slug: "managing-difficult-conversations",
         number: "08",
-        title: "Difficult Conversations Managed",
+        title: "Managing Difficult Conversations",
         summary:
-          "Stay calm, curious and constructive when the stakes rise and conversations become uncomfortable.",
-        video: "managing-difficult-conversations-2026-09.mp4",
+          "Learn how to approach challenging conversations with confidence, create safety, explore different perspectives and agree on constructive action.",
+        video: "managing-difficult-conversations-2026-11.mp4",
+        duration: "6:55",
         materials: [
           {
             label: "Exercise",
@@ -300,40 +299,6 @@ export const COURSES: Course[] = [
             "Deliver difficult news to Katya, who will not make it easy.",
           prompt:
             "Play someone receiving difficult news — defensive, then emotional. Have the learner stay clear and composed without becoming cold.",
-        },
-      },
-      {
-        slug: "interjecting",
-        number: "07A3",
-        title: "Interjecting",
-        summary:
-          "Step in confidently and respectfully — without sounding abrupt or derailing the conversation.",
-      },
-      {
-        slug: "meeting-recovery",
-        number: "07A4",
-        title: "Meeting Recovery",
-        summary:
-          "Recognize when a meeting is drifting and bring the discussion back to purpose, priorities and action.",
-      },
-      {
-        slug: "spontaneous-speaking",
-        number: "07A5",
-        title: "Spontaneous Speaking",
-        summary:
-          "Organize your thinking quickly and respond with clarity when you have little or no preparation.",
-      },
-      {
-        slug: "handling-curveballs",
-        number: "07A6",
-        title: "Handling Curveballs",
-        summary:
-          "Stay composed, think on your feet and respond effectively when the unexpected happens.",
-        practice: {
-          brief:
-            "Present while Katya interrupts with the questions you least want.",
-          prompt:
-            "Have the learner present a topic of their choice, then interrupt with the questions they would least want. Assess how they hold their composure and return to their structure.",
         },
       },
     ],
